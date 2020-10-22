@@ -26,3 +26,7 @@ class Mixin:
     def file_actions_for_toolbar(self):
         print('file_actions_for_toolbar')
         return (self.file_quit_action,) # TODO don't include Quit in toolbar
+
+
+    def file_open(self, filename):
+        print(f'file_open {filename}')

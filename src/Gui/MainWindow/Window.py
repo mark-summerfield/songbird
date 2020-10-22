@@ -2,9 +2,10 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 import contextlib
+import pathlib
 
-from PySide2.QtCore import QStandardPaths, QTimer
-from PySide2.QtWidgets import QLabel, QMainWindow
+from PySide2.QtCore import QStandardPaths
+from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 from . import Actions, FileActions
 from .Const import TIMEOUT_LONG
@@ -38,7 +39,8 @@ class Window(QMainWindow, Actions.Mixin, FileActions.Mixin):
         #     self.add_recent_file(self.model.filename)
         # self.save_settings()
         # self.save()
-        print('closeEvent: maybe unsaved changes dialog + save settings in .sbc file')
+        print('closeEvent: maybe unsaved changes dialog + '
+              'save settings in .sbc file')
         event.accept()
 
 
@@ -55,14 +57,14 @@ class Window(QMainWindow, Actions.Mixin, FileActions.Mixin):
         #     self.recent_files = [self.recent_files]
         # if not filename:
         #     filename = settings.value(SETTINGS_LAST_FILE)
-        # if filename and not os.path.exists(filename):
-        #     filename = None
-        # if filename:
-        #     self.database_open(filename)
-        # else:
-        #     self.show_status_message(
-        #         'Click <b>File→New</b> or <b>File→Open</b> to open or '
-        #         'create a Database')
+        if filename and not pathlib.Path(filename).exists():
+            filename = None
+        if filename:
+            self.file_open(filename)
+        else:
+            self.statusBar().showMessage(
+                'Click File→New or File→Open to open or create a database',
+                TIMEOUT_LONG)
 
 
     def add_recent_file(self, filename):
@@ -72,25 +74,10 @@ class Window(QMainWindow, Actions.Mixin, FileActions.Mixin):
         self.recent_files = self.recent_files[-9:]
 
 
-    def show_status_message(self, message, timeout_ms=TIMEOUT_LONG):
-        self.message_timer.stop()
-        self.status_label.setText(' '.join(message.split()).strip())
-        self.status_label.show()
-        qApp.processEvents()
-        self.message_timer.start(timeout_ms)
-
-
-    def clear_status_message(self):
-        self.status_label.hide()
-
-
     def make_widgets(self):
-        self.message_timer = QTimer(self)
-        self.message_timer.setSingleShot(True)
-        self.message_timer.timeout.connect(self.clear_status_message)
-        self.status_label = QLabel()
+        self.mdiArea = QMdiArea()
+        self.setCentralWidget(self.mdiArea)
         # TODO contents tree dock widget + MDI central area
-        self.status_label.hide()
         print('make_widgets')
 
 
