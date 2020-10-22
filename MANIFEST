@@ -1,6 +1,5 @@
 src/songbird.pyw
 src/Gui/MainWindow/Window.py
-src/Gui/MainWindow/Actions.py
 src/Gui/MainWindow/FileActions.py
 src/Gui/MainWindow/Const.py
 src/Gui/MainWindow/Util.py

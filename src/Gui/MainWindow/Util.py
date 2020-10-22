@@ -34,7 +34,7 @@ def add_actions(menu_or_toolbar, actions):
             menu_or_toolbar.addAction(action)
 
 
-def create_tool_button(icon, tooltip, slot=None, *, menu=None):
+def make_tool_button(icon, tooltip, slot=None, *, menu=None):
     button = QToolButton()
     button.setToolTip(tooltip)
     button.setIcon(QIcon(icon))

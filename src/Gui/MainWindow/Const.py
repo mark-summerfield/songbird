@@ -4,5 +4,6 @@
 import sys
 
 WIN = sys.platform.startswith('win')
+
 TIMEOUT_LONG = 10000 # 10s
 TIMEOUT_SHORT = 5000 # 5s

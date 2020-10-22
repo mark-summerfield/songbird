@@ -7,12 +7,12 @@ import pathlib
 from PySide2.QtCore import QStandardPaths
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
-from . import Actions, FileActions
+from . import FileActions
 from .Const import TIMEOUT_LONG
 from .Util import add_actions
 
 
-class Window(QMainWindow, Actions.Mixin, FileActions.Mixin):
+class Window(QMainWindow, FileActions.Mixin):
 
     def __init__(self, app_path, filename):
         super().__init__()
