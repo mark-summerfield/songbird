@@ -1,0 +1,56 @@
+
+st.sh
+
+README.md
+
+#0
+# File->New | Open | Open Recent-> | Close | Save | Save As... | Backup |
+#   Dump | Import (e.g., from CSV/TSV/etc) | Export (e.g. to ditto) | Quit
+#1 pure SQL
+#2 custom types via Tcl functions (e.g., tobytes, frombytes, tosring)
+#3 custom forms
+#4 custom layouts (i.e., for 'apps')
+#  Ideally support vsplit & hsplit for tabs so that I can show two tabs
+#  side-by-side and/or above-below i.e., 1, 2, 3, or 4 tabs visible at
+#  the same time.
+#5 ultimately aim to be able to replace both Biller and Notebox with
+#  custom songbird databases
+
+# SDI one main window per db
+# Main window layout:
+#
+#   Menu bar.................
+#   Tool bar.................
+#   Contents tree is a dock window
+#   Central area is MDI for Form/List views
+#   Status bar.....................
+
+# &File              &Edit        &Options	        &SQL
+#   &New... ^N         &Copy ^C     [X] Show &Toolbar     Create &SELECT...
+#   &Open... ^O        Cu&t  ^X     [X] Show &Contents    ---------
+#   Open &Recent ->    &Paste ^V    [ ] Show C&alendar    Create &Table...
+#   &Save ^S                        [ ] Show Calc&ulator  Create &View...
+#   Save &As...                     ------------------    &Create Trigger...
+#   &Backup...                      &Toggle Form|List     ---------
+#   ---------                       ------------------    &Alter Table...
+#   &Import...                      &Options...           Alter Vie&w...
+#   &Export...                                            A&lter Trigger...
+#   ---------                       
+#   &Close F4
+#   &Quit ^Q
+
+# &Form                &Window                 &Help
+#   &Next F6             &Next Alt+F6            &About
+#   &Previous Shift+F6   &Previous Shift+Alt+F6  &Help F1
+#   &1 <mdi name>        &1 <window name>                   
+#      :	            :                               
+#   &9 <mdi name>        &9 <window name>
+#   &More ->             &More ->
+#   ---------            ---------
+#   &Close Shift+F4      &Close Alt+F4          
+
+# Initially insert/update can only be done in form view and delete in
+# form or list view. Ideally allow in-place insert/update in list view
+# if/when possible.
+
+# vim: syn=yaml
