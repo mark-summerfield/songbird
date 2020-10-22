@@ -1,6 +1,6 @@
 #!/bin/bash
 cd src
-tokei -slines -c80 -tPython
+tokei -f -slines -c110 -tPython
 unrecognized.py -q
 python3 -m flake8 --config=../setup.cfg . \
     | grep -v undefined.name..qApp
