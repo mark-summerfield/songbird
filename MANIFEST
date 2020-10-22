@@ -9,16 +9,14 @@ st.sh
 
 README.md
 
+# -1 save/restore win size/pos (in songbird.sbc)
 #0
 # File->New | Open | Open Recent-> | Close | Save | Save As... | Backup |
-#   Dump | Import (e.g., from CSV/TSV/etc) | Export (e.g. to ditto) | Quit
+#   Import (e.g., from CSV/TSV/etc) | Export (e.g. to CSV/TSV/etc + dump) |
+#   Quit
 #1 pure SQL
 #2 custom types via Tcl functions (e.g., tobytes, frombytes, tosring)
 #3 custom forms
-#4 custom layouts (i.e., for 'apps')
-#  Ideally support vsplit & hsplit for tabs so that I can show two tabs
-#  side-by-side and/or above-below i.e., 1, 2, 3, or 4 tabs visible at
-#  the same time.
 #5 ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
 
