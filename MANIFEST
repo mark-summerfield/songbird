@@ -4,7 +4,7 @@ src/Gui/MainWindow/FileActions.py
 src/Gui/MainWindow/HelpActions.py
 src/Gui/MainWindow/Const.py
 src/Gui/MainWindow/Util.py
-src/Db/
+src/Model/Model.py
 
 st.sh
 

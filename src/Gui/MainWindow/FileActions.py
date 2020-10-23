@@ -57,6 +57,14 @@ class Mixin:
                 self.file_export_action)
 
 
+    def file_update_ui(self):
+        enable = bool(self.model)
+        for action in (self.file_save_action, self.file_saveas_action,
+                       self.file_backup_action, self.file_export_action):
+            action.setEnabled(enable)
+        print('file_update_ui') # TODO
+
+
     def file_new(self):
         print('file_new') # TODO
 

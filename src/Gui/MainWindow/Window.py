@@ -18,6 +18,7 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
     def __init__(self, app_path, filename):
         super().__init__()
         self.app_path = app_path
+        self.model = None
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
         self.recent_files = [] # Order is Old to New
@@ -106,4 +107,5 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
 
 
     def update_ui(self):
+        self.file_update_ui()
         print('update_ui')
