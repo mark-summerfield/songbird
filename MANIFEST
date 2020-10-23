@@ -34,18 +34,18 @@ README.md
 # for viewing (and possibly in-place adding/editing).
 # Toggle Tabs toggles between MDI and tabs view.
 
-#  &Edit        &SQL                &Options	      
-#    &Copy ^C   Create &SELECT...     [X] Show &Contents   
-#    Cu&t  ^X   ---------             [ ] Show C&alendar   
-#    &Paste ^V  Create &Table...      [ ] Show Calc&ulator 
-#               Create &View...        ------------------  
-#               &Create Trigger...    ------------------  
-#               ---------             Toggle &Form View   
-#               &Alter Table...       &Toggle Tabs        
-#               Alter Vie&w...        ------------------  
-#               A&lter Trigger...     &Options...         
-#                 
-[X] Show &Toolbar   
+#  &Edit         &SQL                &Options	      
+#    &Copy ^C      Create &SELECT...    [X] Show &Contents   
+#    Cu&t  ^X      ---------            [ ] Show C&alendar   
+#    &Paste ^V     Create &Table...     [ ] Show Calc&ulator 
+#                  Create &View...       ------------------  
+#                  &Create Trigger...   [X] Show &Toolbar
+#                  ---------            ------------------  
+#                  &Alter Table...      Toggle &Form View   
+#                  Alter Vie&w...       &Toggle Tabs        
+#                  A&lter Trigger...    ------------------  
+#                                       &Options...         
+
 # &Window             
 #   &Next F6          
 #   &Previous Shift+F6
