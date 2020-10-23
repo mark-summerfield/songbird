@@ -3,7 +3,6 @@
 
 import datetime
 import platform
-import subprocess
 import sys
 
 import PySide2.QtCore
