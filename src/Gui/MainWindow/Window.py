@@ -7,12 +7,12 @@ import pathlib
 from PySide2.QtCore import QStandardPaths
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
-from . import FileActions
+from . import FileActions, HelpActions
 from .Const import TIMEOUT_LONG
 from .Util import add_actions
 
 
-class Window(QMainWindow, FileActions.Mixin):
+class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
 
     recent_files = [] # Order is Old to New; static for all main windows
 
@@ -93,7 +93,12 @@ class Window(QMainWindow, FileActions.Mixin):
         self.file_toolbar = self.addToolBar('File')
         self.file_toolbar.setObjectName('File')
         add_actions(self.file_toolbar, self.file_actions_for_toolbar)
+
         print('make_actions')
+
+        self.make_help_actions()
+        self.help_menu = self.menuBar().addMenu('&Help')
+        add_actions(self.help_menu, self.help_actions_for_menu)
 
 
     def make_connections(self):

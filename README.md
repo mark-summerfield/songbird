@@ -1,7 +1,7 @@
 # Songbird
 
-An application for viewing, creating, and modifying SQLite and Songbird
-databases.
+An easy to use application for viewing, creating, editing, and updating
+SQLite and Songbird databases.
 
 ## Dependencies
 
