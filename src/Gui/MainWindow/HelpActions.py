@@ -34,8 +34,8 @@ class Mixin:
     def help_about(self):
         year = datetime.date.today().year
         year = "2020-{}".format(str(year)[-2:]) if year != 2020 else "2020"
-        TEMPLATE = ('Python&nbsp;{}.{}.{}<br>{}<br>{}'
-                    '<br>APSW&nbsp;{}<br>SQLite&nbsp;{}<br>{}<br>{}')
+        TEMPLATE = ('Python&nbsp;{}.{}.{} • {} • {}'
+                    '<br>APSW&nbsp;{} • SQLite&nbsp;{}<br>{}<br>{}')
         BINDING = f'PySide2&nbsp;{PySide2.__version__}'
         QT = f'Qt&nbsp;{PySide2.QtCore.qVersion()}'
         info = TEMPLATE.format(
@@ -43,17 +43,21 @@ class Mixin:
             sys.version_info.micro, BINDING, QT, apsw.apswversion(),
             apsw.sqlitelibversion(), QSysInfo.prettyProductName(),
             platform.platform())
+        # TODO change URL below to github
         QMessageBox.about(
             self, f'About — {qApp.applicationName()}', '''<p>
 <font color=navy><b>{app} {version}</b></font></p>
 <p>
-<font color=navy>{app} is an easy to learn and use application for
-viewing, creating, editing, and updating SQLite and
-Songbird databases.
+<font color=navy>{app} is an easy to learn and use GUI application for
+viewing, creating, editing, and updating SQLite and Songbird databases.
 </font>
 </p>
-<p>Copyright © {year} Mark Summerfield. All Rights Reserved.</p>
-<p>
+<p align=center><a
+href="http://www.qtrac.eu/songbird.html">www.qtrac.eu/songbird.html</a>
+</p>
+<p align=center>Copyright © {year} Mark Summerfield.<br>
+All Rights Reserved.</p>
+<p align=center>
 This software is Free Open Source Software (FOSS) licensed under the
 GNU Public License version 3 (GPLv3).
 </p>

@@ -28,7 +28,7 @@ def main():
 
 USAGE = f'''usage: {pathlib.Path(sys.argv[0]).name} [filename]
 
-A GUI application for viewing, creating, and modifying
+An easy to use GUI application for viewing, creating, editing, and updating
 SQLite and Songbird databases.
 
 filename must be a SQLite or Songbird database
