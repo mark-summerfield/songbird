@@ -4,7 +4,7 @@ src/Gui/MainWindow/FileActions.py
 src/Gui/MainWindow/HelpActions.py
 src/Gui/MainWindow/Const.py
 src/Gui/MainWindow/Util.py
-src/Database/
+src/Db/
 
 st.sh
 
@@ -21,7 +21,7 @@ README.md
 #5 ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
 
-# SDI one main window per db
+# Not SDI: for multiple dbs run multiple instances.
 # Main window layout:
 #
 #   Menu bar.................
@@ -34,29 +34,27 @@ README.md
 # for viewing (and possibly in-place adding/editing).
 # Toggle Tabs toggles between MDI and tabs view.
 
-# &File              &Edit        &Options	        &SQL
-#   &New... ^N         &Copy ^C     [X] Show &Toolbar     Create &SELECT...
-#   &Open... ^O        Cu&t  ^X     [X] Show &Contents    ---------
-#   Open &Recent ->    &Paste ^V    [ ] Show C&alendar    Create &Table...
-#   &Save ^S                        [ ] Show Calc&ulator  Create &View...
-#   Save &As...                     ------------------    &Create Trigger...
-#   &Backup...                      Toggle &Form View     ---------
-#   ---------                       &Toggle Tabs          &Alter Table...
-#   &Import...                      ------------------    Alter Vie&w...
-#   &Export...                      &Options...                             A&lter Trigger...
-#   ---------                       
-#   &Close F4
-#   &Quit ^Q
-
-# &Form                &Window                 &Help
-#   &Next F6             &Next Alt+F6            &About
-#   &Previous Shift+F6   &Previous Shift+Alt+F6  &Help F1
-#   &1 <mdi name>        &1 <window name>                   
-#      :	            :                               
-#   &9 <mdi name>        &9 <window name>
-#   &More ->             &More ->
-#   ---------            ---------
-#   &Close Shift+F4      &Close Alt+F4          
+#  &Edit        &SQL                &Options	      
+#    &Copy ^C   Create &SELECT...     [X] Show &Contents   
+#    Cu&t  ^X   ---------             [ ] Show C&alendar   
+#    &Paste ^V  Create &Table...      [ ] Show Calc&ulator 
+#               Create &View...        ------------------  
+#               &Create Trigger...    ------------------  
+#               ---------             Toggle &Form View   
+#               &Alter Table...       &Toggle Tabs        
+#               Alter Vie&w...        ------------------  
+#               A&lter Trigger...     &Options...         
+#                 
+[X] Show &Toolbar   
+# &Window             
+#   &Next F6          
+#   &Previous Shift+F6
+#   &1 <mdi name>                   
+#      :	                    
+#   &9 <mdi name>      
+#   &More ->           
+#   ---------          
+#   &Close Ctrl+W
 
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view

@@ -14,13 +14,13 @@ from .Util import add_actions
 
 class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
 
-    recent_files = [] # Order is Old to New; static for all main windows
 
     def __init__(self, app_path, filename):
         super().__init__()
         self.app_path = app_path
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
+        self.recent_files = [] # Order is Old to New
         self.default_blink_rate = qApp.cursorFlashTime()
         self.closing = False
         self.setWindowTitle(
@@ -53,15 +53,15 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
         #                                     QByteArray()))
         # self.restoreState(settings.value(SETTINGS_WINDOW_STATE,
         #                                  QByteArray()))
-        # Window.recent_files = settings.value(SETTINGS_RECENT_FILES) or []
-        # if isinstance(Window.recent_files, str):
-        #     Window.recent_files = [Window.recent_files]
+        # self.recent_files = settings.value(SETTINGS_RECENT_FILES) or []
+        # if isinstance(self.recent_files, str):
+        #     self.recent_files = [self.recent_files]
         # if not filename:
         #     filename = settings.value(SETTINGS_LAST_FILE)
         if filename and not pathlib.Path(filename).exists():
             filename = None
         if filename:
-            self.file_open(filename)
+            self.file_load(filename)
         else:
             self.statusBar().showMessage(
                 'Click File→New or File→Open to open or create a database',
@@ -70,9 +70,9 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
 
     def add_recent_file(self, filename):
         with contextlib.suppress(ValueError):
-            Window.recent_files.remove(filename)
-        Window.recent_files.append(filename)
-        Window.recent_files = Window.recent_files[-9:]
+            self.recent_files.remove(filename)
+        self.recent_files.append(filename)
+        self.recent_files = self.recent_files[-9:]
 
 
     def make_widgets(self):
