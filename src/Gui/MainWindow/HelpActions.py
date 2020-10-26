@@ -52,12 +52,12 @@ class Mixin:
 viewing, creating, editing, and updating SQLite and Songbird databases.
 </font>
 </p>
-<p align=center><a
+<p><a
 href="http://www.qtrac.eu/songbird.html">www.qtrac.eu/songbird.html</a>
 </p>
-<p align=center>Copyright © {year} Mark Summerfield.<br>
+<p>Copyright © {year} Mark Summerfield.<br>
 All Rights Reserved.</p>
-<p align=center>
+<p>
 This software is Free Open Source Software (FOSS) licensed under the
 GNU Public License version 3 (GPLv3).
 </p>

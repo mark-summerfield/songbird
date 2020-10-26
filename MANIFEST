@@ -1,6 +1,7 @@
 src/songbird.pyw
 src/Gui/MainWindow/Window.py
 src/Gui/MainWindow/FileActions.py
+src/Gui/MainWindow/EditActions.py
 src/Gui/MainWindow/HelpActions.py
 src/Gui/MainWindow/Const.py
 src/Gui/MainWindow/Util.py
@@ -11,24 +12,12 @@ st.sh
 README.md
 
 # -1 save/restore win size/pos (in songbird.sbc)
-#0
-# File->New | Open | Open Recent-> | Close | Save | Save As... | Backup |
-#   Import (e.g., from CSV/TSV/etc) | Export (e.g. to CSV/TSV/etc + dump) |
-#   Quit
+#0 complete menus: SQL, Options, Window
 #1 pure SQL
-#2 custom types via Tcl functions (e.g., tobytes, frombytes, tosring)
+#2 custom types using songbird_types (tablename, fieldname, type)
 #3 custom forms
 #5 ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
-
-# Not SDI: for multiple dbs run multiple instances.
-# Main window layout:
-#
-#   Menu bar.................
-#   Tool bar.................
-#   Contents tree is a dock window
-#   Central area is MDI for Form/List views
-#   Status bar.....................
 
 # Toggle Form View toggles between a form for adding/editing and a list
 # for viewing (and possibly in-place adding/editing).

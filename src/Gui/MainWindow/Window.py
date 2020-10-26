@@ -7,12 +7,13 @@ import pathlib
 from PySide2.QtCore import QStandardPaths
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
-from . import FileActions, HelpActions
+from . import EditActions, FileActions, HelpActions
 from .Const import TIMEOUT_LONG
 from .Util import add_actions
 
 
-class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
+class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
+             HelpActions.Mixin):
 
 
     def __init__(self, app_path, filename):
@@ -95,6 +96,13 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
         self.file_toolbar.setObjectName('File')
         add_actions(self.file_toolbar, self.file_actions_for_toolbar)
 
+        self.make_edit_actions()
+        self.edit_menu = self.menuBar().addMenu('&Edit')
+        add_actions(self.edit_menu, self.edit_actions_for_menu)
+        self.edit_toolbar = self.addToolBar('Edit')
+        self.edit_toolbar.setObjectName('Edit')
+        add_actions(self.edit_toolbar, self.edit_actions_for_toolbar)
+
         print('make_actions')
 
         self.make_help_actions()
@@ -108,4 +116,5 @@ class Window(QMainWindow, FileActions.Mixin, HelpActions.Mixin):
 
     def update_ui(self):
         self.file_update_ui()
+        self.edit_update_ui()
         print('update_ui')

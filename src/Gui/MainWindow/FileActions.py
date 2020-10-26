@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-
 from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QMenu
 
