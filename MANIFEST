@@ -7,12 +7,12 @@ src/EditActions.py
 src/HelpActions.py
 src/Ui.py
 src/Model.py
+src/Sql.py
 
 st.sh
 
 README.md
 
-# -1 save/restore win size/pos (in songbird.sbc)
 #0 complete menus: SQL, Options, Window
 #1 pure SQL
 #2 custom types using songbird_types (tablename, fieldname, type)

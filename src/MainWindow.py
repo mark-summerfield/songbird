@@ -7,16 +7,16 @@ import pathlib
 from PySide2.QtCore import QStandardPaths
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
+import Config
 import EditActions
 import FileActions
 import HelpActions
-from Const import TIMEOUT_LONG
+from Const import MAINWINDOWGEOMETRY, MAINWINDOWSTATE, TIMEOUT_LONG
 from Ui import add_actions
 
 
 class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
              HelpActions.Mixin):
-
 
     def __init__(self, filename):
         super().__init__()
@@ -43,19 +43,23 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         #     self.add_recent_file(self.model.filename)
         # self.save_settings()
         # self.save()
+        Config.set(MAINWINDOWSTATE, self.saveState())
+        Config.set(MAINWINDOWGEOMETRY, self.saveGeometry())
         print('closeEvent: maybe unsaved changes dialog + '
               'save settings in .sbc file')
         event.accept()
 
 
     def load_settings(self, filename):
+        state = Config.get(MAINWINDOWSTATE)
+        if state is not None:
+            self.restoreState(state)
+        geometry = Config.get(MAINWINDOWGEOMETRY)
+        if geometry is not None:
+            self.restoreGeometry(geometry)
         print('load_settings')
         # settings = QSettings()
         # self.configure_blink_rate()
-        # self.restoreGeometry(settings.value(SETTINGS_GEOMETRY,
-        #                                     QByteArray()))
-        # self.restoreState(settings.value(SETTINGS_WINDOW_STATE,
-        #                                  QByteArray()))
         # self.recent_files = settings.value(SETTINGS_RECENT_FILES) or []
         # if isinstance(self.recent_files, str):
         #     self.recent_files = [self.recent_files]

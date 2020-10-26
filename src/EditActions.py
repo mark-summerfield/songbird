@@ -10,7 +10,7 @@ from Ui import make_action
 class Mixin:
 
     def make_edit_actions(self):
-        path = Config.get().path
+        path = Config.path()
         self.edit_copy_action = make_action(
             self, path / 'images/edit-copy.svg', '&Copy', self.edit_copy,
             QKeySequence.Copy)

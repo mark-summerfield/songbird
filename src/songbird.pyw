@@ -20,8 +20,8 @@ def main():
     app.setOrganizationDomain('qtrac.eu')
     app.setApplicationName(APPNAME)
     app.setApplicationVersion('0.1.0')
-    config = Config.get(pathlib.Path(__file__).resolve().parent)
-    app.setWindowIcon(QIcon(str(config.path / 'images/icon.svg')))
+    Config.initialize(pathlib.Path(__file__).resolve().parent)
+    app.setWindowIcon(QIcon(str(Config.path() / 'images/icon.svg')))
     filename = sys.argv[1] if len(sys.argv) == 2 else None
     window = MainWindow.Window(filename)
     window.show()

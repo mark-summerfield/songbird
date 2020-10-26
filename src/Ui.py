@@ -31,15 +31,3 @@ def add_actions(menu_or_toolbar, actions):
             menu_or_toolbar.addWidget(button)
         else:
             menu_or_toolbar.addAction(action)
-
-
-def make_tool_button(icon, tooltip, slot=None, *, menu=None):
-    button = QToolButton()
-    button.setToolTip(tooltip)
-    button.setIcon(QIcon(icon))
-    if slot is not None:
-        button.clicked.connect(slot)
-    if menu is not None:
-        button.setPopupMode(QToolButton.InstantPopup)
-        button.setMenu(menu)
-    return button

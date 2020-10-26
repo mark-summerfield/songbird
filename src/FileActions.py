@@ -11,7 +11,7 @@ from Ui import make_action
 class Mixin:
 
     def make_file_actions(self):
-        path = Config.get().path
+        path = Config.path()
         self.file_new_action = make_action(
             self, path / 'images/document-new.svg', '&New...',
             self.file_new, QKeySequence.New)

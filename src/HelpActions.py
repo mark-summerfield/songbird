@@ -18,7 +18,7 @@ from Ui import make_action
 class Mixin:
 
     def make_help_actions(self):
-        path = Config.get().path
+        path = Config.path()
         self.help_action = make_action(
             self, path / 'images/help.svg', '&Help', self.help,
             QKeySequence.HelpContents)
