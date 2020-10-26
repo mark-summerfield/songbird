@@ -3,6 +3,8 @@
 
 import sys
 
+APPNAME = 'Songbird'
+
 WIN = sys.platform.startswith('win')
 
 TIMEOUT_LONG = 10000 # 10s

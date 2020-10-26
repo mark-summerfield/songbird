@@ -11,19 +11,19 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QMessageBox
 
 import apsw
-
-from .Util import make_action
+import Config
+from Ui import make_action
 
 
 class Mixin:
 
     def make_help_actions(self):
+        path = Config.get().path
         self.help_action = make_action(
-            self, self.app_path / 'images/help.svg', '&Help', self.help,
+            self, path / 'images/help.svg', '&Help', self.help,
             QKeySequence.HelpContents)
         self.help_about_action = make_action(
-            self, self.app_path / 'images/icon.svg', '&About',
-            self.help_about)
+            self, path / 'images/icon.svg', '&About', self.help_about)
 
 
     @property

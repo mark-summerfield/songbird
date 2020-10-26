@@ -3,21 +3,23 @@
 
 from PySide2.QtGui import QKeySequence
 
-from .Util import make_action
+import Config
+from Ui import make_action
 
 
 class Mixin:
 
     def make_edit_actions(self):
+        path = Config.get().path
         self.edit_copy_action = make_action(
-            self, self.app_path / 'images/edit-copy.svg', '&Copy',
-            self.edit_copy, QKeySequence.Copy)
+            self, path / 'images/edit-copy.svg', '&Copy', self.edit_copy,
+            QKeySequence.Copy)
         self.edit_cut_action = make_action(
-            self, self.app_path / 'images/edit-cut.svg', 'C&ut',
-            self.edit_cut, QKeySequence.Cut)
+            self, path / 'images/edit-cut.svg', 'C&ut', self.edit_cut,
+            QKeySequence.Cut)
         self.edit_paste_action = make_action(
-            self, self.app_path / 'images/edit-paste.svg', '&Paste',
-            self.edit_paste, QKeySequence.Paste)
+            self, path / 'images/edit-paste.svg', '&Paste', self.edit_paste,
+            QKeySequence.Paste)
 
 
     @property

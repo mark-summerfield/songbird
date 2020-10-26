@@ -7,7 +7,9 @@ import sys
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication
 
-from Gui.MainWindow import Window
+import Config
+import MainWindow
+from Const import APPNAME
 
 
 def main():
@@ -16,12 +18,12 @@ def main():
     app = QApplication(sys.argv)
     app.setOrganizationName('Mark Summerfield')
     app.setOrganizationDomain('qtrac.eu')
-    app.setApplicationName('Songbird')
+    app.setApplicationName(APPNAME)
     app.setApplicationVersion('0.1.0')
-    app_path = pathlib.Path(__file__).resolve().parent
-    app.setWindowIcon(QIcon(str(app_path / 'images/icon.svg')))
+    config = Config.get(pathlib.Path(__file__).resolve().parent)
+    app.setWindowIcon(QIcon(str(config.path / 'images/icon.svg')))
     filename = sys.argv[1] if len(sys.argv) == 2 else None
-    window = Window.Window(app_path, filename)
+    window = MainWindow.Window(filename)
     window.show()
     sys.exit(app.exec_())
 

@@ -4,41 +4,42 @@
 from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QMenu
 
-from .Util import make_action
+import Config
+from Ui import make_action
 
 
 class Mixin:
 
     def make_file_actions(self):
+        path = Config.get().path
         self.file_new_action = make_action(
-            self, self.app_path / 'images/document-new.svg', '&New...',
+            self, path / 'images/document-new.svg', '&New...',
             self.file_new, QKeySequence.New)
         self.file_open_action = make_action(
-            self, self.app_path / 'images/document-open.svg', '&Open...',
+            self, path / 'images/document-open.svg', '&Open...',
             self.file_open, QKeySequence.Open)
         self.file_open_recent_action = make_action(
-            self, self.app_path / 'images/document-open.svg',
-            'Open &Recent')
+            self, path / 'images/document-open.svg', 'Open &Recent')
         self.file_open_recent_menu = QMenu(self)
         self.file_open_recent_action.setMenu(self.file_open_recent_menu)
         self.file_save_action = make_action(
-            self, self.app_path / 'images/filesave.svg', '&Save',
-            self.file_save, QKeySequence.Save)
+            self, path / 'images/filesave.svg', '&Save', self.file_save,
+            QKeySequence.Save)
         self.file_saveas_action = make_action(
-            self, self.app_path / 'images/filesaveas.svg', 'Save &As...',
+            self, path / 'images/filesaveas.svg', 'Save &As...',
             self.file_saveas, QKeySequence.SaveAs)
         self.file_backup_action = make_action(
-            self, self.app_path / 'images/filesaveas.svg', '&Backup...',
+            self, path / 'images/filesaveas.svg', '&Backup...',
             self.file_backup)
         self.file_import_action = make_action(
-            self, self.app_path / 'images/import.svg', '&Import...',
+            self, path / 'images/import.svg', '&Import...',
             self.file_import)
         self.file_export_action = make_action(
-            self, self.app_path / 'images/export.svg', '&Export...',
+            self, path / 'images/export.svg', '&Export...',
             self.file_export)
         self.file_quit_action = make_action(
-            self, self.app_path / 'images/shutdown.svg', '&Quit',
-            self.close, QKeySequence(Qt.CTRL + Qt.Key_Q))
+            self, path / 'images/shutdown.svg', '&Quit', self.close,
+            QKeySequence(Qt.CTRL + Qt.Key_Q))
 
 
     @property
