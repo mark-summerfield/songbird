@@ -11,22 +11,3 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
     if value is None:
         return value
     return bool(int(value)) if isinstance(Class, bool) else Class(value)
-
-
-class Transaction:
-
-    def __init__(self, db):
-        self.db = db
-
-
-    def __enter__(self):
-        self.cursor = self.db.cursor()
-        self.cursor.execute("BEGIN;")
-        return self.cursor
-
-
-    def __exit__(self, exc_type, _exc_val, _exc_tb):
-        if exc_type is None:
-            self.cursor.execute("COMMIT;")
-        else:
-            self.cursor.execute("ROLLBACK;") # Exception will be raised

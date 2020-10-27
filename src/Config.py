@@ -106,8 +106,8 @@ class _Singleton_Config:
     def _make_default_sbc(self):
         db = None
         try:
-            db, _ = self._open()
-            with Sql.Transaction(db) as cursor:
+            db, cursor = self._open()
+            with db:
                 cursor.execute(_CREATE)
                 for n in range(1, RECENT_FILES_MAX + 1):
                     key = f'{RECENT_FILE}/{n}'
@@ -155,8 +155,8 @@ class _Singleton_Config:
     def write_main_window_options(self, options):
         db = None
         try:
-            db, _ = self._open()
-            with Sql.Transaction(db) as cursor:
+            db, cursor = self._open()
+            with db:
                 cursor.execute(_SET, dict(key=MAIN_WINDOW_STATE,
                                           value=options.state))
                 cursor.execute(_SET, dict(key=MAIN_WINDOW_GEOMETRY,
@@ -177,8 +177,8 @@ class _Singleton_Config:
         options = MainWindowOptions()
         db = None
         try:
-            db, _ = self._open()
-            with Sql.Transaction(db) as cursor:
+            db, cursor = self._open()
+            with db:
                 options.state = Sql.first(
                     cursor, _GET, dict(key=MAIN_WINDOW_STATE), Class=bytes)
                 options.geometry = Sql.first(
