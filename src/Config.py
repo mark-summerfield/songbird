@@ -71,6 +71,20 @@ class _Singleton_Config:
         return self._filename
 
 
+    def _open(self):
+        db = apsw.Connection(self._filename)
+        cursor = db.cursor()
+        cursor.execute(_PREPARE)
+        version = Sql.first(cursor, _GET_VERSION)
+        if version is None or version < _VERSION:
+            self._update_sbc(cursor)
+        return db, cursor
+
+
+    def _update_sbc(self, cursor):
+        cursor.execute(_UPDATE_VERSION)
+
+
     def _set_filename(self):
         name = APPNAME.lower() + '.sbc'
         if WIN:
@@ -92,9 +106,7 @@ class _Singleton_Config:
     def _make_default_sbc(self):
         db = None
         try:
-            db = apsw.Connection(self._filename)
-            cursor = db.cursor()
-            cursor.execute(_PREPARE)
+            db, _ = self._open()
             with Sql.Transaction(db) as cursor:
                 cursor.execute(_CREATE)
                 for n in range(1, RECENT_FILES_MAX + 1):
@@ -108,8 +120,7 @@ class _Singleton_Config:
     def _update_opened(self):
         db = None
         try:
-            db = apsw.Connection(self._filename)
-            cursor = db.cursor()
+            db, cursor = self._open()
             cursor.execute(_INCREMENT, dict(key=OPENED))
         finally:
             if db is not None:
@@ -119,13 +130,13 @@ class _Singleton_Config:
     def __getitem__(self, key):
         db = None
         try:
-            db = apsw.Connection(self._filename)
+            db, cursor = self._open()
             Class = int
             if key in {MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE}:
                 Class = bytes
             elif key == BLINK:
                 Class = bool
-            return Sql.first(db.cursor(), _GET, dict(key=key), Class=Class)
+            return Sql.first(cursor, _GET, dict(key=key), Class=Class)
         finally:
             if db is not None:
                 db.close()
@@ -134,8 +145,7 @@ class _Singleton_Config:
     def __setitem__(self, key, value):
         db = None
         try:
-            db = apsw.Connection(self._filename)
-            cursor = db.cursor()
+            db, cursor = self._open()
             cursor.execute(_SET, dict(key=key, value=value))
         finally:
             if db is not None:
@@ -145,7 +155,7 @@ class _Singleton_Config:
     def write_main_window_options(self, options):
         db = None
         try:
-            db = apsw.Connection(self._filename)
+            db, _ = self._open()
             with Sql.Transaction(db) as cursor:
                 cursor.execute(_SET, dict(key=MAIN_WINDOW_STATE,
                                           value=options.state))
@@ -167,7 +177,7 @@ class _Singleton_Config:
         options = MainWindowOptions()
         db = None
         try:
-            db = apsw.Connection(self._filename)
+            db, _ = self._open()
             with Sql.Transaction(db) as cursor:
                 options.state = Sql.first(
                     cursor, _GET, dict(key=MAIN_WINDOW_STATE), Class=bytes)
@@ -190,7 +200,10 @@ class _Singleton_Config:
                 db.close()
 
 
-_PREPARE = '''
+_VERSION = 1
+
+
+_PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
 PRAGMA foreign_keys = TRUE;
 PRAGMA synchronous = NORMAL;
@@ -199,6 +212,8 @@ PRAGMA temp_store = MEMORY;
 
 
 _CREATE = f'''
+PRAGMA user_version = {_VERSION};
+
 DROP TABLE IF EXISTS config;
 
 CREATE TABLE config (
@@ -227,3 +242,9 @@ _SET = 'UPDATE config SET value = :value WHERE key = :key;'
 
 _CLEAR_RECENT_FILES = f'''
 DELETE FROM config WHERE key LIKE '{RECENT_FILE}/?';'''
+
+
+_GET_VERSION = 'PRAGMA user_version;'
+
+
+_UPDATE_VERSION = f'PRAGMA user_version = {_VERSION};'
