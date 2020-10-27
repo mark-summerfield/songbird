@@ -17,7 +17,7 @@ class MainWindowOptions:
         self.state = state
         self.geometry = geometry
         self.last_filename = last_filename
-        self.recent_files = recent_files
+        self.recent_files = recent_files if recent_files is not None else []
 
 
 def path():

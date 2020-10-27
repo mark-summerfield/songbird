@@ -4,11 +4,13 @@
 import contextlib
 import pathlib
 
-from PySide2.QtCore import QTimer
+from PySide2.QtCore import QDir, QTimer
 from PySide2.QtGui import QKeySequence, Qt
-from PySide2.QtWidgets import QMenu
+from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import Config
+import Model
+from Const import SUFFIXES
 from Ui import make_action
 
 
@@ -84,11 +86,56 @@ class Mixin:
 
 
     def file_new(self):
-        print('file_new') # TODO
+        filename = self._file_new_or_open('New',
+                                          QFileDialog.getSaveFileName)
+        if filename:
+            filename = pathlib.Path(filename)
+            if filename.exists():
+                QMessageBox.warning(
+                    self, f'Database exists — {qApp.applicationName()}',
+                    f'Will not overwrite an existing database '
+                    '({filename}) with a new one')
+            else:
+                self._open('Created new empty database: ', filename)
 
 
     def file_open(self):
-        print('file_open') # TODO
+        filename = self._file_new_or_open('Open',
+                                          QFileDialog.getOpenFileName)
+        if filename:
+            filename = pathlib.Path(filename)
+            if not filename.exists():
+                QMessageBox.warning(
+                    self, f'Database missing — {qApp.applicationName()}',
+                    f'Cannot find database {filename}')
+            else:
+                self._open('Opened existing database: ', filename)
+
+
+    def _file_new_or_open(self, prefix, dialog):
+        suffixes = '*' + ' *'.join(SUFFIXES)
+        filename, _ = dialog(
+            self, f'{prefix} database — {qApp.applicationName()}',
+            str(self.path),
+            f'{qApp.applicationName()} ({suffixes});;Any file (*.*)')
+        if filename and not filename.casefold().endswith(SUFFIXES):
+            filename += SUFFIXES[0]
+        if filename:
+            self.path = pathlib.Path(filename).parent
+        return filename
+
+
+    def _open(self, message, filename):
+        print("_open: check for unsaved changes if there's a model") # TODO
+        self.model.close()
+        with contextlib.suppress(ValueError):
+            self.recent_files.remove(filename)
+        self.model = Model.Model(filename)
+        self.setWindowTitle(
+            f'{pathlib.Path(filename).name} — {qApp.applicationName()}')
+        self.statusBar().showMessage(message +
+                                     QDir.toNativeSeparators(str(filename)))
+        self.update_ui()
 
 
     def file_save(self):
