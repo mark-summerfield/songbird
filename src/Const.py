@@ -12,7 +12,9 @@ TIMEOUT_SHORT = 5000 # 5s
 
 RECENT_FILES_MAX = 9
 
+BLINK = 'Blink'
+LAST_FILE = 'LastFile'
+MAIN_WINDOW_GEOMETRY = 'MainWindow/Geometry'
+MAIN_WINDOW_STATE = 'MainWindow/State'
 OPENED = 'Opened'
-MAINWINDOWSTATE = 'MainWindow/State'
-MAINWINDOWGEOMETRY = 'MainWindow/Geometry'
-RECENTFILE = 'RecentFile'
+RECENT_FILE = 'RecentFile'

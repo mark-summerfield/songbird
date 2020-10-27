@@ -4,4 +4,9 @@
 
 class Model:
 
-    pass
+    def __init__(self, filename=None):
+        self.filename = filename
+
+
+    def __bool__(self):
+        return self.filename is not None

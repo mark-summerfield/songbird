@@ -6,8 +6,18 @@ import pathlib
 import apsw
 import Sql
 from Const import (
-    APPNAME, MAINWINDOWGEOMETRY, MAINWINDOWSTATE, OPENED, RECENT_FILES_MAX,
-    RECENTFILE, WIN)
+    APPNAME, BLINK, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE,
+    OPENED, RECENT_FILE, RECENT_FILES_MAX, WIN)
+
+
+class MainWindowOptions:
+
+    def __init__(self, state=None, geometry=None, last_filename=None,
+                 recent_files=None):
+        self.state = state
+        self.geometry = geometry
+        self.last_filename = last_filename
+        self.recent_files = recent_files
 
 
 def path():
@@ -28,6 +38,14 @@ def set(key, value):
 
 def initialize(path):
     _the(path)
+
+
+def write_main_window_options(options):
+    _the.config.write_main_window_options(options)
+
+
+def read_main_window_options():
+    return _the.config.read_main_window_options()
 
 
 def _the(path):
@@ -80,7 +98,7 @@ class _Singleton_Config:
             with Sql.Transaction(db) as cursor:
                 cursor.execute(_CREATE)
                 for n in range(1, RECENT_FILES_MAX + 1):
-                    key = f'{RECENTFILE}/{n}'
+                    key = f'{RECENT_FILE}/{n}'
                     cursor.execute(_INSERT_RECENT, dict(key=key))
         finally:
             if db is not None:
@@ -103,8 +121,10 @@ class _Singleton_Config:
         try:
             db = apsw.Connection(self._filename)
             Class = int
-            if key in {MAINWINDOWGEOMETRY, MAINWINDOWSTATE}:
+            if key in {MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE}:
                 Class = bytes
+            elif key == BLINK:
+                Class = bool
             return Sql.first(db.cursor(), _GET, dict(key=key), Class=Class)
         finally:
             if db is not None:
@@ -122,24 +142,75 @@ class _Singleton_Config:
                 db.close()
 
 
+    def write_main_window_options(self, options):
+        db = None
+        try:
+            db = apsw.Connection(self._filename)
+            with Sql.Transaction(db) as cursor:
+                cursor.execute(_SET, dict(key=MAIN_WINDOW_STATE,
+                                          value=options.state))
+                cursor.execute(_SET, dict(key=MAIN_WINDOW_GEOMETRY,
+                                          value=options.geometry))
+                cursor.execute(_SET, dict(key=LAST_FILE,
+                                          value=options.last_filename))
+                cursor.execute(_CLEAR_RECENT_FILES)
+                for n, name in enumerate(options.recent_files, 1):
+                    if name and pathlib.Path(name).exists():
+                        cursor.execute(_SET, dict(key=f'{RECENT_FILE}/{n}',
+                                                  value=str(name)))
+        finally:
+            if db is not None:
+                db.close()
+
+
+    def read_main_window_options(self):
+        options = MainWindowOptions()
+        db = None
+        try:
+            db = apsw.Connection(self._filename)
+            with Sql.Transaction(db) as cursor:
+                options.state = Sql.first(
+                    cursor, _GET, dict(key=MAIN_WINDOW_STATE), Class=bytes)
+                options.geometry = Sql.first(
+                    cursor, _GET, dict(key=MAIN_WINDOW_GEOMETRY),
+                    Class=bytes)
+                options.last_filename = Sql.first(
+                    cursor, _GET, dict(key=LAST_FILE), Class=str)
+                for n in range(1, RECENT_FILES_MAX + 1):
+                    name = Sql.first(cursor, _GET,
+                                     dict(key=f'{RECENT_FILE}/{n}'),
+                                     Class=str)
+                    if name:
+                        name = pathlib.Path(name)
+                        if name.exists():
+                            options.recent_files.append(str(name.resolve()))
+                return options
+        finally:
+            if db is not None:
+                db.close()
+
+
 _PREPARE = '''
 PRAGMA encoding = 'UTF-8';
 PRAGMA foreign_keys = TRUE;
 PRAGMA synchronous = NORMAL;
 PRAGMA temp_store = MEMORY;
-DROP TABLE IF EXISTS config;
 '''
 
 
 _CREATE = f'''
+DROP TABLE IF EXISTS config;
+
 CREATE TABLE config (
     key TEXT PRIMARY KEY NOT NULL,
     value BLOB
 ) WITHOUT ROWID;
 
 INSERT INTO config (key, value) VALUES ('{OPENED}', 1);
-INSERT INTO config (key, value) VALUES ('{MAINWINDOWSTATE}', NULL);
-INSERT INTO config (key, value) VALUES ('{MAINWINDOWGEOMETRY}', NULL);
+INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_STATE}', NULL);
+INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
+INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
+INSERT INTO config (key, value) VALUES ('{BLINK}', TRUE);
 '''
 
 _INSERT_RECENT = 'INSERT INTO config (key, value) VALUES (:key, NULL);'
@@ -152,3 +223,7 @@ _GET = 'SELECT value FROM config WHERE key = :key;'
 
 
 _SET = 'UPDATE config SET value = :value WHERE key = :key;'
+
+
+_CLEAR_RECENT_FILES = f'''
+DELETE FROM config WHERE key LIKE '{RECENT_FILE}/?';'''

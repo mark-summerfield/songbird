@@ -11,7 +11,8 @@ import Config
 import EditActions
 import FileActions
 import HelpActions
-from Const import MAINWINDOWGEOMETRY, MAINWINDOWSTATE, TIMEOUT_LONG
+import Model
+from Const import BLINK, TIMEOUT_LONG
 from Ui import add_actions
 
 
@@ -20,7 +21,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
     def __init__(self, filename):
         super().__init__()
-        self.model = None
+        self.model = Model.Model()
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
         self.recent_files = [] # Order is Old to New
@@ -33,38 +34,38 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         self.make_actions()
         self.make_connections()
         qApp.commitDataRequest.connect(self.close)
-        self.load_settings(filename)
+        self.load_options(filename)
         self.update_ui()
 
 
     def closeEvent(self, event):
         self.closing = True
-        # if bool(self.model):
-        #     self.add_recent_file(self.model.filename)
-        # self.save_settings()
-        # self.save()
-        Config.set(MAINWINDOWSTATE, self.saveState())
-        Config.set(MAINWINDOWGEOMETRY, self.saveGeometry())
+        if bool(self.model):
+            self.add_recent_file(self.model.filename)
+        self.file_save()
+        options = Config.MainWindowOptions(
+            self.saveState(), self.saveGeometry(), self.model.filename,
+            self.recent_files)
+        Config.write_main_window_options(options)
         print('closeEvent: maybe unsaved changes dialog + '
               'save settings in .sbc file')
         event.accept()
 
 
-    def load_settings(self, filename):
-        state = Config.get(MAINWINDOWSTATE)
-        if state is not None:
-            self.restoreState(state)
-        geometry = Config.get(MAINWINDOWGEOMETRY)
-        if geometry is not None:
-            self.restoreGeometry(geometry)
-        print('load_settings')
-        # settings = QSettings()
-        # self.configure_blink_rate()
-        # self.recent_files = settings.value(SETTINGS_RECENT_FILES) or []
-        # if isinstance(self.recent_files, str):
-        #     self.recent_files = [self.recent_files]
-        # if not filename:
-        #     filename = settings.value(SETTINGS_LAST_FILE)
+    def load_options(self, filename):
+        qApp.setCursorFlashTime(self.default_blink_rate
+                                if Config.get(BLINK) else 0)
+        options = Config.read_main_window_options()
+        if options.state is not None:
+            self.restoreState(options.state)
+        if options.geometry is not None:
+            self.restoreGeometry(options.geometry)
+        self.recent_files = options.recent_files or []
+        if isinstance(self.recent_files, str):
+            self.recent_files = [self.recent_files]
+        if (not filename and options.last_filename and
+                pathlib.Path(options.last_filename).exists()):
+            filename = options.last_filename
         if filename and not pathlib.Path(filename).exists():
             filename = None
         if filename:

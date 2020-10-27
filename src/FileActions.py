@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import contextlib
+import pathlib
+
+from PySide2.QtCore import QTimer
 from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QMenu
 
@@ -62,7 +66,21 @@ class Mixin:
         for action in (self.file_save_action, self.file_saveas_action,
                        self.file_backup_action, self.file_export_action):
             action.setEnabled(enable)
-        print('file_update_ui') # TODO
+        QTimer.singleShot(0, self.file_populate_open_recent_menu)
+
+
+    def file_populate_open_recent_menu(self):
+        self.file_open_recent_menu.clear()
+        filenames = [filename for filename in
+                     reversed(self.recent_files[-9:])
+                     if pathlib.Path(filename).exists()]
+        self.file_open_recent_menu.setEnabled(bool(filenames))
+        icon = Config.path() / 'images/document-open.svg'
+        for i, filename in enumerate(filenames, 1):
+            action = make_action(
+                self, icon, '&{} {}'.format(i, filename),
+                lambda *_, filename=filename: self.file_load(filename))
+            self.file_open_recent_menu.addAction(action)
 
 
     def file_new(self):
@@ -94,4 +112,6 @@ class Mixin:
 
 
     def file_load(self, filename):
+        with contextlib.suppress(ValueError):
+            self.recent_files.remove(filename)
         print(f'file_load {filename}') # TODO

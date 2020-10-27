@@ -1,6 +1,4 @@
 src/songbird.pyw
-src/Const.py
-src/Config.py
 src/MainWindow.py
 src/FileActions.py
 src/EditActions.py
@@ -8,12 +6,14 @@ src/HelpActions.py
 src/Ui.py
 src/Model.py
 src/Sql.py
+src/Config.py
+src/Const.py
 
 st.sh
 
 README.md
 
-#0 complete menus: SQL, Options, Window
+#0 complete menus: SQL, Options, Window & File Open etc.
 #1 pure SQL
 #2 custom types using songbird_types (tablename, fieldname, type)
 #3 custom forms
