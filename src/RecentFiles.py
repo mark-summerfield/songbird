@@ -25,7 +25,7 @@ class RecentFiles:
 
     def load(self, names):
         self.clear()
-        seen = set()
+        seen = {self.current} if self.current else set()
         for name in reversed(names):
             filename = pathlib.Path(name).resolve()
             if filename not in seen and filename.exists():
@@ -34,7 +34,7 @@ class RecentFiles:
 
 
     def __iter__(self):
-        seen = {self.current}
+        seen = {self.current} if self.current else set()
         count = 0
         for filename in reversed(self._filenames):
             if filename not in seen and filename.exists():

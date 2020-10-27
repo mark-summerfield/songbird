@@ -14,11 +14,12 @@ st.sh
 
 README.md
 
-#0 complete menus: SQL, Options, Window & File Open etc.
-#1 pure SQL
-#2 custom types using songbird_types (tablename, fieldname, type)
-#3 custom forms
-#5 ultimately aim to be able to replace both Biller and Notebox with
+# - complete menus: SQL, Options, Window & File Open etc.
+# - pure SQL
+# - options dialog: blink; default suffix
+# - custom types using songbird_types (tablename, fieldname, type)
+# - custom forms
+# - ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
 
 # Toggle Form View toggles between a form for adding/editing and a list

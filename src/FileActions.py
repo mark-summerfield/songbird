@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import Config
 import Model
-from Const import SUFFIXES
+from Const import DEFAULT_SUFFIX, SUFFIX, SUFFIXES
 from Ui import make_action
 
 
@@ -96,7 +96,6 @@ class Mixin:
         filename = self._file_new_or_open('New',
                                           QFileDialog.getSaveFileName)
         if filename:
-            filename = pathlib.Path(filename)
             if filename.exists():
                 QMessageBox.warning(
                     self, f'Database exists — {qApp.applicationName()}',
@@ -110,7 +109,6 @@ class Mixin:
         filename = self._file_new_or_open('Open',
                                           QFileDialog.getOpenFileName)
         if filename:
-            filename = pathlib.Path(filename)
             if not filename.exists():
                 QMessageBox.warning(
                     self, f'Database missing — {qApp.applicationName()}',
@@ -124,11 +122,13 @@ class Mixin:
         filename, _ = dialog(
             self, f'{prefix} database — {qApp.applicationName()}',
             str(self.path),
-            f'{qApp.applicationName()} ({suffixes});;Any file (*.*)')
-        if filename and not filename.casefold().endswith(SUFFIXES):
-            filename += SUFFIXES[0]
+            f'SQLite ({suffixes});;{qApp.applicationName()} ({SUFFIX});;'
+            'Any file (*.*)')
         if filename:
-            self.path = pathlib.Path(filename).parent
+            filename = pathlib.Path(filename)
+            self.path = filename.parent
+            if '.' not in filename.name:
+                filename = filename.with_suffix(DEFAULT_SUFFIX)
         return filename
 
 
@@ -139,7 +139,7 @@ class Mixin:
         self.recent_files.add(filename)
         filename = pathlib.Path(filename).resolve()
         self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
-        message = (f'Opened new empty database {filename}' if new else
+        message = (f'Created new empty database {filename}' if new else
                    f'Opened existing database {filename}')
         self.statusBar().showMessage(message)
         self.update_ui()

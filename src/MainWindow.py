@@ -64,6 +64,8 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         if filename and not pathlib.Path(filename).exists():
             filename = None
         if filename:
+            if options.last_filename:
+                self.recent_files.add(options.last_filename)
             self.file_load(filename)
         else:
             self.statusBar().showMessage(
