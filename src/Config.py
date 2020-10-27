@@ -241,7 +241,7 @@ _SET = 'UPDATE config SET value = :value WHERE key = :key;'
 
 
 _CLEAR_RECENT_FILES = f'''
-DELETE FROM config WHERE key LIKE '{RECENT_FILE}/?';'''
+UPDATE config SET value = NULL WHERE key LIKE '{RECENT_FILE}%';'''
 
 
 _GET_VERSION = 'PRAGMA user_version;'

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-import contextlib
 import pathlib
 
 from PySide2.QtCore import QStandardPaths
@@ -12,7 +11,8 @@ import EditActions
 import FileActions
 import HelpActions
 import Model
-from Const import BLINK, TIMEOUT_LONG
+import RecentFiles
+from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions
 
 
@@ -24,7 +24,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         self.model = Model.Model()
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
-        self.recent_files = [] # Order is Old to New
+        self.recent_files = RecentFiles.RecentFiles(RECENT_FILES_MAX)
         self.default_blink_rate = qApp.cursorFlashTime()
         self.closing = False
         self.setWindowTitle(
@@ -40,15 +40,12 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
     def closeEvent(self, event):
         self.closing = True
-        if bool(self.model):
-            self.add_recent_file(self.model.filename)
         self.file_save()
         options = Config.MainWindowOptions(
-            self.saveState(), self.saveGeometry(), str(self.model.filename),
-            self.recent_files)
+            self.saveState(), self.saveGeometry(),
+            str(self.model.filename or ''), list(self.recent_files))
         Config.write_main_window_options(options)
-        print('closeEvent: maybe unsaved changes dialog + '
-              'save settings in .sbc file')
+        print('closeEvent: maybe unsaved changes dialog')
         event.accept()
 
 
@@ -60,9 +57,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
             self.restoreState(options.state)
         if options.geometry is not None:
             self.restoreGeometry(options.geometry)
-        self.recent_files = options.recent_files or []
-        if isinstance(self.recent_files, str):
-            self.recent_files = [self.recent_files]
+        self.recent_files.load(options.recent_files)
         if (not filename and options.last_filename and
                 pathlib.Path(options.last_filename).exists()):
             filename = options.last_filename
@@ -74,13 +69,6 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
             self.statusBar().showMessage(
                 'Click File→New or File→Open to open or create a database',
                 TIMEOUT_LONG)
-
-
-    def add_recent_file(self, filename):
-        with contextlib.suppress(ValueError):
-            self.recent_files.remove(filename)
-        self.recent_files.append(filename)
-        self.recent_files = self.recent_files[-9:]
 
 
     def make_widgets(self):

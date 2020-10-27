@@ -1,7 +1,7 @@
-# TODO get recent files working
 src/songbird.pyw
 src/MainWindow.py
 src/FileActions.py
+src/RecentFiles.py
 src/EditActions.py
 src/HelpActions.py
 src/Ui.py

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-import contextlib
 import pathlib
 
-from PySide2.QtCore import QDir, QTimer
+from PySide2.QtCore import QTimer
 from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
@@ -73,9 +72,7 @@ class Mixin:
 
     def file_populate_open_recent_menu(self):
         self.file_open_recent_menu.clear()
-        filenames = [filename for filename in
-                     reversed(self.recent_files[-9:])
-                     if pathlib.Path(filename).exists()]
+        filenames = [str(filename) for filename in list(self.recent_files)]
         self.file_open_recent_menu.setEnabled(bool(filenames))
         icon = Config.path() / 'images/document-open.svg'
         for i, filename in enumerate(filenames, 1):
@@ -83,6 +80,16 @@ class Mixin:
                 self, icon, '&{} {}'.format(i, filename),
                 lambda *_, filename=filename: self.file_load(filename))
             self.file_open_recent_menu.addAction(action)
+        if filenames:
+            self.file_open_recent_menu.addSeparator()
+            self.file_open_recent_menu.addAction(make_action(
+                self, Config.path() / 'images/edit-clear.svg', '&Clear',
+                self.file_clear_recent_files))
+
+
+    def file_clear_recent_files(self):
+        self.recent_files.clear()
+        self.file_update_ui()
 
 
     def file_new(self):
@@ -96,7 +103,7 @@ class Mixin:
                     f'Will not overwrite an existing database '
                     '({filename}) with a new one')
             else:
-                self._open('Created new empty database: ', filename)
+                self.file_load(filename, new=True)
 
 
     def file_open(self):
@@ -109,7 +116,7 @@ class Mixin:
                     self, f'Database missing — {qApp.applicationName()}',
                     f'Cannot find database {filename}')
             else:
-                self._open('Opened existing database: ', filename)
+                self.file_load(filename)
 
 
     def _file_new_or_open(self, prefix, dialog):
@@ -125,16 +132,16 @@ class Mixin:
         return filename
 
 
-    def _open(self, message, filename):
+    def file_load(self, filename, new=False):
         print("_open: check for unsaved changes if there's a model") # TODO
         self.model.close()
-        with contextlib.suppress(ValueError):
-            self.recent_files.remove(filename)
         self.model = Model.Model(filename)
-        self.setWindowTitle(
-            f'{pathlib.Path(filename).name} — {qApp.applicationName()}')
-        self.statusBar().showMessage(message +
-                                     QDir.toNativeSeparators(str(filename)))
+        self.recent_files.add(filename)
+        filename = pathlib.Path(filename).resolve()
+        self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
+        message = (f'Opened new empty database {filename}' if new else
+                   f'Opened existing database {filename}')
+        self.statusBar().showMessage(message)
         self.update_ui()
 
 
@@ -143,6 +150,7 @@ class Mixin:
 
 
     def file_saveas(self):
+        # self.recent_files.add(filename) # unless we use file_load()
         print('file_saveas') # TODO
 
 
@@ -156,9 +164,3 @@ class Mixin:
 
     def file_export(self):
         print('file_export') # TODO
-
-
-    def file_load(self, filename):
-        with contextlib.suppress(ValueError):
-            self.recent_files.remove(filename)
-        print(f'file_load {filename}') # TODO
