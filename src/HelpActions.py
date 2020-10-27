@@ -43,7 +43,6 @@ class Mixin:
             sys.version_info.micro, BINDING, QT, apsw.apswversion(),
             apsw.sqlitelibversion(), QSysInfo.prettyProductName(),
             platform.platform())
-        # TODO change URL below to github
         QMessageBox.about(
             self, f'About — {qApp.applicationName()}', '''<p>
 <font color=navy><b>{app} {version}</b></font></p>
@@ -52,8 +51,8 @@ class Mixin:
 viewing, creating, editing, and updating SQLite and Songbird databases.
 </font>
 </p>
-<p><a
-href="http://www.qtrac.eu/songbird.html">www.qtrac.eu/songbird.html</a>
+<p><a href="https://github.com/mark-summerfield/songbird"
+>Songbird on github</a>
 </p>
 <p>Copyright © {year} Mark Summerfield.<br>
 All Rights Reserved.</p>

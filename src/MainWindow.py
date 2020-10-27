@@ -40,12 +40,12 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
     def closeEvent(self, event):
         self.closing = True
-        self.file_save()
+        print('closeEvent: maybe unsaved changes dialog')
+        self.file_save() # TODO maybe save?
         options = Config.MainWindowOptions(
             self.saveState(), self.saveGeometry(),
             str(self.model.filename or ''), list(self.recent_files))
         Config.write_main_window_options(options)
-        print('closeEvent: maybe unsaved changes dialog')
         event.accept()
 
 

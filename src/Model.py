@@ -33,4 +33,4 @@ class Model:
         if self.db is not None:
             self.db.close()
             self.db = None
-            self._filename = None
+        self._filename = None
