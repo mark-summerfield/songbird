@@ -17,7 +17,7 @@ st.sh
 
 README.md
 
-# - complete menus: SQL, Options, Window & File Open etc.
+# - complete menus: SQL, Options, Contents, Window & File Open etc.
 # - pure SQL
 # - options dialog:
 #   blink; default suffix; default database (SQLite | Songbird)
