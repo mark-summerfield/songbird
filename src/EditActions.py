@@ -39,7 +39,11 @@ class Mixin:
                        self.edit_paste_action):
             action.setEnabled(False)
         widget = qApp.focusWidget()
-        if widget is not None:
+        if widget is None:
+            self.edit_copy_action.setEnabled(
+                self.contentsDock.widget().canCopy())
+            # TODO if calendar then copy date?
+        else:
             try:
                 self.edit_paste_action.setEnabled(widget.canPaste())
             except AttributeError:

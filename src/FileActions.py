@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import Config
 import Model
-from Const import DEFAULT_SUFFIX, SUFFIX, SUFFIXES
+from Const import DEFAULT_SUFFIX, SUFFIX, SUFFIXES, TIMEOUT_SHORT
 from Ui import make_action
 
 
@@ -133,7 +133,7 @@ class Mixin:
 
 
     def file_load(self, filename, new=False):
-        print("_open: check for unsaved changes if there's a model") # TODO
+        self.file_save()
         self.model.close()
         self.model = Model.Model(filename)
         self.recent_files.add(filename)
@@ -141,7 +141,8 @@ class Mixin:
         self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
         message = (f'Created new empty database {filename}' if new else
                    f'Opened existing database {filename}')
-        self.statusBar().showMessage(message)
+        self.statusBar().showMessage(message, TIMEOUT_SHORT)
+        self.refresh_contents()
         self.update_ui()
 
 

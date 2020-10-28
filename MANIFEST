@@ -3,9 +3,12 @@ src/MainWindow.py
 src/FileActions.py
 src/RecentFiles.py
 src/EditActions.py
+src/OptionsActions.py
 src/HelpActions.py
+src/ContentsView.py
 src/Ui.py
 src/Model.py
+src/ModelSQL.py
 src/Sql.py
 src/Config.py
 src/Const.py
@@ -27,27 +30,17 @@ README.md
 # for viewing (and possibly in-place adding/editing).
 # Toggle Tabs toggles between MDI and tabs view.
 
-#  &Edit         &SQL                &Options	      
-#    &Copy ^C      Create &SELECT...    [X] Show &Contents   
-#    Cu&t  ^X      ---------            [ ] Show C&alendar   
-#    &Paste ^V     Create &Table...     [ ] Show Calc&ulator 
-#                  Create &View...       ------------------  
-#                  &Create Trigger...   [X] Show &Toolbar
-#                  ---------            ------------------  
-#                  &Alter Table...      Toggle &Form View   
-#                  Alter Vie&w...       &Toggle Tabs        
-#                  A&lter Trigger...    ------------------  
-#                                       &Options...         
-
-# &Window             
-#   &Next F6          
-#   &Previous Shift+F6
-#   &1 <mdi name>                   
-#      :	                    
-#   &9 <mdi name>      
-#   &More ->           
-#   ---------          
-#   &Close Ctrl+W
+# &SQL                &Options	              &Window             
+#   Create &Query...     [X] Show &Contents     &Next F6            
+#   ---------            [ ] Show C&alendar     &Previous Shift+F6  
+#   Create &Table...     ------------------     &1 <mdi name>       
+#   Create &View...      [X] Show &Toolbar         :	        
+#   &Create Trigger...   ------------------     &9 <mdi name>
+#   ---------            Toggle &Form View      &More ->           
+#   &Alter Table...      &Toggle Tabs           ---------          
+#   Alter Vie&w...       ------------------     &Close Ctrl+W
+#   A&lter Trigger...    &Options...         
+#                        
 
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view

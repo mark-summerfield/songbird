@@ -3,21 +3,23 @@
 
 import pathlib
 
-from PySide2.QtCore import QStandardPaths
-from PySide2.QtWidgets import QMainWindow, QMdiArea
+from PySide2.QtCore import QStandardPaths, Qt
+from PySide2.QtWidgets import QDockWidget, QMainWindow, QMdiArea
 
 import Config
+import ContentsView
 import EditActions
 import FileActions
 import HelpActions
 import Model
+import OptionsActions
 import RecentFiles
 from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions
 
 
-class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
-             HelpActions.Mixin):
+class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
+             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -75,6 +77,15 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
     def make_widgets(self):
         self.mdiArea = QMdiArea()
         self.setCentralWidget(self.mdiArea)
+        self.contentsDock = QDockWidget('Contents', self)
+        self.contentsDock.setObjectName('Contents')
+        self.contentsDock.setAllowedAreas(Qt.LeftDockWidgetArea |
+                                          Qt.RightDockWidgetArea)
+        self.contentsDock.setFeatures(QDockWidget.DockWidgetClosable |
+                                      QDockWidget.DockWidgetMovable |
+                                      QDockWidget.DockWidgetFloatable)
+        self.contentsDock.setWidget(ContentsView.View())
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
         # TODO contents tree dock widget + MDI central area
         print('make_widgets')
 
@@ -98,6 +109,13 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         self.edit_toolbar.setObjectName('Edit')
         add_actions(self.edit_toolbar, self.edit_actions_for_toolbar)
 
+        self.make_options_actions()
+        self.options_menu = self.menuBar().addMenu('&Options')
+        add_actions(self.options_menu, self.options_actions_for_menu)
+        self.options_toolbar = self.addToolBar('Options')
+        self.options_toolbar.setObjectName('Options')
+        add_actions(self.options_toolbar, self.options_actions_for_toolbar)
+
         print('make_actions')
 
         self.make_help_actions()
@@ -112,4 +130,5 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
     def update_ui(self):
         self.file_update_ui()
         self.edit_update_ui()
+        self.options_update_ui()
         print('update_ui')

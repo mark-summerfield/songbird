@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import collections
+
 import apsw
+from ModelSQL import CONTENT_SUMMARY
 
 
 class Model:
@@ -34,3 +37,16 @@ class Model:
             self.db.close()
             self.db = None
         self._filename = None
+
+
+    def content_summary(self):
+        if self.db is not None:
+            cursor = self.db.cursor()
+            for row in cursor.execute(CONTENT_SUMMARY):
+                content = ContentSummary(*row)
+                if content.name.startswith(('sqlite_', 'songbird')):
+                    continue
+                yield content
+
+
+ContentSummary = collections.namedtuple('ContentSummary', ('kind', 'name'))
