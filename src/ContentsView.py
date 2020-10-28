@@ -16,6 +16,14 @@ class Mixin:
                 view.clear()
 
 
+    def maybe_show_content(self, item, _=None):
+        if item.childCount():
+            return # Ignore top-level items
+        kind = item.parent().text(0).lower()[:-1]
+        name = item.text(0)
+        print('maybe_show_content', kind, name) # TODO
+
+
 class View(QTreeWidget):
 
     def __init__(self):

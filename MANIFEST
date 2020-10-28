@@ -1,9 +1,12 @@
+# rename WindowActions ContentsActions etc.
+# make recent_files static so it is shared across SDI windows
 src/songbird.pyw
 src/MainWindow.py
 src/FileActions.py
 src/RecentFiles.py
 src/EditActions.py
 src/OptionsActions.py
+src/WindowActions.py
 src/HelpActions.py
 src/ContentsView.py
 src/Ui.py
@@ -30,17 +33,31 @@ README.md
 # for viewing (and possibly in-place adding/editing).
 # Toggle Tabs toggles between MDI and tabs view.
 
-# &SQL                &Options	              &Window             
-#   Create &Query...     [X] Show &Contents     &Next F6            
-#   ---------            [ ] Show C&alendar     &Previous Shift+F6  
-#   Create &Table...     ------------------     &1 <mdi name>       
-#   Create &View...      [X] Show &Toolbar         :	        
-#   &Create Trigger...   ------------------     &9 <mdi name>
-#   ---------            Toggle &Form View      &More ->           
-#   &Alter Table...      &Toggle Tabs           ---------          
-#   Alter Vie&w...       ------------------     &Close Ctrl+W
-#   A&lter Trigger...    &Options...         
-#                        
+# &SQL                &Options	             &Contents
+#   Create &Query...    [ ] Show C&alendar     [X] Show &Contents
+#   ---------           [X] Show &Toolbar      &View Item            
+#   Create &Table...    ------------------     -------------------
+#   Create &View...     &Options...            Toggle &Form View      
+#   &Create Trigger...                         &Toggle Tabs       
+#   ---------                                  -------------------
+#   &Alter Table...                            &Next F6              
+#   Alter Vie&w...                             &Previous Shift+F6    
+#   A&lter Trigger...                          &1 <mdi name>         
+#                                                 :	          
+#                                              &9 <mdi name>         
+#                                              &More ->              
+#                                              ---------             
+#                                              &Close Ctrl+W
+
+# SDI!
+#
+# &Window             
+#  &1 <sdi name>        
+#     :	         
+#  &9 <sdi name>        
+#  &More ->             
+
+
 
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view

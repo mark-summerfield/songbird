@@ -14,12 +14,14 @@ import HelpActions
 import Model
 import OptionsActions
 import RecentFiles
+import WindowActions
 from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions
 
 
 class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
-             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin):
+             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin,
+             WindowActions.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -32,7 +34,6 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
         self.setWindowTitle(
             f'{qApp.applicationName()} {qApp.applicationVersion()}')
         self.make_widgets()
-        self.make_layout()
         self.make_actions()
         self.make_connections()
         qApp.commitDataRequest.connect(self.close)
@@ -86,12 +87,6 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
                                       QDockWidget.DockWidgetFloatable)
         self.contentsDock.setWidget(ContentsView.View())
         self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
-        # TODO contents tree dock widget + MDI central area
-        print('make_widgets')
-
-
-    def make_layout(self):
-        print('make_layout')
 
 
     def make_actions(self):
@@ -116,6 +111,13 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
         self.options_toolbar.setObjectName('Options')
         add_actions(self.options_toolbar, self.options_actions_for_toolbar)
 
+        self.make_window_actions()
+        self.window_menu = self.menuBar().addMenu('&Window')
+        add_actions(self.window_menu, self.window_actions_for_menu)
+        self.window_toolbar = self.addToolBar('Window')
+        self.window_toolbar.setObjectName('Window')
+        add_actions(self.window_toolbar, self.window_actions_for_toolbar)
+
         print('make_actions')
 
         self.make_help_actions()
@@ -124,6 +126,9 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
 
 
     def make_connections(self):
+        view = self.contentsDock.widget()
+        view.itemDoubleClicked.connect(self.maybe_show_content)
+        # TODO also connect if user presses Enter on an item too
         print('make_connections')
 
 
