@@ -81,17 +81,6 @@ class _Singleton_Config:
         return db, cursor
 
 
-    def _update_sbc(self, db, cursor):
-        cursor.execute(_UPDATE_VERSION)
-        # 3
-        with db:
-            cursor.execute(f'''
-                INSERT INTO config (key, value)
-                SELECT '{SHOW_CONTENTS}', TRUE
-                WHERE NOT EXISTS (SELECT 1 FROM config
-                                  WHERE key = '{SHOW_CONTENTS}');''')
-
-
     def _set_filename(self):
         name = APPNAME.lower() + '.sbc'
         if WIN:
@@ -214,6 +203,17 @@ class _Singleton_Config:
         finally:
             if db is not None:
                 db.close()
+
+
+    def _update_sbc(self, db, cursor):
+        cursor.execute(_UPDATE_VERSION)
+        # 3
+        with db:
+            cursor.execute(f'''
+                INSERT INTO config (key, value)
+                SELECT '{SHOW_CONTENTS}', TRUE
+                WHERE NOT EXISTS (SELECT 1 FROM config
+                                  WHERE key = '{SHOW_CONTENTS}');''')
 
 
 _VERSION = 3

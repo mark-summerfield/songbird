@@ -157,6 +157,8 @@ class Mixin:
     def file_saveas(self):
         # self.recent_files.add(filename) # unless we use file_load()
         print('file_saveas') # TODO
+        # save as and backup are the same except that for save as we then
+        # open the file under the new name
 
 
     def file_backup(self):

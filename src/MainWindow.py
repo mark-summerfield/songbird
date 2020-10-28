@@ -7,6 +7,7 @@ from PySide2.QtCore import QStandardPaths, Qt
 from PySide2.QtWidgets import QDockWidget, QMainWindow, QMdiArea
 
 import Config
+import ContentsActions
 import ContentsView
 import EditActions
 import FileActions
@@ -14,14 +15,13 @@ import HelpActions
 import Model
 import OptionsActions
 import RecentFiles
-import WindowActions
 from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions
 
 
-class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
-             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin,
-             WindowActions.Mixin):
+class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
+             EditActions.Mixin, FileActions.Mixin, HelpActions.Mixin,
+             OptionsActions.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -87,6 +87,7 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
                                       QDockWidget.DockWidgetFloatable)
         self.contentsDock.setWidget(ContentsView.View())
         self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
+        # TODO Calendar dock widget
 
 
     def make_actions(self):
@@ -111,14 +112,16 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
         self.options_toolbar.setObjectName('Options')
         add_actions(self.options_toolbar, self.options_actions_for_toolbar)
 
-        self.make_window_actions()
-        self.window_menu = self.menuBar().addMenu('&Window')
-        add_actions(self.window_menu, self.window_actions_for_menu)
-        self.window_toolbar = self.addToolBar('Window')
-        self.window_toolbar.setObjectName('Window')
-        add_actions(self.window_toolbar, self.window_actions_for_toolbar)
+        self.make_contents_actions()
+        self.contents_menu = self.menuBar().addMenu('&Contents')
+        add_actions(self.contents_menu, self.contents_actions_for_menu)
+        self.contents_toolbar = self.addToolBar('Contents')
+        self.contents_toolbar.setObjectName('Contents')
+        add_actions(self.contents_toolbar,
+                    self.contents_actions_for_toolbar)
 
-        print('make_actions')
+        # TODO sql actions
+        # TODO sdi window actions
 
         self.make_help_actions()
         self.help_menu = self.menuBar().addMenu('&Help')
@@ -128,12 +131,14 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
     def make_connections(self):
         view = self.contentsDock.widget()
         view.itemDoubleClicked.connect(self.maybe_show_content)
-        # TODO also connect if user presses Enter on an item too
-        print('make_connections')
+        view.itemSelectionChanged.connect(self.contents_update_ui)
+        # TODO
 
 
     def update_ui(self):
         self.file_update_ui()
         self.edit_update_ui()
         self.options_update_ui()
-        print('update_ui')
+        self.contents_update_ui()
+        # TODO sql actions
+        # TODO sdi window actions

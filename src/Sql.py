@@ -11,3 +11,7 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
     if value is None:
         return value
     return bool(int(value)) if isinstance(Class, bool) else Class(value)
+
+
+CONTENT_SUMMARY = '''
+SELECT type, name FROM sqlite_master ORDER BY UPPER(name);'''

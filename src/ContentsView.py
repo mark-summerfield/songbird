@@ -17,11 +17,13 @@ class Mixin:
 
 
     def maybe_show_content(self, item, _=None):
-        if item.childCount():
+        if item.parent() is None:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
         name = item.text(0)
         print('maybe_show_content', kind, name) # TODO
+        # either bring the MDI window showing this to the top or create an
+        # MDI window and bring it to the top
 
 
 class View(QTreeWidget):
@@ -73,3 +75,8 @@ class View(QTreeWidget):
 
     def canCopy(self):
         return self.currentItem() is not None
+
+
+    def can_view(self):
+        return (self.currentItem() is not None and
+                self.currentItem().parent() is not None)

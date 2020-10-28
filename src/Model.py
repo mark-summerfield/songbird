@@ -4,7 +4,7 @@
 import collections
 
 import apsw
-from ModelSQL import CONTENT_SUMMARY
+from Sql import CONTENT_SUMMARY
 
 
 class Model:

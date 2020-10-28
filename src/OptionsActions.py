@@ -6,29 +6,28 @@ from PySide2.QtGui import QIcon, QKeySequence
 import Config
 from Ui import make_action
 
+# [X] Show &Toolbar
+# [ ] Show C&alendar
+# &Options...
+
 
 class Mixin:
 
     def make_options_actions(self):
         path = Config.path()
-        self.options_toggle_contents_action = (
-            self.contentsDock.toggleViewAction())
-        self.options_toggle_contents_action.setIcon(
-            QIcon(str(path / 'images/folder.svg')))
-        self.options_toggle_contents_action.setText('Show &Contents')
         # TODO
 
 
     @property
     def options_actions_for_menu(self):
         # TODO
-        return (self.options_toggle_contents_action,)
+        return ()
 
 
     @property
     def options_actions_for_toolbar(self):
         # TODO
-        return (self.options_toggle_contents_action,)
+        return ()
 
 
     def options_update_ui(self):
