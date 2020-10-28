@@ -3,7 +3,7 @@
 
 import pathlib
 
-from PySide2.QtCore import QStandardPaths, Qt
+from PySide2.QtCore import QStandardPaths, Qt, QTimer
 from PySide2.QtWidgets import QDockWidget, QMainWindow, QMdiArea
 
 import Config
@@ -39,6 +39,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         qApp.commitDataRequest.connect(self.close)
         self.load_options(filename)
         self.update_ui()
+        QTimer.singleShot(0, self.contents_update_toggle_action)
 
 
     def closeEvent(self, event):

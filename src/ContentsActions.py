@@ -37,7 +37,9 @@ class Mixin:
             self.contents_view_content, QKeySequence.AddTab)
 
 
-    def contents_update_toggle_action(self, on):
+    def contents_update_toggle_action(self, on=None):
+        if on is None:
+            on = self.contentsDock.isVisible()
         self.contents_toggle_action.setText(('Hide' if on else 'Show') +
                                             ' &Contents')
 
