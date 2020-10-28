@@ -7,7 +7,7 @@ import apsw
 import Sql
 from Const import (
     APPNAME, BLINK, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE,
-    OPENED, RECENT_FILE, RECENT_FILES_MAX, WIN)
+    OPENED, RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, WIN)
 
 
 class MainWindowOptions:
@@ -77,12 +77,19 @@ class _Singleton_Config:
         cursor.execute(_PREPARE)
         version = Sql.first(cursor, _GET_VERSION)
         if version is None or version < _VERSION:
-            self._update_sbc(cursor)
+            self._update_sbc(db, cursor)
         return db, cursor
 
 
-    def _update_sbc(self, cursor):
+    def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
+        # 3
+        with db:
+            cursor.execute(f'''
+                INSERT INTO config (key, value)
+                SELECT '{SHOW_CONTENTS}', TRUE
+                WHERE NOT EXISTS (SELECT 1 FROM config
+                                  WHERE key = '{SHOW_CONTENTS}');''')
 
 
     def _set_filename(self):
@@ -118,10 +125,19 @@ class _Singleton_Config:
 
 
     def _update_opened(self):
+        d = dict(key=OPENED)
+        vacuum = False
         db = None
         try:
             db, cursor = self._open()
-            cursor.execute(_INCREMENT, dict(key=OPENED))
+            with db:
+                cursor.execute(_INCREMENT, d)
+                if Sql.first(cursor, _GET, d) > 100:
+                    d.update(value=1)
+                    cursor.execute(_SET, d)
+                    vacuum = True
+            if vacuum:
+                cursor.execute('VACUUM;')
         finally:
             if db is not None:
                 db.close()
@@ -200,7 +216,7 @@ class _Singleton_Config:
                 db.close()
 
 
-_VERSION = 1
+_VERSION = 3
 
 
 _PREPARE = f'''
@@ -226,6 +242,7 @@ INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_STATE}', NULL);
 INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
 INSERT INTO config (key, value) VALUES ('{BLINK}', TRUE);
+INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
 '''
 
 _INSERT_RECENT = 'INSERT INTO config (key, value) VALUES (:key, NULL);'

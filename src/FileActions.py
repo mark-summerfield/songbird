@@ -146,7 +146,11 @@ class Mixin:
 
 
     def file_save(self):
-        print('file_save') # TODO
+        if bool(self.model):
+            # TODO iterate all open form/list view windows & if any have
+            # unsaved changes offer dialog: [&Save] [Save &All] [&Discard]
+            # [&Cancel]
+            print('file_save: maybe unsaved changes dialog?') # TODO
 
 
     def file_saveas(self):

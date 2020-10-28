@@ -16,7 +16,8 @@ README.md
 
 # - complete menus: SQL, Options, Window & File Open etc.
 # - pure SQL
-# - options dialog: blink; default suffix
+# - options dialog:
+#   blink; default suffix; default database (SQLite | Songbird)
 # - custom types using songbird_types (tablename, fieldname, type)
 # - custom forms
 # - ultimately aim to be able to replace both Biller and Notebox with
