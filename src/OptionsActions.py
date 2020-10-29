@@ -6,9 +6,9 @@ from PySide2.QtGui import QIcon, QKeySequence
 import Config
 from Ui import make_action
 
-# [X] Show &Toolbar
-# [ ] Show C&alendar
-# &Options...
+# [X] Show &Toolbar TODO
+# [ ] Show C&alendar TODO
+# &Options... TODO
 
 
 class Mixin:

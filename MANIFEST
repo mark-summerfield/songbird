@@ -1,14 +1,17 @@
 src/songbird.pyw
 src/MainWindow.py # TODO
 src/FileActions.py # TODO
-src/RecentFiles.py
 src/EditActions.py # TODO
-src/OptionsActions.py # TODO
 src/ContentsActions.py # TODO
+# src/SQLActions.py # TODO
+src/OptionsActions.py # TODO
+# src/WindowsActions.py # TODO
 src/HelpActions.py # TODO
 src/ContentsView.py
+src/PragmaView.py # TODO
 src/Ui.py
 src/Model.py # TODO
+src/RecentFiles.py
 src/Sql.py
 src/Config.py
 src/Const.py
@@ -17,12 +20,15 @@ st.sh
 
 README.md
 
-# - complete menus: SQL, Options, Contents, Window & File Open etc.
+# - complete menus: File (Edit) Contents SQL Options Windows[SDI] Help
 # - pure SQL
 # - options dialog:
 #   blink; default suffix; default database (SQLite | Songbird)
 # - custom types using songbird_types (tablename, fieldname, type)
 # - custom forms
+# - provide an editor/dialog/? for creating transforms e.g., applying
+#   some math function to every column in a table (or selection of a
+#   table), etc.
 # - ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
 
@@ -30,16 +36,24 @@ README.md
 # for viewing (and possibly in-place adding/editing).
 # Toggle Tabs toggles between MDI and tabs view.
 
-# &SQL                &Window # SDI! (max of 9)
-#   Create &Query...   &1 <sdi name>        
-#   ---------             :	         
-#   Create &Table...   &9 <sdi name>        
+# SQL->Create Query leads to a dislog for creating a SELECT or for
+# applying some kind of transform.
+
+# &SQL                
+#   Create &Query...
+#   ---------         
+#   Create &Table...  
 #   Create &View...  
 #   &Create Trigger...
 #   ---------        
 #   &Alter Table...  
 #   Alter Vie&w...   
 #   A&lter Trigger...
+
+# &Window # SDI! (max of 9)
+#   &1 <sdi name>        
+#      :	         
+#   &9 <sdi name>        
 
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view

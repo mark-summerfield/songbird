@@ -14,6 +14,7 @@ import FileActions
 import HelpActions
 import Model
 import OptionsActions
+import PragmaView
 import RecentFiles
 from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions
@@ -21,7 +22,7 @@ from Ui import add_actions
 
 class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
              EditActions.Mixin, FileActions.Mixin, HelpActions.Mixin,
-             OptionsActions.Mixin):
+             OptionsActions.Mixin, PragmaView.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -39,7 +40,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         qApp.commitDataRequest.connect(self.close)
         self.load_options(filename)
         self.update_ui()
-        QTimer.singleShot(0, self.contents_update_toggle_action)
+        QTimer.singleShot(0, self.update_toggle_actions)
 
 
     def closeEvent(self, event):
@@ -86,8 +87,17 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.contentsDock.setFeatures(QDockWidget.DockWidgetClosable |
                                       QDockWidget.DockWidgetMovable |
                                       QDockWidget.DockWidgetFloatable)
-        self.contentsDock.setWidget(ContentsView.View())
+        self.contentsDock.setWidget(ContentsView.View(self.model))
         self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
+        self.pragmasDock = QDockWidget('Pragmas', self)
+        self.pragmasDock.setObjectName('Pragmas')
+        self.pragmasDock.setAllowedAreas(Qt.LeftDockWidgetArea |
+                                         Qt.RightDockWidgetArea)
+        self.pragmasDock.setFeatures(QDockWidget.DockWidgetClosable |
+                                     QDockWidget.DockWidgetMovable |
+                                     QDockWidget.DockWidgetFloatable)
+        self.pragmasDock.setWidget(PragmaView.View(self.model))
+        self.addDockWidget(Qt.RightDockWidgetArea, self.pragmasDock)
         # TODO Calendar dock widget
 
 
@@ -106,13 +116,6 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.edit_toolbar.setObjectName('Edit')
         add_actions(self.edit_toolbar, self.edit_actions_for_toolbar)
 
-        self.make_options_actions()
-        self.options_menu = self.menuBar().addMenu('&Options')
-        add_actions(self.options_menu, self.options_actions_for_menu)
-        self.options_toolbar = self.addToolBar('Options')
-        self.options_toolbar.setObjectName('Options')
-        add_actions(self.options_toolbar, self.options_actions_for_toolbar)
-
         self.make_contents_actions()
         self.contents_menu = self.menuBar().addMenu('&Contents')
         add_actions(self.contents_menu, self.contents_actions_for_menu)
@@ -122,6 +125,14 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
                     self.contents_actions_for_toolbar)
 
         # TODO sql actions
+
+        self.make_options_actions()
+        self.options_menu = self.menuBar().addMenu('&Options')
+        add_actions(self.options_menu, self.options_actions_for_menu)
+        self.options_toolbar = self.addToolBar('Options')
+        self.options_toolbar.setObjectName('Options')
+        add_actions(self.options_toolbar, self.options_actions_for_toolbar)
+
         # TODO sdi window actions
 
         self.make_help_actions()
@@ -143,3 +154,8 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.contents_update_ui()
         # TODO sql actions
         # TODO sdi window actions
+
+
+    def update_toggle_actions(self):
+        self.contents_update_toggle_action()
+        self.pragmas_update_toggle_action()

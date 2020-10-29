@@ -14,7 +14,7 @@ class Model:
         if filename is None:
             self._filename = None
         else:
-            self._open(filename)
+            self.open(filename)
 
 
     def __bool__(self):
@@ -26,7 +26,7 @@ class Model:
         return self._filename
 
 
-    def _open(self, filename):
+    def open(self, filename):
         self.close()
         self._filename = filename
         self.db = apsw.Connection(str(filename))

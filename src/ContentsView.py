@@ -10,10 +10,7 @@ class Mixin:
     def refresh_contents(self):
         view = self.contentsDock.widget()
         if view is not None:
-            if bool(self.model):
-                view.refresh(self.model)
-            else:
-                view.clear()
+            view.refresh()
 
 
     def maybe_show_content(self, item, _=None):
@@ -28,42 +25,45 @@ class Mixin:
 
 class View(QTreeWidget):
 
-    def __init__(self):
+    def __init__(self, model):
         super().__init__()
+        self.model = model
         self.setHeaderHidden(True)
         self.setRootIsDecorated(False)
         self.setSelectionBehavior(QTreeWidget.SelectRows)
         self.setSelectionMode(QTreeWidget.SingleSelection)
 
 
-    def refresh(self, model):
+    def refresh(self):
         self.clear()
-        self.setColumnCount(1)
-        tableItem = QTreeWidgetItem(self, ('Tables',))
-        viewItem = QTreeWidgetItem(self, ('Views',))
-        triggerItem = QTreeWidgetItem(self, ('Triggers',))
-        indexItem = QTreeWidgetItem(self, ('Indexes',))
-        firstItem = None
-        for i, item in enumerate((tableItem, viewItem, triggerItem,
-                                  indexItem)):
-            color = QColor('#F0F0F0' if i % 2 else '#E0E0E0')
-            item.setBackground(0, QBrush(color))
-        for content in model.content_summary():
-            item = QTreeWidgetItem((content.name,))
-            if content.kind == 'table':
-                parent = tableItem
-                if firstItem is None:
-                    firstItem = item
-            elif content.kind == 'view':
-                parent = viewItem
-            elif content.kind == 'trigger':
-                parent = triggerItem
-            elif content.kind == 'index':
-                parent = indexItem
-            parent.addChild(item)
-        self.expandAll()
-        if firstItem is not None:
-            self.setCurrentItem(firstItem)
+        if bool(self.model):
+            self.setColumnCount(1)
+            queryItem = QTreeWidgetItem(self, ('Queries',))
+            tableItem = QTreeWidgetItem(self, ('Tables',))
+            viewItem = QTreeWidgetItem(self, ('Views',))
+            triggerItem = QTreeWidgetItem(self, ('Triggers',))
+            indexItem = QTreeWidgetItem(self, ('Indexes',))
+            firstItem = None
+            for i, item in enumerate((queryItem, tableItem, viewItem,
+                                      triggerItem, indexItem)):
+                color = QColor('#F0F0F0' if i % 2 else '#E0E0E0')
+                item.setBackground(0, QBrush(color))
+            for content in self.model.content_summary():
+                item = QTreeWidgetItem((content.name,))
+                if content.kind == 'table':
+                    parent = tableItem
+                    if firstItem is None:
+                        firstItem = item
+                elif content.kind == 'view':
+                    parent = viewItem
+                elif content.kind == 'trigger':
+                    parent = triggerItem
+                elif content.kind == 'index':
+                    parent = indexItem
+                parent.addChild(item)
+            self.expandAll()
+            if firstItem is not None:
+                self.setCurrentItem(firstItem)
 
 
     def copy(self):

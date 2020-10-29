@@ -8,7 +8,6 @@ from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import Config
-import Model
 from Const import DEFAULT_SUFFIX, SUFFIX, SUFFIXES, TIMEOUT_SHORT
 from Ui import make_action
 
@@ -134,8 +133,7 @@ class Mixin:
 
     def file_load(self, filename, new=False):
         self.file_save()
-        self.model.close()
-        self.model = Model.Model(filename)
+        self.model.open(filename) # previous is automatically closed
         self.recent_files.add(filename)
         filename = pathlib.Path(filename).resolve()
         self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
@@ -148,6 +146,9 @@ class Mixin:
 
     def file_save(self):
         if bool(self.model):
+            view = self.pragmasDock.widget()
+            if view is not None:
+                view.save()
             # TODO iterate all open form/list view windows & if any have
             # unsaved changes offer dialog: [&Save] [Save &All] [&Discard]
             # [&Cancel]
