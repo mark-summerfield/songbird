@@ -4,7 +4,7 @@
 import collections
 
 import apsw
-from Sql import CONTENT_SUMMARY
+from Sql import CONTENT_DETAIL, CONTENT_SUMMARY
 
 
 class Model:
@@ -49,4 +49,15 @@ class Model:
                 yield content
 
 
+    def content_detail(self, name):
+        if self.db is not None:
+            cursor = self.db.cursor()
+            for row in cursor.execute(CONTENT_DETAIL, dict(name=name)):
+                row = list(row[1:])
+                row.pop(3)
+                yield ContentDetail(*row)
+
+
 ContentSummary = collections.namedtuple('ContentSummary', ('kind', 'name'))
+ContentDetail = collections.namedtuple(
+    'ContentDetail', ('name', 'type', 'notnull', 'pk'))

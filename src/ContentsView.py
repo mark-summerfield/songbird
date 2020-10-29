@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtGui import QBrush, QColor
+from PySide2.QtGui import QBrush, Qt
 from PySide2.QtWidgets import QTreeWidget, QTreeWidgetItem
 
 
@@ -29,29 +29,25 @@ class View(QTreeWidget):
         super().__init__()
         self.model = model
         self.setHeaderHidden(True)
-        self.setRootIsDecorated(False)
         self.setSelectionBehavior(QTreeWidget.SelectRows)
         self.setSelectionMode(QTreeWidget.SingleSelection)
+        self.setAlternatingRowColors(True)
 
 
     def refresh(self):
         self.clear()
         if bool(self.model):
-            self.setColumnCount(1)
-            queryItem = QTreeWidgetItem(self, ('Queries',))
+            self.queryItem = QTreeWidgetItem(self, ('Queries',))
             tableItem = QTreeWidgetItem(self, ('Tables',))
             viewItem = QTreeWidgetItem(self, ('Views',))
             triggerItem = QTreeWidgetItem(self, ('Triggers',))
             indexItem = QTreeWidgetItem(self, ('Indexes',))
             firstItem = None
-            for i, item in enumerate((queryItem, tableItem, viewItem,
-                                      triggerItem, indexItem)):
-                color = QColor('#F0F0F0' if i % 2 else '#E0E0E0')
-                item.setBackground(0, QBrush(color))
             for content in self.model.content_summary():
                 item = QTreeWidgetItem((content.name,))
                 if content.kind == 'table':
                     parent = tableItem
+                    self._add_table_item(content.name, item, parent)
                     if firstItem is None:
                         firstItem = item
                 elif content.kind == 'view':
@@ -61,9 +57,25 @@ class View(QTreeWidget):
                 elif content.kind == 'index':
                     parent = indexItem
                 parent.addChild(item)
-            self.expandAll()
+            self.expandItem(tableItem)
             if firstItem is not None:
                 self.setCurrentItem(firstItem)
+                self.expandItem(firstItem)
+
+
+    def _add_table_item(self, tablename, item, parent):
+        for detail in self.model.content_detail(tablename):
+            text = (f'{detail.name} {detail.type.upper()}'
+                    if detail.type else detail.name)
+            if detail.pk:
+                color = Qt.darkMagenta
+            elif detail.notnull:
+                color = Qt.black
+            else:
+                color = Qt.darkGray
+            child = QTreeWidgetItem((text,))
+            child.setForeground(0, QBrush(color))
+            item.addChild(child)
 
 
     def copy(self):

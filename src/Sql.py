@@ -15,3 +15,5 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
 
 CONTENT_SUMMARY = '''
 SELECT type, name FROM sqlite_master ORDER BY UPPER(name);'''
+
+CONTENT_DETAIL = 'SELECT * FROM pragma_table_info(:name);'

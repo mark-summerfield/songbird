@@ -38,12 +38,13 @@ class Mixin:
         self.contents_view_content_action = make_action(
             self, path / 'images/window-new.svg', '&View Contents Item',
             self.contents_view_content, QKeySequence.AddTab)
-        self.pragmas_toggle_action = self.pragmasDock.toggleViewAction()
-        self.pragmas_toggle_action.setIcon(QIcon(
+        self.contents_pragmas_toggle_action = (
+            self.pragmasDock.toggleViewAction())
+        self.contents_pragmas_toggle_action.setIcon(QIcon(
             str(path / 'images/preferences-desktop.svg')))
-        self.pragmas_toggle_action.setText('Show &Pragmas')
-        self.pragmas_toggle_action.toggled.connect(
-            self.pragmas_update_toggle_action)
+        self.contents_pragmas_toggle_action.setText('Show &Pragmas')
+        self.contents_pragmas_toggle_action.toggled.connect(
+            self.contents_pragmas_update_toggle_action)
 
 
     def contents_update_toggle_action(self, on=None):
@@ -53,25 +54,25 @@ class Mixin:
                                             ' &Contents')
 
 
-    def pragmas_update_toggle_action(self, on=None):
+    def contents_pragmas_update_toggle_action(self, on=None):
         if on is None:
             on = self.pragmasDock.isVisible()
-        self.pragmas_toggle_action.setText(('Hide' if on else 'Show') +
-                                           ' &Pragmas')
+        self.contents_pragmas_toggle_action.setText(
+            ('Hide' if on else 'Show') + ' &Pragmas')
 
 
     @property
     def contents_actions_for_menu(self):
         return (self.contents_toggle_action,
                 self.contents_view_content_action,
-                self.pragmas_toggle_action)
+                self.contents_pragmas_toggle_action)
 
 
     @property
     def contents_actions_for_toolbar(self):
         return (self.contents_toggle_action,
                 self.contents_view_content_action,
-                self.pragmas_toggle_action)
+                self.contents_pragmas_toggle_action)
 
 
     def contents_view_content(self):

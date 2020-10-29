@@ -124,16 +124,16 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         add_actions(self.contents_toolbar,
                     self.contents_actions_for_toolbar)
 
-        # TODO sql actions
+        # TODO sql actions + update OptionsActions options_restore_toolbars()
 
         self.make_options_actions()
         self.options_menu = self.menuBar().addMenu('&Options')
         add_actions(self.options_menu, self.options_actions_for_menu)
-        self.options_toolbar = self.addToolBar('Options')
-        self.options_toolbar.setObjectName('Options')
-        add_actions(self.options_toolbar, self.options_actions_for_toolbar)
+        # self.options_toolbar = self.addToolBar('Options')
+        # self.options_toolbar.setObjectName('Options')
+        # add_actions(self.options_toolbar, self.options_actions_for_toolbar)
 
-        # TODO sdi window actions
+        # TODO sdi window actions + update OptionsActions options_restore_toolbars()
 
         self.make_help_actions()
         self.help_menu = self.menuBar().addMenu('&Help')
@@ -158,4 +158,4 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def update_toggle_actions(self):
         self.contents_update_toggle_action()
-        self.pragmas_update_toggle_action()
+        self.contents_pragmas_update_toggle_action()
