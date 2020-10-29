@@ -30,9 +30,18 @@ class Mixin:
         self.contents_toggle_action.setIcon(QIcon(
             str(path / 'images/folder.svg')))
         self.contents_toggle_action.setText('Show &Contents')
+        self.contents_toggle_action.toggled.connect(
+            self.contents_update_toggle_action)
         self.contents_view_content_action = make_action(
             self, path / 'images/window-new.svg', '&View Item',
             self.contents_view_content, QKeySequence.AddTab)
+
+
+    def contents_update_toggle_action(self, on=None):
+        if on is None:
+            on = self.contentsDock.isVisible()
+        self.contents_toggle_action.setText(('Hide' if on else 'Show') +
+                                            ' &Contents')
 
 
     @property
