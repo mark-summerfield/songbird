@@ -2,7 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 from PySide2.QtGui import QBrush, Qt
-from PySide2.QtWidgets import QTreeWidget, QTreeWidgetItem
+from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
 
 
 class Mixin:
@@ -37,6 +37,11 @@ class View(QTreeWidget):
     def refresh(self):
         self.clear()
         if bool(self.model):
+            self.setColumnCount(2)
+            header = self.header()
+            header.setStretchLastSection(False)
+            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
             self.queryItem = QTreeWidgetItem(self, ('Queries',))
             tableItem = QTreeWidgetItem(self, ('Tables',))
             viewItem = QTreeWidgetItem(self, ('Views',))
@@ -65,16 +70,17 @@ class View(QTreeWidget):
 
     def _add_table_item(self, tablename, item, parent):
         for detail in self.model.content_detail(tablename):
-            text = (f'{detail.name} {detail.type.upper()}'
-                    if detail.type else detail.name)
             if detail.pk:
-                color = Qt.darkMagenta
+                color = Qt.darkGreen
             elif detail.notnull:
                 color = Qt.black
             else:
                 color = Qt.darkGray
-            child = QTreeWidgetItem((text,))
+            child = QTreeWidgetItem((detail.name, detail.type.upper()))
             child.setForeground(0, QBrush(color))
+            font = child.font(1)
+            font.setPointSize(max(8, font.pointSize() - 1))
+            child.setFont(1, font)
             item.addChild(child)
 
 
