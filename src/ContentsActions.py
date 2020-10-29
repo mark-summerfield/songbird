@@ -8,8 +8,8 @@ from Ui import make_action
 
 # [X] Show &Contents
 # &View Contents Item
-# E&xpand Contents  TODO
-# C&ollapse Contents    TODO
+# E&xpand Contents Item  TODO
+# C&ollapse Contents Item    TODO
 # [ ] Show &Pragmas
 # -------------------
 # Toggle &Form View TODO
