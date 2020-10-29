@@ -150,9 +150,9 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def update_ui(self):
         self.file_update_ui()
         self.edit_update_ui()
-        self.options_update_ui()
         self.contents_update_ui()
         # TODO sql actions
+        self.options_update_ui()
         # TODO sdi window actions
 
 

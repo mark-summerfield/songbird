@@ -2,6 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 from PySide2.QtGui import QKeySequence
+from PySide2.QtWidgets import QLineEdit, QPlainTextEdit, QTextEdit
 
 import Config
 from Ui import make_action
@@ -39,22 +40,18 @@ class Mixin:
                        self.edit_paste_action):
             action.setEnabled(False)
         widget = qApp.focusWidget()
-        if widget is None:
-            # TODO if calendar then copy date?
-            self.edit_copy_action.setEnabled(
-                self.contentsDock.widget().canCopy())
-        else:
-            try:
-                self.edit_paste_action.setEnabled(widget.canPaste())
-            except AttributeError:
-                pass # Already set to False
-            try:
-                text_cursor = widget.textCursor()
-                enable = text_cursor.hasSelection()
-                self.edit_copy_action.setEnabled(enable)
-                self.edit_cut_action.setEnabled(enable)
-            except AttributeError:
-                pass # Already set to False
+        if isinstance(widget, QLineEdit):
+            hasText = widget.selectionLength() > 0
+            self.edit_copy_action.setEnabled(hasText)
+            self.edit_cut_action.setEnabled(hasText)
+            clipboard = qApp.clipboard()
+            self.edit_paste_action.setEnabled(bool(clipboard.text()))
+        elif isinstance(widget, (QPlainTextEdit, QTextEdit)):
+            text_cursor = widget.textCursor()
+            enable = text_cursor.hasSelection()
+            self.edit_copy_action.setEnabled(enable)
+            self.edit_cut_action.setEnabled(enable)
+            self.edit_paste_action.setEnabled(widget.canPaste())
 
 
     def edit_copy(self):

@@ -68,13 +68,13 @@ class View(QTreeWidget):
 
     def copy(self):
         item = self.currentItem()
-        if item is not None:
+        if item is not None and item.parent() is not None:
             clipboard = qApp.clipboard()
             clipboard.setText(item.text(0))
 
 
     def canCopy(self):
-        return self.currentItem() is not None
+        return self.can_view()
 
 
     def can_view(self):
