@@ -18,12 +18,12 @@ from Ui import make_action
 class Mixin:
 
     def make_help_actions(self):
-        path = Config.path()
+        path = Config.path() / 'images'
         self.help_action = make_action(
-            self, path / 'images/help.svg', '&Help', self.help,
+            self, path / 'help.svg', '&Help', self.help,
             QKeySequence.HelpContents)
         self.help_about_action = make_action(
-            self, path / 'images/icon.svg', '&About', self.help_about)
+            self, path / 'icon.svg', '&About', self.help_about)
 
 
     @property

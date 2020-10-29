@@ -80,24 +80,26 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def make_widgets(self):
         self.mdiArea = QMdiArea()
         self.setCentralWidget(self.mdiArea)
+
+        allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
+        features = (QDockWidget.DockWidgetClosable |
+                    QDockWidget.DockWidgetMovable |
+                    QDockWidget.DockWidgetFloatable)
+
         self.contentsDock = QDockWidget('Contents', self)
         self.contentsDock.setObjectName('Contents')
-        self.contentsDock.setAllowedAreas(Qt.LeftDockWidgetArea |
-                                          Qt.RightDockWidgetArea)
-        self.contentsDock.setFeatures(QDockWidget.DockWidgetClosable |
-                                      QDockWidget.DockWidgetMovable |
-                                      QDockWidget.DockWidgetFloatable)
+        self.contentsDock.setAllowedAreas(allowedAreas)
+        self.contentsDock.setFeatures(features)
         self.contentsDock.setWidget(ContentsView.View(self.model))
         self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
+
         self.pragmasDock = QDockWidget('Pragmas', self)
         self.pragmasDock.setObjectName('Pragmas')
-        self.pragmasDock.setAllowedAreas(Qt.LeftDockWidgetArea |
-                                         Qt.RightDockWidgetArea)
-        self.pragmasDock.setFeatures(QDockWidget.DockWidgetClosable |
-                                     QDockWidget.DockWidgetMovable |
-                                     QDockWidget.DockWidgetFloatable)
+        self.pragmasDock.setAllowedAreas(allowedAreas)
+        self.pragmasDock.setFeatures(features)
         self.pragmasDock.setWidget(PragmaView.View(self.model))
         self.addDockWidget(Qt.RightDockWidgetArea, self.pragmasDock)
+
         # TODO Calendar dock widget
 
 

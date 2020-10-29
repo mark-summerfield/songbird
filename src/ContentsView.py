@@ -37,11 +37,7 @@ class View(QTreeWidget):
     def refresh(self):
         self.clear()
         if bool(self.model):
-            self.setColumnCount(2)
-            header = self.header()
-            header.setStretchLastSection(False)
-            header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-            header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+            self._prepare()
             self.queryItem = QTreeWidgetItem(self, ('Queries',))
             tableItem = QTreeWidgetItem(self, ('Tables',))
             viewItem = QTreeWidgetItem(self, ('Views',))
@@ -68,6 +64,14 @@ class View(QTreeWidget):
                 self.expandItem(firstItem)
 
 
+    def _prepare(self):
+        self.setColumnCount(2)
+        header = self.header()
+        header.setStretchLastSection(False)
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+
+
     def _add_table_item(self, tablename, item, parent):
         for detail in self.model.content_detail(tablename):
             if detail.pk:
@@ -79,7 +83,7 @@ class View(QTreeWidget):
             child = QTreeWidgetItem((detail.name, detail.type.upper()))
             child.setForeground(0, QBrush(color))
             font = child.font(1)
-            font.setPointSize(max(8, font.pointSize() - 1))
+            font.setPointSize(max(6, font.pointSize() - 1))
             child.setFont(1, font)
             item.addChild(child)
 

@@ -28,20 +28,19 @@ from Ui import make_action
 class Mixin:
 
     def make_contents_actions(self):
-        path = Config.path()
+        path = Config.path() / 'images'
         self.contents_toggle_action = self.contentsDock.toggleViewAction()
-        self.contents_toggle_action.setIcon(QIcon(
-            str(path / 'images/folder.svg')))
+        self.contents_toggle_action.setIcon(QIcon(str(path / 'folder.svg')))
         self.contents_toggle_action.setText('Show &Contents')
         self.contents_toggle_action.toggled.connect(
             self.contents_update_toggle_action)
         self.contents_view_content_action = make_action(
-            self, path / 'images/window-new.svg', '&View Contents Item',
+            self, path / 'window-new.svg', '&View Contents Item',
             self.contents_view_content, QKeySequence.AddTab)
         self.contents_pragmas_toggle_action = (
             self.pragmasDock.toggleViewAction())
         self.contents_pragmas_toggle_action.setIcon(QIcon(
-            str(path / 'images/preferences-desktop.svg')))
+            str(path / 'preferences-desktop.svg')))
         self.contents_pragmas_toggle_action.setText('Show &Pragmas')
         self.contents_pragmas_toggle_action.toggled.connect(
             self.contents_pragmas_update_toggle_action)

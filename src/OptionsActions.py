@@ -12,10 +12,10 @@ from Ui import make_action
 class Mixin:
 
     def make_options_actions(self):
-        path = Config.path()
+        path = Config.path() / 'images'
         self.options_restore_toolbars_action = make_action(
-            self, path / 'images/emblem-symbolic-link.svg',
-            'Restore &Toolbars', self.options_restore_toolbars)
+            self, path / 'emblem-symbolic-link.svg', 'Restore &Toolbars',
+            self.options_restore_toolbars)
         # TODO
 
 

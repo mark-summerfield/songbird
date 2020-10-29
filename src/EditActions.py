@@ -11,15 +11,15 @@ from Ui import make_action
 class Mixin:
 
     def make_edit_actions(self):
-        path = Config.path()
+        path = Config.path() / 'images'
         self.edit_copy_action = make_action(
-            self, path / 'images/edit-copy.svg', '&Copy', self.edit_copy,
+            self, path / 'edit-copy.svg', '&Copy', self.edit_copy,
             QKeySequence.Copy)
         self.edit_cut_action = make_action(
-            self, path / 'images/edit-cut.svg', 'C&ut', self.edit_cut,
+            self, path / 'edit-cut.svg', 'C&ut', self.edit_cut,
             QKeySequence.Cut)
         self.edit_paste_action = make_action(
-            self, path / 'images/edit-paste.svg', '&Paste', self.edit_paste,
+            self, path / 'edit-paste.svg', '&Paste', self.edit_paste,
             QKeySequence.Paste)
 
 

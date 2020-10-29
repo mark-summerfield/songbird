@@ -102,7 +102,9 @@ class _Singleton_Config:
     def _make_default_sbc(self):
         db = None
         try:
-            db, cursor = self._open()
+            db = apsw.Connection(self._filename) # Mustn't call _open here
+            cursor = db.cursor()
+            cursor.execute(_PREPARE)
             with db:
                 cursor.execute(_CREATE)
                 for n in range(1, RECENT_FILES_MAX + 1):
