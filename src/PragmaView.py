@@ -3,7 +3,9 @@
 
 from PySide2.QtWidgets import QFormLayout, QMessageBox, QSpinBox, QWidget
 
+from Const import MAX_I32
 from Sql import Pragmas
+from Ui import BlockSignals
 
 
 class Mixin:
@@ -26,7 +28,7 @@ class View(QWidget):
 
     def make_widgets(self):
         self.userVersionSpinbox = QSpinBox()
-        self.userVersionSpinbox.setRange(0, (2**31) - 1)
+        self.userVersionSpinbox.setRange(0, MAX_I32)
         # TODO make all widgets
 
 
@@ -51,22 +53,16 @@ class View(QWidget):
         self.clear()
         if bool(self.model):
             pragmas = self.model.pragmas()
-            blocked = self.blockSignals(True)
-            try:
+            with BlockSignals(self):
                 self.userVersionSpinbox.setValue(pragmas.user_version)
                 # TODO refresh all widgets
-            finally:
-                self.blockSignals(blocked)
         self.dirty = False
 
 
     def clear(self):
-        blocked = self.blockSignals(True)
-        try:
+        with BlockSignals(self):
             self.userVersionSpinbox.setValue(0)
             # TODO clear all widgets
-        finally:
-            self.blockSignals(blocked)
         self.dirty = False
 
 

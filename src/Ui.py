@@ -5,6 +5,23 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QAction, QDockWidget, QToolBar, QToolButton
 
 
+class BlockSignals:
+
+    def __init__(self, *widgets):
+        self.widgets = widgets
+        self.blocked = []
+
+
+    def __enter__(self):
+        for widget in self.widgets:
+            self.blocked.append(widget.blockSignals(True))
+
+
+    def __exit__(self, _exc_type, _exc_val, _exc_tb):
+        for i, widget in enumerate(self.widgets):
+            widget.blockSignals(self.blocked[i])
+
+
 def make_action(widget, icon, text, slot=None, shortcut=None, tooltip=None,
                 *, menu=None):
     action = QAction(QIcon(str(icon)), text, widget)

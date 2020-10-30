@@ -8,7 +8,7 @@ from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import Config
-from Const import DEFAULT_SUFFIX, SUFFIX, SUFFIXES, TIMEOUT_SHORT
+from Const import SUFFIX, SUFFIX_DEFAULT, SUFFIXES, TIMEOUT_SHORT
 from Ui import make_action
 
 
@@ -124,7 +124,7 @@ class Mixin:
             filename = pathlib.Path(filename)
             self.path = filename.parent
             if '.' not in filename.name:
-                filename = filename.with_suffix(DEFAULT_SUFFIX)
+                filename = filename.with_suffix(SUFFIX_DEFAULT)
         return filename
 
 
