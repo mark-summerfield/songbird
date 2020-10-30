@@ -34,6 +34,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.closing = False
         self.setWindowTitle(
             f'{qApp.applicationName()} {qApp.applicationVersion()}')
+        self.mdiWidgets = {} # key = (kind, name); value = QueryWidget etc.
         self.make_widgets()
         self.make_actions()
         self.make_connections()
@@ -45,7 +46,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def closeEvent(self, event):
         self.closing = True
-        self.file_save()
+        self.clear()
         options = Config.MainWindowOptions(
             self.saveState(), self.saveGeometry(),
             str(self.model.filename or ''), list(self.recent_files))
@@ -161,3 +162,12 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def update_toggle_actions(self):
         self.contents_update_toggle_action()
         self.contents_pragmas_update_toggle_action()
+
+
+    def clear(self):
+        widget = self.pragmasDock.widget()
+        if widget is not None:
+            widget.save(self.closing)
+            widget.clear()
+        for widget in self.mdiWidgets.values():
+            widget.close() # Will save if dirty

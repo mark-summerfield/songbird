@@ -129,7 +129,7 @@ class Mixin:
 
 
     def file_load(self, filename, new=False):
-        self.file_save()
+        self.clear() # Will save if necessary
         self.model.open(filename) # previous is automatically closed
         self.recent_files.add(filename)
         filename = pathlib.Path(filename).resolve()
@@ -138,18 +138,17 @@ class Mixin:
                    f'Opened existing database {filename}')
         self.statusBar().showMessage(message, TIMEOUT_SHORT)
         self.refresh_contents()
+        self.refresh_pragmas()
         self.update_ui()
 
 
     def file_save(self):
         if bool(self.model):
-            view = self.pragmasDock.widget()
-            if view is not None:
-                view.save()
-            # TODO iterate all open form/list view windows & if any have
-            # unsaved changes offer dialog: [&Save] [Save &All] [&Discard]
-            # [&Cancel]
-            print('file_save: maybe unsaved changes dialog?') # TODO
+            widget = self.pragmasDock.widget()
+            if widget is not None:
+                widget.save()
+            for widget in self.mdiWidgets.values():
+                widget.save()
 
 
     def file_saveas(self):

@@ -4,15 +4,7 @@
 from PySide2.QtWidgets import QWidget
 
 
-class Mixin:
-
-    def refresh_pragmas(self):
-        widget = self.pragmasDock.widget()
-        if widget is not None:
-            widget.refresh()
-
-
-class View(QWidget):
+class Widget(QWidget):
 
     def __init__(self, model):
         super().__init__()
@@ -20,22 +12,14 @@ class View(QWidget):
         self.dirty = False
 
 
-    def refresh(self):
-        self.clear()
-        if bool(self.model):
-            pass # TODO
-        print('PragmaView View.refresh')
-
-
-    def clear(self):
-        # TODO clear all widgets
-        self.dirty = False
+    def closeEvent(self):
+        self.save(closing=True)
 
 
     def save(self, *, closing=False):
         # TODO what happens if there's an error and it can't save? We could
         # be closing down
-        print(f'PragmaView View.save dirty={self.dirty} closing={self.closing}')
+        print(f'QueryModel Widget.save dirty={self.dirty} closing={closing}')
         if self.dirty and bool(self.model):
             pass # TODO
         self.dirty = False

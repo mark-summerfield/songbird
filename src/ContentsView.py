@@ -8,9 +8,9 @@ from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
 class Mixin:
 
     def refresh_contents(self):
-        view = self.contentsDock.widget()
-        if view is not None:
-            view.refresh()
+        widget = self.contentsDock.widget()
+        if widget is not None:
+            widget.refresh()
 
 
     def maybe_show_content(self, item, _=None):
@@ -18,7 +18,14 @@ class Mixin:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
         name = item.text(0)
-        print('maybe_show_content', kind, name) # TODO
+        widget = self.mdiWidgets.get((kind, name))
+        if widget is not None:
+            widget.show()
+            widget.raise_()
+            widget.activateWindow()
+        else:
+            # TODO create a new QueryWidget or TriggerEditWidget etc.
+            print('maybe_show_content', kind, name) # TODO
         # either bring the MDI window showing this to the top or create an
         # MDI window and bring it to the top
 

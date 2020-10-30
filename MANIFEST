@@ -9,6 +9,7 @@ src/OptionsActions.py # TODO
 src/HelpActions.py # TODO
 src/ContentsView.py
 src/PragmaView.py # TODO
+src/QueryWidget.py # TODO
 src/Ui.py
 src/Model.py # TODO
 src/RecentFiles.py
@@ -20,7 +21,7 @@ st.sh
 
 README.md
 
-# - create QueryWidget
+# - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
 #   -- splitter --
@@ -33,6 +34,10 @@ README.md
 #	:
 #   QLabelN editorN
 #   [Insert][Update][Delete][Save][Revert][List View][Previous][Next]
+#
+# - create TriggerEditor for adding/editing/deleting triggers
+#
+# - create IndexEditor for adding/editing/deleting indexes
 #
 # - complete menus: File (Edit) Contents SQL Options Windows[SDI] Help
 # - pure SQL
