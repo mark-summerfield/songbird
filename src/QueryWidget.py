@@ -20,6 +20,9 @@ class Widget(QWidget):
         # TODO what happens if there's an error and it can't save? We could
         # be closing down
         print(f'QueryModel Widget.save dirty={self.dirty} closing={closing}')
+        saved = False
         if self.dirty and bool(self.model):
             pass # TODO
+            saved = True
         self.dirty = False
+        return saved

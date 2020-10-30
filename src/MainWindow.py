@@ -39,17 +39,20 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.make_actions()
         self.make_connections()
         qApp.commitDataRequest.connect(self.close)
-        self.load_options(filename)
+        options = self.load_options(filename)
         self.update_ui()
-        QTimer.singleShot(0, self.update_toggle_actions)
+        QTimer.singleShot(0, lambda: self.initalize_toggle_actions(options))
 
 
     def closeEvent(self, event):
         self.closing = True
         self.clear()
         options = Config.MainWindowOptions(
-            self.saveState(), self.saveGeometry(),
-            str(self.model.filename or ''), list(self.recent_files))
+            state=self.saveState(), geometry=self.saveGeometry(),
+            last_filename=str(self.model.filename or ''),
+            recent_files=list(self.recent_files),
+            show_contents=self.contentsDock.isVisible(),
+            show_pragmas=self.pragmasDock.isVisible())
         Config.write_main_window_options(options)
         event.accept()
 
@@ -76,6 +79,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
             self.statusBar().showMessage(
                 'Click File→New or File→Open to open or create a database',
                 TIMEOUT_LONG)
+        return options
 
 
     def make_widgets(self):
@@ -91,14 +95,16 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.contentsDock.setObjectName('Contents')
         self.contentsDock.setAllowedAreas(allowedAreas)
         self.contentsDock.setFeatures(features)
-        self.contentsDock.setWidget(ContentsView.View(self.model))
+        view = ContentsView.View(self.model)
+        self.contentsDock.setWidget(view)
         self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
 
         self.pragmasDock = QDockWidget('Pragmas', self)
         self.pragmasDock.setObjectName('Pragmas')
         self.pragmasDock.setAllowedAreas(allowedAreas)
         self.pragmasDock.setFeatures(features)
-        self.pragmasDock.setWidget(PragmaView.View(self.model))
+        view = PragmaView.View(self.model)
+        self.pragmasDock.setWidget(view)
         self.addDockWidget(Qt.RightDockWidgetArea, self.pragmasDock)
 
         # TODO Calendar dock widget
@@ -144,10 +150,18 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
 
     def make_connections(self):
-        view = self.contentsDock.widget()
-        view.itemDoubleClicked.connect(self.maybe_show_content)
-        view.itemSelectionChanged.connect(self.contents_update_ui)
+        widget = self.contentsDock.widget()
+        widget.itemDoubleClicked.connect(self.maybe_show_content)
+        widget.itemSelectionChanged.connect(self.contents_update_ui)
         # TODO
+
+
+    def initalize_toggle_actions(self, options):
+        self.contentsDock.setVisible(options.show_contents)
+        self.contents_update_toggle_action(options.show_contents)
+        show_pragmas = bool(self.model) and options.show_pragmas
+        self.pragmasDock.setVisible(show_pragmas)
+        self.contents_pragmas_update_toggle_action(show_pragmas)
 
 
     def update_ui(self):
@@ -157,11 +171,6 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         # TODO sql actions
         self.options_update_ui()
         # TODO sdi window actions
-
-
-    def update_toggle_actions(self):
-        self.contents_update_toggle_action()
-        self.contents_pragmas_update_toggle_action()
 
 
     def clear(self):

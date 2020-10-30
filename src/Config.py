@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import collections
 import pathlib
 
 import apsw
 import Sql
 from Const import (
     APPNAME, BLINK, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE,
-    OPENED, RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, WIN)
+    OPENED, RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, SHOW_PRAGMAS, WIN)
 
 
 class MainWindowOptions:
 
-    def __init__(self, state=None, geometry=None, last_filename=None,
-                 recent_files=None):
+    def __init__(self, *, state=None, geometry=None, last_filename=None,
+                 recent_files=None, show_contents=True, show_pragmas=False):
         self.state = state
         self.geometry = geometry
         self.last_filename = last_filename
         self.recent_files = recent_files if recent_files is not None else []
+        self.show_contents = show_contents
+        self.show_pragmas = show_pragmas
+
+
+ToggleOptions = collections.namedtuple('ToggleOptions', ('show_contents',
+                                                         'show_pragmas'))
 
 
 def path():
@@ -170,6 +177,10 @@ class _Singleton_Config:
                                           value=options.geometry))
                 cursor.execute(_SET, dict(key=LAST_FILE,
                                           value=options.last_filename))
+                cursor.execute(_SET, dict(key=SHOW_CONTENTS,
+                                          value=options.show_contents))
+                cursor.execute(_SET, dict(key=SHOW_PRAGMAS,
+                                          value=options.show_pragmas))
                 cursor.execute(_CLEAR_RECENT_FILES)
                 for n, name in enumerate(options.recent_files, 1):
                     if name and pathlib.Path(name).exists():
@@ -193,6 +204,10 @@ class _Singleton_Config:
                     Class=bytes)
                 options.last_filename = Sql.first(
                     cursor, _GET, dict(key=LAST_FILE), Class=str)
+                options.show_contents = Sql.first(
+                    cursor, _GET, dict(key=SHOW_CONTENTS), Class=bool)
+                options.show_pragmas = Sql.first(
+                    cursor, _GET, dict(key=SHOW_PRAGMAS), Class=bool)
                 for n in range(1, RECENT_FILES_MAX + 1):
                     name = Sql.first(cursor, _GET,
                                      dict(key=f'{RECENT_FILE}/{n}'),
@@ -209,16 +224,22 @@ class _Singleton_Config:
 
     def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
-        # 3
         with db:
+            # 3
             cursor.execute(f'''
                 INSERT INTO config (key, value)
                 SELECT '{SHOW_CONTENTS}', TRUE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_CONTENTS}');''')
+            # 4
+            cursor.execute(f'''
+                INSERT INTO config (key, value)
+                SELECT '{SHOW_PRAGMAS}', FALSE
+                WHERE NOT EXISTS (SELECT 1 FROM config
+                                  WHERE key = '{SHOW_PRAGMAS}');''')
 
 
-_VERSION = 3
+_VERSION = 4
 
 
 _PREPARE = f'''
@@ -227,7 +248,6 @@ PRAGMA foreign_keys = TRUE;
 PRAGMA synchronous = NORMAL;
 PRAGMA temp_store = MEMORY;
 '''
-
 
 _CREATE = f'''
 PRAGMA user_version = {_VERSION};
@@ -245,25 +265,20 @@ INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
 INSERT INTO config (key, value) VALUES ('{BLINK}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
+INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
 '''
 
 _INSERT_RECENT = 'INSERT INTO config (key, value) VALUES (:key, NULL);'
 
-
 _INCREMENT = 'UPDATE config SET value = value + 1 WHERE key = :key;'
-
 
 _GET = 'SELECT value FROM config WHERE key = :key;'
 
-
 _SET = 'UPDATE config SET value = :value WHERE key = :key;'
-
 
 _CLEAR_RECENT_FILES = f'''
 UPDATE config SET value = NULL WHERE key LIKE '{RECENT_FILE}%';'''
 
-
 _GET_VERSION = 'PRAGMA user_version;'
-
 
 _UPDATE_VERSION = f'PRAGMA user_version = {_VERSION};'

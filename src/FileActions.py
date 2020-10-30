@@ -143,12 +143,15 @@ class Mixin:
 
 
     def file_save(self):
+        saved = 0
         if bool(self.model):
             widget = self.pragmasDock.widget()
             if widget is not None:
-                widget.save()
+                saved += widget.save()
             for widget in self.mdiWidgets.values():
-                widget.save()
+                saved += widget.save()
+        message = 'Saved changes' if saved else 'Database is up-to-date'
+        self.statusBar().showMessage(message, TIMEOUT_SHORT)
 
 
     def file_saveas(self):

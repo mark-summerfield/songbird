@@ -42,6 +42,7 @@ class Mixin:
         self.contents_pragmas_toggle_action.setIcon(QIcon(
             str(path / 'preferences-desktop.svg')))
         self.contents_pragmas_toggle_action.setText('Show &Pragmas')
+        self.contents_pragmas_toggle_action.setChecked(False) # Starts hid
         self.contents_pragmas_toggle_action.toggled.connect(
             self.contents_pragmas_update_toggle_action)
 
@@ -56,6 +57,7 @@ class Mixin:
     def contents_pragmas_update_toggle_action(self, on=None):
         if on is None:
             on = self.pragmasDock.isVisible()
+        self.pragmasDock.widget().setVisible(on)
         self.contents_pragmas_toggle_action.setText(
             ('Hide' if on else 'Show') + ' &Pragmas')
 
@@ -75,13 +77,14 @@ class Mixin:
 
 
     def contents_view_content(self):
-        view = self.contentsDock.widget()
-        if view is not None:
-            self.maybe_show_content(view.currentItem())
+        widget = self.contentsDock.widget()
+        if widget is not None:
+            self.maybe_show_content(widget.currentItem())
 
 
     def contents_update_ui(self):
         enable = bool(self.model)
-        view = self.contentsDock.widget()
+        widget = self.contentsDock.widget()
         self.contents_view_content_action.setEnabled(
-            view is not None and enable and view.can_view())
+            widget is not None and enable and widget.can_view())
+        self.contents_pragmas_toggle_action.setEnabled(enable)

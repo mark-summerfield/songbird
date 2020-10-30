@@ -12,6 +12,7 @@ OPENED = 'Opened'
 RECENT_FILE = 'RecentFile'
 RECENT_FILES_MAX = 9
 SHOW_CONTENTS = 'ShowContents'
+SHOW_PRAGMAS = 'ShowPragmas'
 SUFFIXES = ('.sqlite', '.sqlite3', '.db', '.db3')
 SUFFIX = '.sb'
 DEFAULT_SUFFIX = SUFFIXES[0] # Make this a user option

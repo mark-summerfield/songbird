@@ -28,12 +28,12 @@ README.md
 #   QTableView with custom QueryModel (using OFFSET & LIMIT if rows > 1K)
 #   -- splitter --
 #   QPlainTextEdit for errors & info
-#   [Insert][Update][Delete][Save][Revert][Form View]
+#   [Insert][Update][Delete][Form View] # saves when any clicked
 #      -- form view --
 #   QLabel1 editor1
 #	:
 #   QLabelN editorN
-#   [Insert][Update][Delete][Save][Revert][List View][Previous][Next]
+#   [Insert][Update][Delete][List View][Previous][Next] # saves when any clicked
 #
 # - create TriggerEditor for adding/editing/deleting triggers
 #
