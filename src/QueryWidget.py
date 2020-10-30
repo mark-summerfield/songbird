@@ -17,7 +17,7 @@ class Widget(QWidget):
 
 
     def save(self, *, closing=False):
-        print(f'QueryModel Widget.save dirty={self.dirty} closing={closing}')
+        print(f'QueryWidget.save dirty={self.dirty} closing={closing}')
         saved = not self.dirty
         errors = False
         if self.dirty and bool(self.model):
