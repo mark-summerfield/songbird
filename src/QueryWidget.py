@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtWidgets import QWidget
+from PySide2.QtWidgets import QMessageBox, QWidget
 
 
 class Widget(QWidget):
@@ -17,12 +17,19 @@ class Widget(QWidget):
 
 
     def save(self, *, closing=False):
-        # TODO what happens if there's an error and it can't save? We could
-        # be closing down
         print(f'QueryModel Widget.save dirty={self.dirty} closing={closing}')
-        saved = False
+        saved = not self.dirty
+        errors = False
         if self.dirty and bool(self.model):
-            pass # TODO
-            saved = True
-        self.dirty = False
+            # TODO save change to list view or form view
+            errors = []# self.model.save_...
+            if errors:
+                if not closing:
+                    error = '\n'.join(errors)
+                    QMessageBox.warning(
+                        self, f'Save error — {qApp.applicationName()}',
+                        f'Failed to save:\n{error}')
+            else:
+                saved = True
+        self.dirty = not errors
         return saved

@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtWidgets import QFormLayout, QSpinBox, QWidget
+from PySide2.QtWidgets import QFormLayout, QMessageBox, QSpinBox, QWidget
+
+from Const import UNCHANGED
+from Sql import Pragmas
 
 
 class Mixin:
@@ -17,6 +20,7 @@ class View(QWidget):
     def __init__(self, model):
         super().__init__()
         self.model = model
+        self.pragmas = Pragmas(user_version=UNCHANGED)
         self.dirty = False
         self.make_widgets()
         self.make_layout()
@@ -35,7 +39,12 @@ class View(QWidget):
 
 
     def make_connections(self):
-        pass # TODO
+        self.userVersionSpinbox.valueChanged.connect(self.on_user_version)
+
+
+    def on_user_version(self):
+        self.pragmas.user_version = self.userVersionSpinbox.value()
+        self.dirty = True
 
 
     def refresh(self):
@@ -52,11 +61,17 @@ class View(QWidget):
 
 
     def save(self, *, closing=False):
-        # TODO what happens if there's an error and it can't save? We could
-        # be closing down
-        saved = False
+        saved = not self.dirty
+        errors = False
         if self.dirty and bool(self.model):
-            pass # TODO
-            saved = True
-        self.dirty = False
+            errors = self.model.save_pragmas(self.pragmas)
+            if errors:
+                if not closing:
+                    error = '\n'.join(errors)
+                    QMessageBox.warning(
+                        self, f'Pragma error — {qApp.applicationName()}',
+                        f'Failed to save pragmas:\n{error}')
+            else:
+                saved = True
+        self.dirty = not errors
         return saved

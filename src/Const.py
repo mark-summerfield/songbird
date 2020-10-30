@@ -19,3 +19,4 @@ DEFAULT_SUFFIX = SUFFIXES[0] # Make this a user option
 TIMEOUT_LONG = 10000 # 10s
 TIMEOUT_SHORT = 5000 # 5s
 WIN = sys.platform.startswith('win')
+UNCHANGED = object()

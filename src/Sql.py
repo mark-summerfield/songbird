@@ -28,5 +28,5 @@ ContentDetail = collections.namedtuple(
 
 class Pragmas:
 
-    def __init__(self):
-        self.user_version = 0
+    def __init__(self, *, user_version=0):
+        self.user_version = user_version

@@ -2,6 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 import apsw
+from Const import UNCHANGED
 from Sql import (
     CONTENT_DETAIL, CONTENT_SUMMARY, ContentDetail, ContentSummary, Pragmas,
     first)
@@ -66,3 +67,17 @@ class Model:
                 pragmas.user_version = first(
                     cursor, 'PRAGMA user_version', default=0)
         return pragmas
+
+
+    def save_pragmas(self, pragmas):
+        errors = []
+        if self.db is not None:
+            cursor = self.db.cursor()
+            with self.db:
+                if pragmas.user_version is not UNCHANGED:
+                    try:
+                        cursor.execute(
+                            f'PRAGMA user_version = {pragmas.user_version}')
+                    except apsw.SQLError as err:
+                        errors.append(str(err))
+        return errors
