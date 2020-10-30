@@ -24,13 +24,13 @@ class View(QWidget):
 
 
     def make_widgets(self):
-        self.versionSpinbox = QSpinBox()
-        self.versionSpinbox.setRange(0, (2**31) - 1)
+        self.userVersionSpinbox = QSpinBox()
+        self.userVersionSpinbox.setRange(0, (2**31) - 1)
 
 
     def make_layout(self):
         form = QFormLayout()
-        form.addRow('User Version', self.versionSpinbox)
+        form.addRow('User Version', self.userVersionSpinbox)
         self.setLayout(form)
 
 
@@ -41,11 +41,12 @@ class View(QWidget):
     def refresh(self):
         self.clear()
         if bool(self.model):
-            pass # TODO
+            pragmas = self.model.pragmas()
+            self.userVersionSpinbox.setValue(pragmas.user_version)
 
 
     def clear(self):
-        self.versionSpinbox.setValue(0)
+        self.userVersionSpinbox.setValue(0)
         # TODO clear all widgets
         self.dirty = False
 

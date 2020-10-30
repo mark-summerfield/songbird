@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-import collections
-
 import apsw
-from Sql import CONTENT_DETAIL, CONTENT_SUMMARY
+from Sql import (
+    CONTENT_DETAIL, CONTENT_SUMMARY, ContentDetail, ContentSummary, Pragmas,
+    first)
 
 
 class Model:
@@ -58,6 +58,11 @@ class Model:
                 yield ContentDetail(*row)
 
 
-ContentSummary = collections.namedtuple('ContentSummary', ('kind', 'name'))
-ContentDetail = collections.namedtuple(
-    'ContentDetail', ('name', 'type', 'notnull', 'pk'))
+    def pragmas(self):
+        pragmas = Pragmas()
+        if self.db is not None:
+            cursor = self.db.cursor()
+            with self.db:
+                pragmas.user_version = first(
+                    cursor, 'PRAGMA user_version', default=0)
+        return pragmas

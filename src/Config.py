@@ -5,7 +5,7 @@ import collections
 import pathlib
 
 import apsw
-import Sql
+from Sql import first
 from Const import (
     APPNAME, BLINK, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE,
     OPENED, RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, SHOW_PRAGMAS, WIN)
@@ -82,7 +82,7 @@ class _Singleton_Config:
         db = apsw.Connection(self._filename)
         cursor = db.cursor()
         cursor.execute(_PREPARE)
-        version = Sql.first(cursor, _GET_VERSION)
+        version = first(cursor, _GET_VERSION)
         if version is None or version < _VERSION:
             self._update_sbc(db, cursor)
         return db, cursor
@@ -130,7 +130,7 @@ class _Singleton_Config:
             db, cursor = self._open()
             with db:
                 cursor.execute(_INCREMENT, d)
-                if Sql.first(cursor, _GET, d) > 100:
+                if first(cursor, _GET, d) > 100:
                     d.update(value=1)
                     cursor.execute(_SET, d)
                     vacuum = True
@@ -150,7 +150,7 @@ class _Singleton_Config:
                 Class = bytes
             elif key == BLINK:
                 Class = bool
-            return Sql.first(cursor, _GET, dict(key=key), Class=Class)
+            return first(cursor, _GET, dict(key=key), Class=Class)
         finally:
             if db is not None:
                 db.close()
@@ -197,21 +197,20 @@ class _Singleton_Config:
         try:
             db, cursor = self._open()
             with db:
-                options.state = Sql.first(
+                options.state = first(
                     cursor, _GET, dict(key=MAIN_WINDOW_STATE), Class=bytes)
-                options.geometry = Sql.first(
+                options.geometry = first(
                     cursor, _GET, dict(key=MAIN_WINDOW_GEOMETRY),
                     Class=bytes)
-                options.last_filename = Sql.first(
+                options.last_filename = first(
                     cursor, _GET, dict(key=LAST_FILE), Class=str)
-                options.show_contents = Sql.first(
+                options.show_contents = first(
                     cursor, _GET, dict(key=SHOW_CONTENTS), Class=bool)
-                options.show_pragmas = Sql.first(
+                options.show_pragmas = first(
                     cursor, _GET, dict(key=SHOW_PRAGMAS), Class=bool)
                 for n in range(1, RECENT_FILES_MAX + 1):
-                    name = Sql.first(cursor, _GET,
-                                     dict(key=f'{RECENT_FILE}/{n}'),
-                                     Class=str)
+                    name = first(cursor, _GET,
+                                 dict(key=f'{RECENT_FILE}/{n}'), Class=str)
                     if name:
                         name = pathlib.Path(name)
                         if name.exists():
