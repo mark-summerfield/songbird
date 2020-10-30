@@ -35,7 +35,7 @@ class View(QWidget):
     def save(self, *, closing=False):
         # TODO what happens if there's an error and it can't save? We could
         # be closing down
-        print(f'PragmaView View.save dirty={self.dirty} closing={self.closing}')
+        print(f'PragmaView View.save dirty={self.dirty} closing={closing}')
         if self.dirty and bool(self.model):
             pass # TODO
         self.dirty = False

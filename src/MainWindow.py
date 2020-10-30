@@ -167,7 +167,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def clear(self):
         widget = self.pragmasDock.widget()
         if widget is not None:
-            widget.save(self.closing)
+            widget.save(closing=self.closing)
             widget.clear()
         for widget in self.mdiWidgets.values():
             widget.close() # Will save if dirty
