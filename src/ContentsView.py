@@ -8,9 +8,7 @@ from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
 class Mixin:
 
     def refresh_contents(self):
-        widget = self.contentsDock.widget()
-        if widget is not None:
-            widget.refresh()
+        self.contentsDock.widget().refresh()
 
 
     def maybe_show_content(self, item, _=None):

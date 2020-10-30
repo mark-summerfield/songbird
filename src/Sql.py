@@ -3,6 +3,8 @@
 
 import collections
 
+from Const import UNCHANGED
+
 
 def first(cursor, sql, d=None, *, default=None, Class=int):
     d = {} if d is None else d
@@ -30,3 +32,8 @@ class Pragmas:
 
     def __init__(self, *, user_version=0):
         self.user_version = user_version
+
+
+    @staticmethod
+    def unchanged():
+        return Pragmas(user_version=UNCHANGED)

@@ -78,8 +78,7 @@ class Mixin:
 
     def contents_view_content(self):
         widget = self.contentsDock.widget()
-        if widget is not None:
-            self.maybe_show_content(widget.currentItem())
+        self.maybe_show_content(widget.currentItem())
 
 
     def contents_update_ui(self):

@@ -4,7 +4,7 @@
 import pathlib
 
 from PySide2.QtCore import QStandardPaths, Qt, QTimer
-from PySide2.QtWidgets import QDockWidget, QMainWindow, QMdiArea
+from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 import Config
 import ContentsActions
@@ -17,7 +17,7 @@ import OptionsActions
 import PragmaView
 import RecentFiles
 from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
-from Ui import add_actions
+from Ui import add_actions, make_dock_widget
 
 
 class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
@@ -26,15 +26,9 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def __init__(self, filename):
         super().__init__()
-        self.model = Model.Model()
-        self.path = self.export_path = QStandardPaths.writableLocation(
-            QStandardPaths.DocumentsLocation)
-        self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
-        self.default_blink_rate = qApp.cursorFlashTime()
-        self.closing = False
         self.setWindowTitle(
             f'{qApp.applicationName()} {qApp.applicationVersion()}')
-        self.mdiWidgets = {} # key = (kind, name); value = QueryWidget etc.
+        self.make_variables()
         self.make_widgets()
         self.make_actions()
         self.make_connections()
@@ -46,67 +40,38 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def closeEvent(self, event):
         self.closing = True
-        self.clear()
         options = Config.MainWindowOptions(
-            state=self.saveState(), geometry=self.saveGeometry(),
+            state=self.saveState(),
+            geometry=self.saveGeometry(),
             last_filename=str(self.model.filename or ''),
             recent_files=list(self.recent_files),
             show_contents=self.contentsDock.isVisible(),
             show_pragmas=self.pragmasDock.isVisible())
         Config.write_main_window_options(options)
+        self.clear()
         event.accept()
 
 
-    def load_options(self, filename):
-        qApp.setCursorFlashTime(self.default_blink_rate
-                                if Config.get(BLINK) else 0)
-        options = Config.read_main_window_options()
-        if options.state is not None:
-            self.restoreState(options.state)
-        if options.geometry is not None:
-            self.restoreGeometry(options.geometry)
-        self.recent_files.load(options.recent_files)
-        if (not filename and options.last_filename and
-                pathlib.Path(options.last_filename).exists()):
-            filename = options.last_filename
-        if filename and not pathlib.Path(filename).exists():
-            filename = None
-        if filename:
-            if options.last_filename:
-                self.recent_files.add(options.last_filename)
-            self.file_load(filename)
-        else:
-            self.statusBar().showMessage(
-                'Click File→New or File→Open to open or create a database',
-                TIMEOUT_LONG)
-        return options
+    def make_variables(self):
+        self.model = Model.Model()
+        self.path = self.export_path = QStandardPaths.writableLocation(
+            QStandardPaths.DocumentsLocation)
+        self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
+        self.default_blink_rate = qApp.cursorFlashTime()
+        self.closing = False
+        self.mdiWidgets = {} # key = (kind, name); value = QueryWidget etc.
 
 
     def make_widgets(self):
         self.mdiArea = QMdiArea()
         self.setCentralWidget(self.mdiArea)
-
         allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
-        features = (QDockWidget.DockWidgetClosable |
-                    QDockWidget.DockWidgetMovable |
-                    QDockWidget.DockWidgetFloatable)
-
-        self.contentsDock = QDockWidget('Contents', self)
-        self.contentsDock.setObjectName('Contents')
-        self.contentsDock.setAllowedAreas(allowedAreas)
-        self.contentsDock.setFeatures(features)
         view = ContentsView.View(self.model)
-        self.contentsDock.setWidget(view)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.contentsDock)
-
-        self.pragmasDock = QDockWidget('Pragmas', self)
-        self.pragmasDock.setObjectName('Pragmas')
-        self.pragmasDock.setAllowedAreas(allowedAreas)
-        self.pragmasDock.setFeatures(features)
+        self.contentsDock = make_dock_widget(
+            self, 'Contents', view, Qt.LeftDockWidgetArea, allowedAreas)
         view = PragmaView.View(self.model)
-        self.pragmasDock.setWidget(view)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.pragmasDock)
-
+        self.pragmasDock = make_dock_widget(
+            self, 'Pragmas', view, Qt.RightDockWidgetArea, allowedAreas)
         # TODO Calendar dock widget
 
 
@@ -156,6 +121,31 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         # TODO
 
 
+    def load_options(self, filename):
+        qApp.setCursorFlashTime(self.default_blink_rate
+                                if Config.get(BLINK) else 0)
+        options = Config.read_main_window_options()
+        if options.state is not None:
+            self.restoreState(options.state)
+        if options.geometry is not None:
+            self.restoreGeometry(options.geometry)
+        self.recent_files.load(options.recent_files)
+        if (not filename and options.last_filename and
+                pathlib.Path(options.last_filename).exists()):
+            filename = options.last_filename
+        if filename and not pathlib.Path(filename).exists():
+            filename = None
+        if filename:
+            if options.last_filename:
+                self.recent_files.add(options.last_filename)
+            self.file_load(filename)
+        else:
+            self.statusBar().showMessage(
+                'Click File→New or File→Open to open or create a database',
+                TIMEOUT_LONG)
+        return options
+
+
     def initalize_toggle_actions(self, options):
         self.contentsDock.setVisible(options.show_contents)
         self.contents_update_toggle_action(options.show_contents)
@@ -175,8 +165,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def clear(self):
         widget = self.pragmasDock.widget()
-        if widget is not None:
-            widget.save(closing=self.closing)
-            widget.clear()
+        widget.save(closing=self.closing)
+        widget.clear()
         for widget in self.mdiWidgets.values():
             widget.close() # Will save if dirty

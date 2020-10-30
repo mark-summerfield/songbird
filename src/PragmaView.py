@@ -3,16 +3,13 @@
 
 from PySide2.QtWidgets import QFormLayout, QMessageBox, QSpinBox, QWidget
 
-from Const import UNCHANGED
 from Sql import Pragmas
 
 
 class Mixin:
 
     def refresh_pragmas(self):
-        widget = self.pragmasDock.widget()
-        if widget is not None:
-            widget.refresh()
+        self.pragmasDock.widget().refresh()
 
 
 class View(QWidget):
@@ -20,7 +17,7 @@ class View(QWidget):
     def __init__(self, model):
         super().__init__()
         self.model = model
-        self.pragmas = Pragmas(user_version=UNCHANGED)
+        self.pragmas = Pragmas.unchanged()
         self.dirty = False
         self.make_widgets()
         self.make_layout()
@@ -30,16 +27,19 @@ class View(QWidget):
     def make_widgets(self):
         self.userVersionSpinbox = QSpinBox()
         self.userVersionSpinbox.setRange(0, (2**31) - 1)
+        # TODO make all widgets
 
 
     def make_layout(self):
         form = QFormLayout()
         form.addRow('User Version', self.userVersionSpinbox)
+        # TODO add all widgets
         self.setLayout(form)
 
 
     def make_connections(self):
         self.userVersionSpinbox.valueChanged.connect(self.on_user_version)
+        # TODO connect all widgets
 
 
     def on_user_version(self):
@@ -51,17 +51,27 @@ class View(QWidget):
         self.clear()
         if bool(self.model):
             pragmas = self.model.pragmas()
-            self.userVersionSpinbox.setValue(pragmas.user_version)
+            blocked = self.blockSignals(True)
+            try:
+                self.userVersionSpinbox.setValue(pragmas.user_version)
+                # TODO refresh all widgets
+            finally:
+                self.blockSignals(blocked)
+        self.dirty = False
 
 
     def clear(self):
-        self.userVersionSpinbox.setValue(0)
-        # TODO clear all widgets
+        blocked = self.blockSignals(True)
+        try:
+            self.userVersionSpinbox.setValue(0)
+            # TODO clear all widgets
+        finally:
+            self.blockSignals(blocked)
         self.dirty = False
 
 
     def save(self, *, closing=False):
-        saved = not self.dirty
+        saved = False
         errors = False
         if self.dirty and bool(self.model):
             errors = self.model.save_pragmas(self.pragmas)
@@ -73,5 +83,5 @@ class View(QWidget):
                         f'Failed to save pragmas:\n{error}')
             else:
                 saved = True
-        self.dirty = not errors
+                self.dirty = False
         return saved

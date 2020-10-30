@@ -12,13 +12,17 @@ class Widget(QWidget):
         self.dirty = False
 
 
-    def closeEvent(self):
+    # TODO see PragmaView.py for refresh() & clear()
+
+
+    def closeEvent(self, event):
         self.save(closing=True)
+        event.accept()
 
 
     def save(self, *, closing=False):
         print(f'QueryWidget.save dirty={self.dirty} closing={closing}')
-        saved = not self.dirty
+        saved = False
         errors = False
         if self.dirty and bool(self.model):
             # TODO save change to list view or form view
@@ -31,5 +35,5 @@ class Widget(QWidget):
                         f'Failed to save:\n{error}')
             else:
                 saved = True
-        self.dirty = not errors
+                self.dirty = False
         return saved

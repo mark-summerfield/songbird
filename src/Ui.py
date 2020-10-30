@@ -2,7 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 from PySide2.QtGui import QIcon
-from PySide2.QtWidgets import QAction, QToolBar, QToolButton
+from PySide2.QtWidgets import QAction, QDockWidget, QToolBar, QToolButton
 
 
 def make_action(widget, icon, text, slot=None, shortcut=None, tooltip=None,
@@ -31,3 +31,16 @@ def add_actions(menu_or_toolbar, actions):
             menu_or_toolbar.addWidget(button)
         else:
             menu_or_toolbar.addAction(action)
+
+
+def make_dock_widget(parent, name, view, area, allowedAreas,
+                     features=QDockWidget.DockWidgetClosable |
+                     QDockWidget.DockWidgetMovable |
+                     QDockWidget.DockWidgetFloatable):
+    dock = QDockWidget(name, parent)
+    dock.setObjectName(name)
+    dock.setAllowedAreas(allowedAreas)
+    dock.setFeatures(features)
+    dock.setWidget(view)
+    parent.addDockWidget(area, dock)
+    return dock
