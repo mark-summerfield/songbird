@@ -45,6 +45,8 @@ README.md
 #   blink; default suffix; default database (SQLite | Songbird)
 # - custom types using songbird_types (tablename, fieldname, type)
 # - custom forms
+# - See DB Browser for SQLite's Tools menu (Optimize, Check, etc.)
+# - See DB Browser for SQLite's File menu & Edit→Preferences dialog
 # - provide an editor/dialog/? for creating transforms e.g., applying
 #   some math function to every column in a table (or selection of a
 #   table), etc.
