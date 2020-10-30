@@ -29,7 +29,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.model = Model.Model()
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
-        self.recent_files = RecentFiles.RecentFiles(RECENT_FILES_MAX)
+        self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
         self.default_blink_rate = qApp.cursorFlashTime()
         self.closing = False
         self.setWindowTitle(

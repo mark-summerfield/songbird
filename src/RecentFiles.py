@@ -4,7 +4,14 @@
 import pathlib
 
 
-class RecentFiles:
+def get(limit=9): # The limit is only used the very first time
+    if get.recent_files is None:
+        get.recent_files = _Singleton_RecentFiles(limit)
+    return get.recent_files
+get.recent_files = None # noqa
+
+
+class _Singleton_RecentFiles:
 
     def __init__(self, limit):
         self.limit = limit

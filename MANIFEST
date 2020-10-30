@@ -21,11 +21,18 @@ st.sh
 README.md
 
 # - create QueryWidget
+#     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
 #   -- splitter --
 #   QTableView with custom QueryModel (using OFFSET & LIMIT if rows > 1K)
 #   -- splitter --
 #   QPlainTextEdit for errors & info
+#   [Insert][Update][Delete][Save][Revert][Form View]
+#      -- form view --
+#   QLabel1 editor1
+#	:
+#   QLabelN editorN
+#   [Insert][Update][Delete][Save][Revert][List View][Previous][Next]
 #
 # - complete menus: File (Edit) Contents SQL Options Windows[SDI] Help
 # - pure SQL
