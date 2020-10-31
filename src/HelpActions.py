@@ -34,8 +34,8 @@ class Mixin:
     def help_about(self):
         year = datetime.date.today().year
         year = "2020-{}".format(str(year)[-2:]) if year != 2020 else "2020"
-        TEMPLATE = ('Python&nbsp;{}.{}.{} • {} • {}'
-                    '<br>APSW&nbsp;{} • SQLite&nbsp;{}<br>{}<br>{}')
+        TEMPLATE = ('Python&nbsp;{}.{}.{} <br> {} <br> {}'
+                    '<br>APSW&nbsp;{} <br> SQLite&nbsp;{}<br>{}<br>{}')
         BINDING = f'PySide2&nbsp;{PySide2.__version__}'
         QT = f'Qt&nbsp;{PySide2.QtCore.qVersion()}'
         info = TEMPLATE.format(
@@ -51,8 +51,7 @@ class Mixin:
 viewing, creating, editing, and updating SQLite and Songbird databases.
 </font>
 </p>
-<p><a href="https://github.com/mark-summerfield/songbird"
->Songbird on github</a>
+<p><a href="https://github.com/mark-summerfield/songbird">Source Code</a>
 </p>
 <p>Copyright © {year} Mark Summerfield.<br>
 All Rights Reserved.</p>
