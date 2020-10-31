@@ -135,7 +135,7 @@ class Mixin:
         filename = pathlib.Path(filename).resolve()
         self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
         message = (f'Created new empty database {filename}' if new else
-                   f'Opened existing database {filename}')
+                   f'Opened database {filename}')
         self.statusBar().showMessage(message, TIMEOUT_SHORT)
         self.refresh_contents()
         self.refresh_pragmas()
