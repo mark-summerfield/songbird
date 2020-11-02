@@ -21,6 +21,8 @@ st.sh
 
 README.md
 
+# - In PragmaView use a QLabel to show the full path to the current db
+#
 # - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
@@ -56,6 +58,14 @@ README.md
 # - provide an editor/dialog/? for creating transforms e.g., applying
 #   some math function to every column in a table (or selection of a
 #   table), etc.
+# - Songbird:
+#   . File→New Songbird
+#   . songbird_types (tablename, fieldname, tid, minimum, maximum)
+#     tid "type ID", e.g., 1 Boolean, 2 Integer, ...
+#   . songbird_windows (tablename, x, y, width, height, z, tab_pos, sql,
+#     listview) -- sql is the SELECT; listview is Boolean list or form view
+#   . songbird_config (key, value) e.g., show_contents, show_pragmas,
+#     use tabs (vs MDI) etc.
 # - ultimately aim to be able to replace both Biller and Notebox with
 #  custom songbird databases
 
@@ -88,5 +98,9 @@ README.md
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view
 # if/when possible.
+
+# Ideas
+#  - implement Undo/Redo by using a temporary memory database; see
+#    https://www.sqlite.org/undoredo.html
 
 # vim: syn=yaml

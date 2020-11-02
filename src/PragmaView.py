@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtWidgets import QFormLayout, QMessageBox, QSpinBox, QWidget
+import os
+import pathlib
+
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (
+    QFormLayout, QLabel, QMessageBox, QSpinBox, QWidget)
 
 from Const import MAX_I32
 from Sql import Pragmas
@@ -30,12 +35,15 @@ class View(QWidget):
         self.userVersionSpinbox = QSpinBox()
         self.userVersionSpinbox.setRange(0, MAX_I32)
         # TODO make all widgets
+        self.pathLabel = QLabel()
+        self.pathLabel.setTextFormat(Qt.RichText)
 
 
     def make_layout(self):
         form = QFormLayout()
         form.addRow('User Version', self.userVersionSpinbox)
         # TODO add all widgets
+        form.addRow(self.pathLabel)
         self.setLayout(form)
 
 
@@ -56,6 +64,10 @@ class View(QWidget):
             with BlockSignals(self):
                 self.userVersionSpinbox.setValue(pragmas.user_version)
                 # TODO refresh all widgets
+                path = str(pathlib.Path(self.model.filename).parent)
+                if not path.endswith(('/', '\\')):
+                    path += os.sep
+                self.pathLabel.setText(_PATH_TEMPLATE.format(path=path))
         self.dirty = False
 
 
@@ -63,6 +75,7 @@ class View(QWidget):
         with BlockSignals(self):
             self.userVersionSpinbox.setValue(0)
             # TODO clear all widgets
+            self.pathLabel.clear()
         self.dirty = False
 
 
@@ -81,3 +94,6 @@ class View(QWidget):
                 saved = True
                 self.dirty = False
         return saved
+
+
+_PATH_TEMPLATE = 'Path <font color=navy>{path}</font>'
