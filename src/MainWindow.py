@@ -3,6 +3,7 @@
 
 import pathlib
 
+import shiboken2
 from PySide2.QtCore import QStandardPaths, Qt, QTimer
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
@@ -57,7 +58,6 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
         self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
-        self.default_blink_rate = qApp.cursorFlashTime()
         self.closing = False
         self.mdiWidgets = {} # key = (kind, name); value = QueryWidget etc.
 
@@ -122,8 +122,6 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
 
     def load_options(self, filename):
-        qApp.setCursorFlashTime(self.default_blink_rate
-                                if Config.get(BLINK) else 0)
         options = Config.read_main_window_options()
         if options.state is not None:
             self.restoreState(options.state)
@@ -167,5 +165,19 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         widget = self.pragmasDock.widget()
         widget.save(closing=self.closing)
         widget.clear()
-        for widget in self.mdiWidgets.values():
+        for widget in self.mdi_widgets():
             widget.close() # Will save if dirty
+        self.mdiWidgets.clear()
+
+
+    def mdi_widgets(self):
+        to_delete = []
+        widgets = []
+        for key, widget in self.mdiWidgets.items():
+            if shiboken2.isValid(widget):
+                widgets.append(widget)
+            else:
+                to_delete.append(key)
+        for key in to_delete:
+            del self.mdiWidgets[key]
+        return widgets

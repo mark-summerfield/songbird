@@ -7,13 +7,16 @@ src/ContentsActions.py # TODO
 src/OptionsActions.py # TODO
 # src/WindowsActions.py # TODO
 src/HelpActions.py # TODO
-src/ContentsView.py
+src/ContentsView.py # TODO
 src/PragmaView.py # TODO
-src/QueryWidget.py # TODO
 src/Ui.py
+src/TableWidget.py # TODO
+src/TableModel.py # TODO
+# src/QueryWidget.py # TODO for ad-hoc SELECTs
+# src/QueryModel.py # TODO for ad-hoc SELECTs
 src/Model.py # TODO
-src/RecentFiles.py
 src/Sql.py
+src/RecentFiles.py
 src/Config.py
 src/Const.py
 
@@ -60,8 +63,9 @@ README.md
 #   . File→New Songbird
 #   . songbird_types (tablename, fieldname, tid, minimum, maximum)
 #     tid "type ID", e.g., 1 Boolean, 2 Integer, ...
-#   . songbird_windows (tablename, x, y, width, height, z, tab_pos, sql,
-#     listview) -- sql is the SELECT; listview is Boolean list or form view
+#   . songbird_windows (tablename, x, y, width, height, z, tab_pos,
+#     sql_select, listview) -- sql is the SELECT; listview is Boolean
+#     list or form view
 #   . songbird_config (key, value) e.g., show_contents, show_pragmas,
 #     use tabs (vs MDI) etc.
 # - ultimately aim to be able to replace both Biller and Notebox with

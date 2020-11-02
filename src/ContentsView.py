@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import contextlib
+
+import shiboken2
 from PySide2.QtGui import QBrush, Qt
 from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
+
+import TableWidget
 
 
 class Mixin:
@@ -16,16 +21,22 @@ class Mixin:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
         name = item.text(0)
-        widget = self.mdiWidgets.get((kind, name))
-        if widget is not None:
-            widget.show()
-            widget.raise_()
-            widget.activateWindow()
-        else:
-            # TODO create a new QueryWidget or TriggerEditWidget etc.
-            print('maybe_show_content', kind, name) # TODO
-        # either bring the MDI window showing this to the top or create an
-        # MDI window and bring it to the top
+        sub_window = self.mdiWidgets.get((kind, name))
+        if not shiboken2.isValid(sub_window):
+            with contextlib.suppress(KeyError):
+                del self.mdiWidgets[(kind, name)]
+            sub_window = None
+        if sub_window is None:
+            if kind == 'table': # TODO can't do views 'cos of pseudo-fields
+                widget = TableWidget.TableWidget(self.model, kind, name)
+                sub_window = self.mdiArea.addSubWindow(widget)
+                self.mdiWidgets[(kind, name)] = sub_window
+                widget.show()
+            else:
+                # TODO create a new QueryWidget or TriggerEditWidget etc.
+                print('maybe_show_content', kind, name) # TODO
+        if sub_window is not None:
+            self.mdiArea.setActiveSubWindow(sub_window)
 
 
 class View(QTreeWidget):
