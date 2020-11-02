@@ -21,8 +21,6 @@ st.sh
 
 README.md
 
-# - In PragmaView use a QLabel to show the full path to the current db
-#
 # - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL

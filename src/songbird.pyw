@@ -44,13 +44,9 @@ filename must be a SQLite or Songbird database
 
 def _messageHandler(kind, context, message):
     if _messageHandler.debug:
-        kind = kind.name.decode('utf-8')
-        filename = context.file
-        line = int(context.line) if context.line else 0
-        function = context.function
-        if filename and line and function:
-            print(f'{kind}: {message} '
-                  f'({filename}{context.line} {function})')
+        if context.file and context.function:
+            print(f'{_str_for_kind(kind)}: {message} '
+                  f'({context.file}:{context.line} {context.function}())')
             return
     else:
         if kind == QtMsgType.QtDebugMsg:
@@ -61,9 +57,17 @@ def _messageHandler(kind, context, message):
                 return
             if 'is a null image' in lmessage:
                 return
-        kind = kind.name.decode('utf-8')
-    print(f'{kind}: {message}')
+    print(f'{_str_for_kind(kind)}: {message}')
 _messageHandler.debug = False # noqa
+
+
+def _str_for_kind(kind):
+    kind = kind.name.decode('utf-8')
+    if kind.startswith('Qt'):
+        kind = kind[2:]
+    if kind.endswith('Msg'):
+        kind = kind[:-3].upper()
+    return kind
 
 
 qInstallMessageHandler(_messageHandler)
