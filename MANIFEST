@@ -1,20 +1,18 @@
 src/songbird.pyw
-src/MainWindow.py # TODO
-src/FileActions.py # TODO
-src/EditActions.py # TODO
-src/ContentsActions.py # TODO
-# src/SQLActions.py # TODO
-src/OptionsActions.py # TODO
-# src/WindowsActions.py # TODO
-src/HelpActions.py # TODO
-src/ContentsView.py # TODO
-src/PragmaView.py # TODO
+src/MainWindow.py
+src/FileActions.py
+src/EditActions.py
+src/ContentsActions.py
+# src/SQLActions.py
+src/OptionsActions.py
+# src/WindowsActions.py
+src/HelpActions.py
+src/ContentsView.py
+src/PragmaView.py
 src/Ui.py
 src/TableWidget.py # TODO
 src/TableModel.py # TODO
-# src/QueryWidget.py # TODO for ad-hoc SELECTs
-# src/QueryModel.py # TODO for ad-hoc SELECTs
-src/Model.py # TODO
+src/Model.py
 src/Sql.py
 src/RecentFiles.py
 src/Config.py
@@ -23,6 +21,19 @@ src/Const.py
 st.sh
 
 README.md
+
+# TODO
+# Replace TableWidget and TableModel with SelectWidget and SelectModel
+# that takes an arbitrary SQL SELECT (which it should show; so need to
+# add a QPlainTextEdit as the top widget in a vbox of 3). For tables the
+# default SQL is 'SELECT * FROM {name}'; for view extract the sql from
+# the sqlite_master table and delete the leading 'CREATE VIEW ... AS'
+# with the rest being the SELECT, e.g.,
+#   'CREATE VIEW stations_with_kiosks as select stations.id,
+#   stations.name, stations.zone, kiosks.name from stations, kiosks
+#   where stations.id = kiosks.sid'
+# Then add the buttons and voila, I'll have the list view part of the
+# QueryWidget described below...
 
 # - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --
@@ -51,7 +62,8 @@ README.md
 # - complete menus: File (Edit) Contents SQL Options Windows[SDI] Help
 # - pure SQL
 # - options dialog:
-#   blink; default suffix; default database (SQLite | Songbird)
+#   default suffix; default database (SQLite | Songbird);
+#   [X] Show Row Numbers (in list views)
 # - custom types using songbird_types (tablename, fieldname, type)
 # - custom forms
 # - See DB Browser for SQLite's Tools menu (Optimize, Check, etc.)

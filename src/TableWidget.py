@@ -13,7 +13,7 @@ class TableWidget(QWidget):
         super().__init__()
         self.model = model
         self.name = name
-        self.setWindowTitle(name if kind == 'table' else f'{name} ({kind})')
+        self.setWindowTitle(f'{name} — {kind}')
         self.dirty = False
         self.make_widgets(kind)
         self.make_layout()
