@@ -10,8 +10,8 @@ src/HelpActions.py
 src/ContentsView.py
 src/PragmaView.py
 src/Ui.py
-src/TableWidget.py # TODO
-src/TableModel.py # TODO
+src/TableWidget.py
+src/TableModel.py
 src/Model.py
 src/Sql.py
 src/RecentFiles.py
@@ -23,17 +23,25 @@ st.sh
 README.md
 
 # TODO
-# Replace TableWidget and TableModel with SelectWidget and SelectModel
-# that takes an arbitrary SQL SELECT (which it should show; so need to
-# add a QPlainTextEdit as the top widget in a vbox of 3). For tables the
-# default SQL is 'SELECT * FROM {name}'; for view extract the sql from
-# the sqlite_master table and delete the leading 'CREATE VIEW ... AS'
-# with the rest being the SELECT, e.g.,
+# Update TableWidget and TableModel to take an arbitrary SQL SELECT
+# (which it should show; so need to add a QPlainTextEdit as the top
+# widget in a vbox of 3 widgets).
+#
+# For tables the default SQL is 'SELECT {field} FROM {name}' where the
+# fields are the full names.
+#
+# Then create a SQLTable class which parses CREATE TABLE|VIEW and so can
+# provide column count, field names & types and a suitable SELECT
+# statement. -OR- make this a feature of the Model?
+# (For views extract
+#  the sql from the sqlite_master table and delete the leading 'CREATE
+#  VIEW ... AS' with the rest being the SELECT, e.g.,
 #   'CREATE VIEW stations_with_kiosks as select stations.id,
 #   stations.name, stations.zone, kiosks.name from stations, kiosks
-#   where stations.id = kiosks.sid'
-# Then add the buttons and voila, I'll have the list view part of the
-# QueryWidget described below...
+#   where stations.id = kiosks.sid')
+#
+# Then add buttons (see below) and voila, I'll have the list view part
+# of the QueryWidget described below...
 
 # - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --
@@ -48,12 +56,6 @@ README.md
 #	:
 #   QLabelN editorN
 #   [Insert][Update][Delete][List View][Previous][Next] # saves when any clicked
-#
-# - src/QueryModel.py # TODO implement my own using:
-#   & SELECT COUNT(*) FROM (<user query>)
-#   & if <user query> doesn't use LIMIT and count > 1K
-#   (user option) then 
-#   SELECT <user query> LIMIT :chunk_size OFFSET :offset
 #
 # - create TriggerEditor for adding/editing/deleting triggers
 #

@@ -83,7 +83,7 @@ class View(QWidget):
         saved = False
         errors = False
         if self.dirty and bool(self.model):
-            errors = self.model.save_pragmas(self.pragmas)
+            errors = self.model.pragmas_save(self.pragmas)
             if errors:
                 if not closing:
                     error = '\n'.join(errors)

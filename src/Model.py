@@ -6,9 +6,9 @@ import functools
 import apsw
 from Const import UNCHANGED
 from Sql import (
-    CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_FIELD_COUNT, TABLE_FIELDS,
-    TABLE_ITEM, TABLE_ROW_COUNT, ContentDetail, ContentSummary, Pragmas,
-    first)
+    CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_FIELD_COUNT,
+    TABLE_FIELD_FOR_COLUMN, TABLE_ITEM, TABLE_ROW_COUNT, ContentDetail,
+    ContentSummary, Pragmas, first)
 
 
 class Model:
@@ -78,7 +78,7 @@ class Model:
         return pragmas
 
 
-    def save_pragmas(self, pragmas):
+    def pragmas_save(self, pragmas):
         errors = []
         if self.db is not None:
             cursor = self.db.cursor()
@@ -126,5 +126,5 @@ class Model:
         if self.db is not None:
             cursor = self.db.cursor()
             with self.db:
-                return first(cursor, TABLE_FIELDS,
+                return first(cursor, TABLE_FIELD_FOR_COLUMN,
                              dict(name=name, row=column), Class=str)

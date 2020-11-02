@@ -27,7 +27,7 @@ CONTENT_DETAIL = 'SELECT * FROM pragma_table_info(:name);'
 ContentDetail = collections.namedtuple(
     'ContentDetail', ('name', 'type', 'notnull', 'pk'))
 
-TABLE_FIELDS = '''
+TABLE_FIELD_FOR_COLUMN = '''
 SELECT name FROM pragma_table_info(:name) LIMIT 1 OFFSET :row;'''
 
 TABLE_FIELD_COUNT = 'SELECT COUNT(*) FROM pragma_table_info(:name);'
