@@ -5,10 +5,10 @@ import collections
 import pathlib
 
 import apsw
-from Sql import first
 from Const import (
-    APPNAME, BLINK, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE,
-    OPENED, RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, SHOW_PRAGMAS, WIN)
+    APPNAME, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED,
+    RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, SHOW_PRAGMAS, WIN)
+from Sql import first
 
 
 class MainWindowOptions:
@@ -148,8 +148,6 @@ class _Singleton_Config:
             Class = int
             if key in {MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE}:
                 Class = bytes
-            elif key == BLINK:
-                Class = bool
             return first(cursor, _GET, dict(key=key), Class=Class)
         finally:
             if db is not None:
@@ -236,9 +234,11 @@ class _Singleton_Config:
                 SELECT '{SHOW_PRAGMAS}', FALSE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_PRAGMAS}');''')
+            # 5
+            cursor.execute('''DELETE FROM config WHERE key = 'Blink';''')
 
 
-_VERSION = 4
+_VERSION = 5
 
 
 _PREPARE = f'''
@@ -262,7 +262,6 @@ INSERT INTO config (key, value) VALUES ('{OPENED}', 1);
 INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_STATE}', NULL);
 INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
-INSERT INTO config (key, value) VALUES ('{BLINK}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
 '''

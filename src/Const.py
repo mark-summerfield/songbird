@@ -4,7 +4,6 @@
 import sys
 
 APPNAME = 'Songbird'
-BLINK = 'Blink' # Make this a user option
 LAST_FILE = 'LastFile'
 MAIN_WINDOW_GEOMETRY = 'MainWindow/Geometry'
 MAIN_WINDOW_STATE = 'MainWindow/State'

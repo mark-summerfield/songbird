@@ -17,7 +17,7 @@ import Model
 import OptionsActions
 import PragmaView
 import RecentFiles
-from Const import BLINK, RECENT_FILES_MAX, TIMEOUT_LONG
+from Const import RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions, make_dock_widget
 
 
