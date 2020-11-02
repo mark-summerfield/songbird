@@ -57,6 +57,13 @@ README.md
 #   QLabelN editorN
 #   [Insert][Update][Delete][List View][Previous][Next] # saves when any clicked
 #
+# - for pure SQLite dbs remember the last 20 opened (in songbird.sbc):
+#   CREATE TABLE recent_files (
+#	filename PK -- full path to SQLite file
+#	wid -- FK to recent_windows
+#   CREATE TABLE recent_windows (
+#	wid PK, sql, x, y, width, height, tab_pos)
+#
 # - create TriggerEditor for adding/editing/deleting triggers
 #
 # - create IndexEditor for adding/editing/deleting indexes
