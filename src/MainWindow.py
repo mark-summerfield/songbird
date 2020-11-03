@@ -64,6 +64,8 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def make_widgets(self):
         self.mdiArea = QMdiArea()
+        self.mdiArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.mdiArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.setCentralWidget(self.mdiArea)
         allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
         view = ContentsView.View(self.db)
