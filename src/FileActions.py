@@ -59,7 +59,7 @@ class Mixin:
 
 
     def file_update_ui(self):
-        enable = bool(self.model)
+        enable = bool(self.db)
         for action in (self.file_save_action, self.file_saveas_action,
                        self.file_backup_action, self.file_export_action):
             action.setEnabled(enable)
@@ -130,7 +130,7 @@ class Mixin:
 
     def file_load(self, filename, new=False):
         self.clear() # Will save if necessary
-        self.model.open(filename) # previous is automatically closed
+        self.db.open(filename) # previous is automatically closed
         self.recent_files.add(filename)
         filename = pathlib.Path(filename).resolve()
         self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
@@ -144,7 +144,7 @@ class Mixin:
 
     def file_save(self):
         saved = 0
-        if bool(self.model):
+        if bool(self.db):
             saved += self.pragmasDock.widget().save()
             for widget in self.mdi_widgets():
                 saved += widget.save()

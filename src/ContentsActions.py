@@ -15,6 +15,9 @@ from Ui import make_action
 # Toggle &Form View TODO
 # &Toggle Tabs  TODO
 # -------------------
+# C&ascade TODO only enable if in MDI mode
+# &Tile TODO only enable if in MDI mode
+# -------------------
 # &Next F6  TODO
 # &Previous Shift+F6    TODO
 # &1 <mdi or tab name>  TODO
@@ -82,7 +85,7 @@ class Mixin:
 
 
     def contents_update_ui(self):
-        enable = bool(self.model)
+        enable = bool(self.db)
         widget = self.contentsDock.widget()
         self.contents_view_content_action.setEnabled(
             widget is not None and enable and widget.can_view())

@@ -12,7 +12,7 @@ src/PragmaView.py
 src/Ui.py
 src/TableWidget.py
 src/TableModel.py
-src/Model.py
+src/Db.py
 src/Sql.py
 src/RecentFiles.py
 src/Config.py
@@ -57,7 +57,7 @@ README.md
 #   QLabelN editorN
 #   [Insert][Update][Delete][List View][Previous][Next] # saves when any clicked
 #
-# - for pure SQLite dbs remember the last 20 opened (in songbird.sbc):
+# - for pure SQLite dbs remember the last 100 opened (in songbird.sbc):
 #   CREATE TABLE recent_files (
 #	filename PK -- full path to SQLite file
 #	wid -- FK to recent_windows

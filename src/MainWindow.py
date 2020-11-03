@@ -13,7 +13,7 @@ import ContentsView
 import EditActions
 import FileActions
 import HelpActions
-import Model
+import Db
 import OptionsActions
 import PragmaView
 import RecentFiles
@@ -44,7 +44,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         options = Config.MainWindowOptions(
             state=self.saveState(),
             geometry=self.saveGeometry(),
-            last_filename=str(self.model.filename or ''),
+            last_filename=str(self.db.filename or ''),
             recent_files=list(self.recent_files),
             show_contents=self.contentsDock.isVisible(),
             show_pragmas=self.pragmasDock.isVisible())
@@ -54,7 +54,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
 
     def make_variables(self):
-        self.model = Model.Model()
+        self.db = Db.Db()
         self.path = self.export_path = QStandardPaths.writableLocation(
             QStandardPaths.DocumentsLocation)
         self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
@@ -66,10 +66,10 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.mdiArea = QMdiArea()
         self.setCentralWidget(self.mdiArea)
         allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
-        view = ContentsView.View(self.model)
+        view = ContentsView.View(self.db)
         self.contentsDock = make_dock_widget(
             self, 'Contents', view, Qt.LeftDockWidgetArea, allowedAreas)
-        view = PragmaView.View(self.model)
+        view = PragmaView.View(self.db)
         self.pragmasDock = make_dock_widget(
             self, 'Pragmas', view, Qt.RightDockWidgetArea, allowedAreas)
         # TODO Calendar dock widget
@@ -147,7 +147,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def initalize_toggle_actions(self, options):
         self.contentsDock.setVisible(options.show_contents)
         self.contents_update_toggle_action(options.show_contents)
-        show_pragmas = bool(self.model) and options.show_pragmas
+        show_pragmas = bool(self.db) and options.show_pragmas
         self.pragmasDock.setVisible(show_pragmas)
         self.contents_pragmas_update_toggle_action(show_pragmas)
 

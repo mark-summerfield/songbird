@@ -28,7 +28,7 @@ class Mixin:
             sub_window = None
         if sub_window is None:
             if kind == 'table': # TODO can't do views 'cos of pseudo-fields
-                widget = TableWidget.TableWidget(self.model, kind, name)
+                widget = TableWidget.TableWidget(self.db, kind, name)
                 sub_window = self.mdiArea.addSubWindow(widget)
                 self.mdiWidgets[(kind, name)] = sub_window
                 widget.show()
@@ -41,9 +41,9 @@ class Mixin:
 
 class View(QTreeWidget):
 
-    def __init__(self, model):
+    def __init__(self, db):
         super().__init__()
-        self.model = model
+        self.db = db
         self.setHeaderHidden(True)
         self.setSelectionBehavior(QTreeWidget.SelectRows)
         self.setSelectionMode(QTreeWidget.SingleSelection)
@@ -52,7 +52,7 @@ class View(QTreeWidget):
 
     def refresh(self):
         self.clear()
-        if bool(self.model):
+        if bool(self.db):
             self._prepare()
             self.queryItem = QTreeWidgetItem(self, ('Queries',))
             tableItem = QTreeWidgetItem(self, ('Tables',))
@@ -60,7 +60,7 @@ class View(QTreeWidget):
             triggerItem = QTreeWidgetItem(self, ('Triggers',))
             indexItem = QTreeWidgetItem(self, ('Indexes',))
             firstItem = None
-            for content in self.model.content_summary():
+            for content in self.db.content_summary():
                 item = QTreeWidgetItem((content.name,))
                 if content.kind == 'table':
                     parent = tableItem
@@ -89,7 +89,7 @@ class View(QTreeWidget):
 
 
     def _add_table_item(self, tablename, item, parent):
-        for detail in self.model.content_detail(tablename):
+        for detail in self.db.content_detail(tablename):
             if detail.pk:
                 color = Qt.darkGreen
             elif detail.notnull:

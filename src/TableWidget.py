@@ -9,9 +9,9 @@ import TableModel
 
 class TableWidget(QWidget):
 
-    def __init__(self, model, kind, name):
+    def __init__(self, db, kind, name):
         super().__init__()
-        self.model = model
+        self.db = db
         self.name = name
         self.setWindowTitle(f'{name} — {kind}')
         self.dirty = False
@@ -21,10 +21,10 @@ class TableWidget(QWidget):
 
 
     def make_widgets(self, kind):
-        self.tableModel = TableModel.TableModel(self.model, self.name)
+        self.tableModel = TableModel.TableModel(self.db, self.name)
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
-        count = self.model.table_row_count(self.name)
+        count = self.db.table_row_count(self.name)
         s = 's' if count != 1 else ''
         self.statusLabel = QLabel(f'{count:,} row{s}')
 
@@ -52,9 +52,9 @@ class TableWidget(QWidget):
         print(f'TableWidget.save dirty={self.dirty} closing={closing}')
         saved = False
         errors = False
-        if self.dirty and bool(self.model):
+        if self.dirty and bool(self.db):
             # TODO save change to list view or form view
-            errors = []# self.model.save_...
+            errors = []# self.db.save_...
             if errors:
                 if not closing:
                     error = '\n'.join(errors)

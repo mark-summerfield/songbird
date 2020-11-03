@@ -21,9 +21,9 @@ class Mixin:
 
 class View(QWidget):
 
-    def __init__(self, model):
+    def __init__(self, db):
         super().__init__()
-        self.model = model
+        self.db = db
         self.pragmas = Pragmas.unchanged()
         self.dirty = False
         self.make_widgets()
@@ -59,12 +59,12 @@ class View(QWidget):
 
     def refresh(self):
         self.clear()
-        if bool(self.model):
-            pragmas = self.model.pragmas()
+        if bool(self.db):
+            pragmas = self.db.pragmas()
             with BlockSignals(self):
                 self.userVersionSpinbox.setValue(pragmas.user_version)
                 # TODO refresh all widgets
-                path = str(pathlib.Path(self.model.filename).parent)
+                path = str(pathlib.Path(self.db.filename).parent)
                 if not path.endswith(('/', '\\')):
                     path += os.sep
                 self.pathLabel.setText(_PATH_TEMPLATE.format(path=path))
@@ -82,8 +82,8 @@ class View(QWidget):
     def save(self, *, closing=False):
         saved = False
         errors = False
-        if self.dirty and bool(self.model):
-            errors = self.model.pragmas_save(self.pragmas)
+        if self.dirty and bool(self.db):
+            errors = self.db.pragmas_save(self.pragmas)
             if errors:
                 if not closing:
                     error = '\n'.join(errors)
