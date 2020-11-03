@@ -8,6 +8,10 @@ import re
 from Const import UNCHANGED
 
 
+class Error(Exception):
+    pass
+
+
 def first(cursor, sql, d=None, *, default=None, Class=int):
     d = {} if d is None else d
     record = cursor.execute(sql, d).fetchone()
@@ -35,7 +39,11 @@ def fields_from_select(select):
                     re.IGNORECASE | re.DOTALL)
     match = rx.search(select)
     if match is not None:
-        return [name.strip() for name in match.group('fields').split(',')]
+        fields = match.group('fields')
+        if fields == '*':
+            raise Error('Cannot determine field names from SELECT *')
+        return tuple([name.strip() for name in fields.split(',')])
+    raise Error('Failed to determine field names')
 
 
 CONTENT_SUMMARY = '''
@@ -63,27 +71,48 @@ class Pragmas:
 
 
 if __name__ == '__main__':
-    ok = True
+    def check_fields_from_select(sql, expected=None):
+        actual = fields_from_select(sql)
+        if actual != expected:
+            sql = ' '.join(sql.split())
+            print(f'SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
+            return 1
+        return 0
+
+    tests = errors = 0
     sql = '''
 SELECT stations.id AS "Station ID", stations.name as Station,
 stations.zone, kiosks.name as "Kiosk Name"
 FROM stations, kiosks WHERE stations.id = kiosks.sid;'''
-    actual = fields_from_select(sql)
-    expected = ('Station ID', 'Station', 'zone', 'Kiosk Name')
-    if actual != expected:
-        sql = ' '.join(sql.split())
-        print(f'SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
-        ok = False
+    tests += 1
+    errors += check_fields_from_select(
+        sql, ('Station ID', 'Station', 'zone', 'Kiosk Name'))
     sql = '''
 SELECT f(a), g(b, h(c, d)), x + y, e, t1.h, t2.i,
 f(a) as fa, g(b, h(c, d)) as gbh, x + y as xy, e as E,
-t1.h as t1h, t2.i as t2i FROM t1, t2 WHERE t1.id = t2.id
+t1.h as "T H #1", t2.i as 'T 2 I' FROM t1, t2 WHERE t1.id = t2.id
 ORDER BY t2.name DESC;'''
-    actual = fields_from_select(sql)
-    expected = ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i',
-                'fa', 'gbh', 'xy', 'E', 't1h', 't2i')
-    if actual != expected:
-        sql = ' '.join(sql.split())
-        print(f'SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
-        ok = False
-    print('OK' if ok else 'Failed')
+    tests += 1
+    errors += check_fields_from_select(
+        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i',
+              'fa', 'gbh', 'xy', 'E', 'T H #1', 'T 2 I'))
+    tests += 1
+    errors += check_fields_from_select(
+        'SELECT COUNT(*) FROM Stations WHERE zone >= 1.5;', ('COUNT(*)',))
+    tests += 1
+    try:
+        check_fields_from_select('SELECT * FROM Kiosks;')
+        errors += 1 # unexpected
+    except Error:
+        pass # expected
+    tests += 1
+    try:
+        check_fields_from_select('SELECT FROM stations;')
+        errors += 1 # unexpected
+    except Error:
+        pass # expected
+    if errors:
+        print(f'{tests - errors:,}/{tests:,} passed, '
+              f'{errors:,}/{tests:,} failed')
+    else:
+        print(f'All {tests:,} OK')
