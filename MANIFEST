@@ -23,25 +23,11 @@ st.sh
 README.md
 
 # TODO
-# Update TableWidget and TableModel to take an arbitrary SQL SELECT
-# (which it should show; so need to add a QPlainTextEdit as the top
-# widget in a vbox of 3 widgets).
-#
-# For tables the default SQL is 'SELECT {field} FROM {name}' where the
-# fields are the full names.
-#
-# Then create a SQLTable class which parses CREATE TABLE|VIEW and so can
-# provide column count, field names & types and a suitable SELECT
-# statement. -OR- make this a feature of the Model?
-# (For views extract
-#  the sql from the sqlite_master table and delete the leading 'CREATE
-#  VIEW ... AS' with the rest being the SELECT, e.g.,
-#   'CREATE VIEW stations_with_kiosks as select stations.id,
-#   stations.name, stations.zone, kiosks.name from stations, kiosks
-#   where stations.id = kiosks.sid')
-#
-# Then add buttons (see below) and voila, I'll have the list view part
-# of the QueryWidget described below...
+# - Sql.py: Use Parsy or Lark  to implement a proper
+#   fields_from_select() that passes the tests at the end
+# - TableWidget: SQL color syntax highlighting
+# - TableWidget add buttons (see below) and voila, I'll have the list
+#   view part of the QueryWidget described below...
 
 # - create QueryWidget (to show: ad hoc SELECT, Table, View)
 #     -- list view --

@@ -27,8 +27,10 @@ class Mixin:
                 del self.mdiWidgets[(kind, name)]
             sub_window = None
         if sub_window is None:
-            if kind == 'table': # TODO can't do views 'cos of pseudo-fields
-                widget = TableWidget.TableWidget(self.db, kind, name)
+            if kind in {'table', 'view', 'query'}:
+                select = self.db.select_make(kind, name)
+                widget = TableWidget.TableWidget(self.db, kind, name,
+                                                 select)
                 sub_window = self.mdiArea.addSubWindow(widget)
                 self.mdiWidgets[(kind, name)] = sub_window
                 widget.show()

@@ -6,9 +6,8 @@ import functools
 import apsw
 from Const import UNCHANGED
 from Sql import (
-    CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_FIELD_COUNT,
-    TABLE_FIELD_FOR_COLUMN, TABLE_ITEM, TABLE_ROW_COUNT, ContentDetail,
-    ContentSummary, Pragmas, first)
+    CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_OR_VIEW_SQL, ContentDetail,
+    ContentSummary, Pragmas, first, select_from_create_view)
 
 
 class Db:
@@ -45,8 +44,8 @@ class Db:
 
 
     def refresh(self):
-        self.table_field_for_column.cache_clear()
-        self.table_field_count.cache_clear()
+        self.table_make_select.cache_clear()
+        self.view_make_select.cache_clear()
 
 
     def content_summary(self):
@@ -63,9 +62,7 @@ class Db:
         if self._db is not None:
             cursor = self._db.cursor()
             for row in cursor.execute(CONTENT_DETAIL, dict(name=name)):
-                row = list(row[1:])
-                row.pop(3)
-                yield ContentDetail(*row)
+                yield ContentDetail(*row[1:])
 
 
     def pragmas(self):
@@ -92,41 +89,47 @@ class Db:
         return errors
 
 
-    def table_row_count(self, name): # No cache because it changes too much
+    def select_make(self, kind, name):
+        if kind == 'view':
+            return self.view_make_select(name)
+        elif kind == 'table':
+            return self.table_make_select(name)
+        # return self.query_make_select(name) # TODO
+
+
+    def select_row_count(self, select):
+        select.rstrip(';')
+        sql = f'SELECT COUNT(*) FROM ({select})'
         if self._db is not None:
             cursor = self._db.cursor()
             with self._db:
-                return first(cursor, TABLE_ROW_COUNT.format(name=name),
-                             default=0)
+                return first(cursor, sql, default=0)
         return 0
 
 
     @functools.lru_cache
-    def table_field_count(self, name):
-        if self._db is not None:
-            cursor = self._db.cursor()
-            with self._db:
-                return first(cursor, TABLE_FIELD_COUNT, dict(name=name),
-                             default=0)
-        return 0
+    def table_make_select(self, name):
+        fields = []
+        for detail in self.content_detail(name):
+            fields.append(detail.name)
+        fields = ', '.join(fields)
+        return f'SELECT {fields} FROM {name}'
 
 
-    # TODO delete
-    def table_item(self, name, row, column):
+    def table_row(self, select, row): # Rely on SQLite to cache
         if self._db is not None:
+            sql = select.rstrip(';') + f' LIMIT 1 OFFSET {row}'
             cursor = self._db.cursor()
             with self._db:
-                field = self.table_field_for_column(name, column)
-                sql = TABLE_ITEM.format(name=name, field=field, row=row)
-                return first(cursor, sql, Class=str)
+                return cursor.execute(sql).fetchone()
         return None
 
 
-    # TODO delete
     @functools.lru_cache
-    def table_field_for_column(self, name, column):
+    def view_make_select(self, name):
         if self._db is not None:
             cursor = self._db.cursor()
             with self._db:
-                return first(cursor, TABLE_FIELD_FOR_COLUMN,
-                             dict(name=name, row=column), Class=str)
+                sql = first(cursor, TABLE_OR_VIEW_SQL, dict(name=name),
+                            Class=str)
+                return select_from_create_view(sql)

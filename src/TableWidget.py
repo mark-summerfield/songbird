@@ -1,37 +1,41 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
-    QLabel, QMessageBox, QTableView, QVBoxLayout, QWidget)
+    QLabel, QMessageBox, QPlainTextEdit, QTableView, QVBoxLayout, QWidget)
 
 import TableModel
 
 
 class TableWidget(QWidget):
 
-    def __init__(self, db, kind, name):
+    def __init__(self, db, kind, name, select):
         super().__init__()
         self.db = db
-        self.name = name
         self.setWindowTitle(f'{name} — {kind}')
+        self.select = select
         self.dirty = False
-        self.make_widgets(kind)
+        self.make_widgets()
         self.make_layout()
         self.make_connections()
 
 
-    def make_widgets(self, kind):
-        self.tableModel = TableModel.TableModel(self.db, self.name)
+    def make_widgets(self):
+        self.sqlEdit = QPlainTextEdit(self.select) # TODO color syntax highlighting
+        self.tableModel = TableModel.TableModel(self.db, self.select)
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
-        count = self.db.table_row_count(self.name)
+        count = self.db.select_row_count(self.select)
         s = 's' if count != 1 else ''
         self.statusLabel = QLabel(f'{count:,} row{s}')
+        self.statusLabel.setTextFormat(Qt.RichText)
 
 
     def make_layout(self):
         vbox = QVBoxLayout()
-        vbox.addWidget(self.tableView, 1)
+        vbox.addWidget(self.sqlEdit, 2)
+        vbox.addWidget(self.tableView, 7)
         vbox.addWidget(self.statusLabel)
         self.setLayout(vbox)
 

@@ -3,38 +3,40 @@
 
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt
 
+import Sql
+
 
 class TableModel(QAbstractTableModel):
 
-    def __init__(self, db, name, parent=None):
+    def __init__(self, db, select, parent=None):
         super().__init__(parent)
         self.db = db
-        self.name = name # SQL table or view name
+        self.select = select
 
 
     def rowCount(self, parent=QModelIndex()):
-        return self.db.table_row_count(self.name)
+        return self.db.select_row_count(self.select)
 
 
     def columnCount(self, parent=QModelIndex()):
-        return self.db.table_field_count(self.name)
+        return len(Sql.fields_from_select(self.select))
 
 
     def data(self, index, role):
         if (not index.isValid() or
-                index.row() >= self.db.table_row_count(self.name) or
-                index.column() >= self.db.table_field_count(self.name)):
+                index.row() >= self.db.select_row_count(self.select) or
+                index.column() >= len(Sql.fields_from_select(self.select))):
             return None
         if role == Qt.DisplayRole:
-            return self.db.table_item(self.name, index.row(),
-                                      index.column())
+            row = self.db.table_row(self.select, index.row())
+            return row[index.column()]
 
 
     def headerData(self, section, orientation, role):
         if role != Qt.DisplayRole:
             return
         if orientation == Qt.Horizontal:
-            return self.db.table_field_for_column(self.name, section)
+            return Sql.fields_from_select(self.select)[section]
         return f'{section + 1:,}'
 
-    # TODO make editable
+    # TODO make editable?
