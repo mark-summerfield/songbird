@@ -33,6 +33,13 @@ def select_from_create_view(sql):
 
 @functools.lru_cache
 def fields_from_select(select):
+    '''
+    stmt ::= SELECT\s+column_expr(\s*,\s*column_expr)*FROM
+    column_expr ::= field_expr (\s+AS\s+field_alias)?
+    # field_expr may contain ','s, but only within '()'s
+    field_expr  ::= ['"][^'"]+['"] | \S+
+    field_alias ::= ['"][^'"]+['"] | \S+
+    '''
     # TODO FIXME
     import re
     rx = re.compile(r'select\s+(?P<fields>.*?)\s+from',
@@ -81,7 +88,7 @@ if __name__ == '__main__':
 
     tests = errors = 0
     sql = '''
-SELECT stations.id AS "Station ID", stations.name as Station,
+SELECT stations.id AS 'Station ID', stations.name as Station,
 stations.zone, kiosks.name as "Kiosk Name"
 FROM stations, kiosks WHERE stations.id = kiosks.sid;'''
     tests += 1
