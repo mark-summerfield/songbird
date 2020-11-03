@@ -23,6 +23,7 @@ st.sh
 README.md
 
 # TODO
+# - TableWidget: use QSplitter for QPlainTextEdit & QTableView
 # - Sql.py: Use Parsy or Lark  to implement a proper
 #   fields_from_select() that passes the tests at the end
 # - TableWidget: [Refresh -or- Requery] (F5) for when the user edits the SQL
