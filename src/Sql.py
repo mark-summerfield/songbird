@@ -12,6 +12,17 @@ class Error(Exception):
     pass
 
 
+class Pragmas:
+
+    def __init__(self, *, user_version=0):
+        self.user_version = user_version
+
+
+    @staticmethod
+    def unchanged():
+        return Pragmas(user_version=UNCHANGED)
+
+
 def first(cursor, sql, d=None, *, default=None, Class=int):
     d = {} if d is None else d
     record = cursor.execute(sql, d).fetchone()
@@ -85,17 +96,6 @@ ContentDetail = collections.namedtuple(
     'ContentDetail', ('name', 'type', 'notnull', 'default', 'pk'))
 
 TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name'
-
-
-class Pragmas:
-
-    def __init__(self, *, user_version=0):
-        self.user_version = user_version
-
-
-    @staticmethod
-    def unchanged():
-        return Pragmas(user_version=UNCHANGED)
 
 
 if __name__ == '__main__':

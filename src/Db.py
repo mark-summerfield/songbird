@@ -49,24 +49,6 @@ class Db:
         self.view_make_select.cache_clear()
 
 
-    def check_select(self, select):
-        limit_rx = re.compile(r'\sLIMIT\s+\d+', re.IGNORECASE)
-        if self._db is not None:
-            match = limit_rx.search(select)
-            if match is None: # No limit set
-                select = select.rstrip(';') + ' LIMIT 1'
-            else:
-                select = limit_rx.sub(' LIMIT 1', select)
-            cursor = self._db.cursor()
-            with self._db:
-                try:
-                    cursor.execute(select)
-                    return
-                except apsw.SQLError as err:
-                    return str(err)
-        return 'No open database'
-
-
     def content_summary(self):
         if self._db is not None:
             cursor = self._db.cursor()
@@ -136,12 +118,21 @@ class Db:
 
 
     def table_row(self, select, row): # Rely on SQLite to cache
+        limit_rx = re.compile(
+            r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
         if self._db is not None:
-            sql = select.rstrip(';') + f' LIMIT 1 OFFSET {row}'
+            match = limit_rx.search(select)
+            if match is None: # No limit set
+                sql = select.rstrip(';') + ' LIMIT 1'
+            else:
+                offset = match.group('offset')
+                if offset:
+                    row += int(offset)
+                sql = limit_rx.sub(' LIMIT 1', select)
+            sql += f' OFFSET {row}'
             cursor = self._db.cursor()
             with self._db:
                 return cursor.execute(sql).fetchone()
-        return None
 
 
     @functools.lru_cache

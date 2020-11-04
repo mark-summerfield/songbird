@@ -5,32 +5,34 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
     QLabel, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget)
 
+import apsw
+import Sql
 import SQLEdit
 import TableModel
 
 
 class TableWidget(QWidget):
 
-    def __init__(self, db, name, select):
+    def __init__(self, db, name, sql):
         super().__init__()
         self.db = db
         self.setWindowTitle(name)
         self.dirty = False
-        self.make_widgets(select)
+        self.make_widgets(sql)
         self.make_layout()
         self.make_connections()
 
 
-    def make_widgets(self, select):
-        self.sqlEdit = SQLEdit.SQLEdit(select)
+    def make_widgets(self, sql):
+        self.sqlEdit = SQLEdit.SQLEdit(sql)
         self.sqlEdit.setTabChangesFocus(True)
         # TODO color syntax highlighting
-        self.tableModel = TableModel.TableModel(self.db, select)
+        self.tableModel = TableModel.TableModel(self.db, sql)
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
         self.statusLabel = QLabel()
         self.statusLabel.setTextFormat(Qt.RichText)
-        self.update_status(select)
+        self.update_status(sql)
 
 
     def make_layout(self):
@@ -45,23 +47,26 @@ class TableWidget(QWidget):
 
 
     def make_connections(self):
-        pass
+        self.tableModel.sql_error.connect(self.on_sql_error)
 
 
     def refresh(self):
-        select = self.sqlEdit.toPlainText()
-        err = self.db.check_select(select)
-        if not err:
-            self.tableModel.refresh(select)
-            self.update_status(select)
-        else:
-            self.statusLabel.setText(f'<font color=red>{err}</font>')
+        sql = self.sqlEdit.toPlainText()
+        self.tableModel.refresh(sql)
+        self.update_status(sql)
 
 
-    def update_status(self, select):
-        count = self.db.select_row_count(select)
-        s = 's' if count != 1 else ''
-        self.statusLabel.setText(f'{count:,} row{s}')
+    def on_sql_error(self, err):
+        self.statusLabel.setText(f'<font color=red>{err}</font>')
+
+
+    def update_status(self, sql):
+        try:
+            count = self.db.select_row_count(sql)
+            s = 's' if count != 1 else ''
+            self.statusLabel.setText(f'{count:,} row{s}')
+        except (apsw.SQLError, Sql.Error) as err:
+            self.on_sql_error(str(err))
 
 
     def closeEvent(self, event):
