@@ -12,7 +12,6 @@ src/PragmaView.py
 src/Ui.py
 src/TableWidget.py
 src/TableModel.py
-src/SQLLineEdit.py # TODO color syntax highlighting
 src/SQLEdit.py # TODO color syntax highlighting
 src/Db.py
 src/Sql.py

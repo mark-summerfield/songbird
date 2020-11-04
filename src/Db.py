@@ -2,6 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 import functools
+import re
 
 import apsw
 from Const import UNCHANGED
@@ -49,8 +50,13 @@ class Db:
 
 
     def check_select(self, select):
+        limit_rx = re.compile(r'\sLIMIT\s+\d+', re.IGNORECASE)
         if self._db is not None:
-            select = select.rstrip(';') + ' LIMIT 1'
+            match = limit_rx.search(select)
+            if match is None: # No limit set
+                select = select.rstrip(';') + ' LIMIT 1'
+            else:
+                select = limit_rx.sub(' LIMIT 1', select)
             cursor = self._db.cursor()
             with self._db:
                 try:

@@ -3,55 +3,39 @@
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
-    QHBoxLayout, QLabel, QMessageBox, QSplitter, QTableView,
-    QVBoxLayout, QWidget)
+    QLabel, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget)
 
 import SQLEdit
-import SQLLineEdit
 import TableModel
 
 
 class TableWidget(QWidget):
 
-    def __init__(self, db, kind, name, select):
+    def __init__(self, db, name, select):
         super().__init__()
         self.db = db
-        self.setWindowTitle(f'{name} — {kind}')
-        self.select = select
+        self.setWindowTitle(name)
         self.dirty = False
-        self.make_widgets()
+        self.make_widgets(select)
         self.make_layout()
         self.make_connections()
 
 
-    def make_widgets(self):
-        self.sqlEdit = SQLEdit.SQLEdit(self.select)
-        self.sqlEdit.setReadOnly(True)
+    def make_widgets(self, select):
+        self.sqlEdit = SQLEdit.SQLEdit(select)
         self.sqlEdit.setTabChangesFocus(True)
-        self.whereEdit = SQLLineEdit.SQLLineEdit()
-        self.whereEdit.setPlaceholderText('WHERE')
-        self.orderByEdit = SQLLineEdit.SQLLineEdit()
-        self.orderByEdit.setPlaceholderText('ORDER BY')
         # TODO color syntax highlighting
-        self.tableModel = TableModel.TableModel(self.db, self.select)
+        self.tableModel = TableModel.TableModel(self.db, select)
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
         self.statusLabel = QLabel()
         self.statusLabel.setTextFormat(Qt.RichText)
-        self.update_status()
+        self.update_status(select)
 
 
     def make_layout(self):
-        editorVbox = QVBoxLayout()
-        editorVbox.addWidget(self.sqlEdit)
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.whereEdit)
-        hbox.addWidget(self.orderByEdit)
-        editorVbox.addLayout(hbox)
-        widget = QWidget()
-        widget.setLayout(editorVbox)
         splitter = QSplitter(Qt.Vertical)
-        splitter.addWidget(widget)
+        splitter.addWidget(self.sqlEdit)
         splitter.addWidget(self.tableView)
         splitter.setStretchFactor(1, 11)
         vbox = QVBoxLayout()
@@ -65,29 +49,17 @@ class TableWidget(QWidget):
 
 
     def refresh(self):
-        where = self.whereEdit.text()
-        if where:
-            where = where.strip()
-            if where:
-                if not where.upper().startswith('WHERE '):
-                    where = f' WHERE {where}'
-        order_by = self.orderByEdit.text()
-        if order_by:
-            order_by = order_by.strip()
-            if order_by:
-                if not order_by.upper().startswith('ORDER BY '):
-                    order_by = f' ORDER BY {order_by}'
-        self.select = self.sqlEdit.toPlainText() + where + order_by
-        err = self.db.check_select(self.select)
+        select = self.sqlEdit.toPlainText()
+        err = self.db.check_select(select)
         if not err:
-            self.tableModel.refresh(self.select)
-            self.update_status()
+            self.tableModel.refresh(select)
+            self.update_status(select)
         else:
             self.statusLabel.setText(f'<font color=red>{err}</font>')
 
 
-    def update_status(self):
-        count = self.db.select_row_count(self.select)
+    def update_status(self, select):
+        count = self.db.select_row_count(select)
         s = 's' if count != 1 else ''
         self.statusLabel.setText(f'{count:,} row{s}')
 
