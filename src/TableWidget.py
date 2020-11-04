@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import re
+
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
     QLabel, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget)
@@ -13,26 +15,26 @@ import TableModel
 
 class TableWidget(QWidget):
 
-    def __init__(self, db, name, sql):
+    def __init__(self, db, name, select):
         super().__init__()
         self.db = db
         self.setWindowTitle(name)
         self.dirty = False
-        self.make_widgets(sql)
+        self.make_widgets(select)
         self.make_layout()
         self.make_connections()
 
 
-    def make_widgets(self, sql):
-        self.sqlEdit = SQLEdit.SQLEdit(sql)
+    def make_widgets(self, select):
+        self.sqlEdit = SQLEdit.SQLEdit(select)
         self.sqlEdit.setTabChangesFocus(True)
         # TODO color syntax highlighting
-        self.tableModel = TableModel.TableModel(self.db, sql)
+        self.tableModel = TableModel.TableModel(self.db, select)
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
         self.statusLabel = QLabel()
         self.statusLabel.setTextFormat(Qt.RichText)
-        self.update_status(sql)
+        self.update_status(select)
 
 
     def make_layout(self):
@@ -51,18 +53,24 @@ class TableWidget(QWidget):
 
 
     def refresh(self):
-        sql = self.sqlEdit.toPlainText()
-        self.tableModel.refresh(sql)
-        self.update_status(sql)
+        select = self.sqlEdit.toPlainText()
+        uncommented = re.sub(r'--.*$', '', select)
+        if not uncommented.lstrip().upper().startswith('SELECT '):
+            self.statusLabel.setText('<font color=red>Only SELECT '
+                                     'statements are supported here</font>')
+        else:
+            # TODO if 'select *' replace * with actual field names
+            self.tableModel.refresh(select)
+            self.update_status(select)
 
 
     def on_sql_error(self, err):
         self.statusLabel.setText(f'<font color=red>{err}</font>')
 
 
-    def update_status(self, sql):
+    def update_status(self, select):
         try:
-            count = self.db.select_row_count(sql)
+            count = self.db.select_row_count(select)
             s = 's' if count != 1 else ''
             self.statusLabel.setText(f'{count:,} row{s}')
         except (apsw.SQLError, Sql.Error) as err:

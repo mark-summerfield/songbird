@@ -123,16 +123,16 @@ class Db:
         if self._db is not None:
             match = limit_rx.search(select)
             if match is None: # No limit set
-                sql = select.rstrip(';') + ' LIMIT 1'
+                select = select.rstrip(';') + ' LIMIT 1'
             else:
                 offset = match.group('offset')
                 if offset:
                     row += int(offset)
-                sql = limit_rx.sub(' LIMIT 1', select)
-            sql += f' OFFSET {row}'
+                select = limit_rx.sub(' LIMIT 1', select)
+            select += f' OFFSET {row}'
             cursor = self._db.cursor()
             with self._db:
-                return cursor.execute(sql).fetchone()
+                return cursor.execute(select).fetchone()
 
 
     @functools.lru_cache

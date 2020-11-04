@@ -10,7 +10,7 @@ src/HelpActions.py
 src/ContentsView.py
 src/PragmaView.py
 src/Ui.py
-src/TableWidget.py
+src/TableWidget.py # TODO xform SELECT * to SELECT fieldname, fieldname, ...
 src/TableModel.py
 src/SQLEdit.py # TODO color syntax highlighting
 src/Db.py
@@ -32,7 +32,7 @@ README.md
 #     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
 #   -- splitter --
-#   QTableView with custom QueryModel (using OFFSET & LIMIT if rows > 1K)
+#   QTableView with custom QueryModel
 #   -- splitter --
 #   QPlainTextEdit for errors & info
 #   [Insert][Update][Refresh -or- Requery](F5)[Delete][Form View]

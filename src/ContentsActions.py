@@ -17,6 +17,8 @@ from Ui import make_action
 # -------------------
 # C&ascade TODO only enable if in MDI mode
 # &Tile TODO only enable if in MDI mode
+# Ma&ximize TODO only enable if in MDI mode
+# Minimi&ze TODO only enable if in MDI mode
 # -------------------
 # &Next F6  TODO
 # &Previous Shift+F6    TODO

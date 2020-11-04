@@ -35,9 +35,8 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
 
 
 def select_from_create_view(sql):
-    sql_rx = re.compile(r'create\s+view.+?\s+as\s+(?P<sql>.+)\s*;?',
-                        re.IGNORECASE | re.DOTALL)
-    match = sql_rx.search(sql)
+    match = re.search(r'create\s+view.+?\s+as\s+(?P<sql>.+)\s*;?', sql,
+                      re.IGNORECASE | re.DOTALL)
     if match is not None:
         return match.group('sql')
 
@@ -45,10 +44,9 @@ def select_from_create_view(sql):
 @functools.lru_cache
 def fields_from_select(select):
     as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
-    select_rx = re.compile(r'select\s+(?P<fields>.*?)\s+from',
-                           re.IGNORECASE | re.DOTALL)
     results = []
-    match = select_rx.search(select)
+    match = re.search(r'select\s+(?P<fields>.*?)\s+from', select,
+                      re.IGNORECASE | re.DOTALL)
     if match is not None:
         fields = match.group('fields')
         if fields == '*':
