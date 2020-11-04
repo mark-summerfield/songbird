@@ -48,6 +48,18 @@ class Db:
         self.view_make_select.cache_clear()
 
 
+    def check_select(self, select):
+        if self._db is not None:
+            cursor = self._db.cursor()
+            with self._db:
+                try:
+                    cursor.execute(select)
+                    return
+                except apsw.SQLError as err:
+                    return str(err)
+        return 'No open database'
+
+
     def content_summary(self):
         if self._db is not None:
             cursor = self._db.cursor()

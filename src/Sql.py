@@ -34,13 +34,17 @@ def select_from_create_view(sql):
 @functools.lru_cache
 def fields_from_select(select):
     r'''
-    stmt ::= SELECT\s+column_expr(\s*,\s*column_expr)*FROM
+    stmt ::= SELECT\s+column_expr(\s*,\s*column_expr)*\s+FROM
     column_expr ::= field_expr (\s+AS\s+field_alias)?
     # field_expr may contain ','s, but only within '()'s
-    field_expr  ::= ['"][^'"]+['"] | \S+
-    field_alias ::= ['"][^'"]+['"] | \S+
+    field_expr  ::= identifier
+    field_alias ::= identifier
+    identifier ::= ['"][^'"]+?['"] | \S+
     '''
     # TODO FIXME
+
+
+    ############
     import re
     rx = re.compile(r'select\s+(?P<fields>.*?)\s+from',
                     re.IGNORECASE | re.DOTALL)

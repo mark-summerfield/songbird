@@ -2,7 +2,8 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 from PySide2.QtGui import QKeySequence
-from PySide2.QtWidgets import QLineEdit, QPlainTextEdit, QTextEdit
+from PySide2.QtWidgets import (
+    QLineEdit, QMdiSubWindow, QPlainTextEdit, QTextEdit)
 
 import Config
 from Ui import make_action
@@ -12,6 +13,9 @@ class Mixin:
 
     def make_edit_actions(self):
         path = Config.path() / 'images'
+        self.edit_refresh_action = make_action(
+            self, path / 'stock_refresh.svg', '&Refresh', self.edit_refresh,
+            QKeySequence.Refresh)
         self.edit_copy_action = make_action(
             self, path / 'edit-copy.svg', '&Copy', self.edit_copy,
             QKeySequence.Copy)
@@ -25,17 +29,18 @@ class Mixin:
 
     @property
     def edit_actions_for_menu(self):
-        return (self.edit_copy_action, self.edit_cut_action,
-                self.edit_paste_action)
+        return (self.edit_refresh_action, None, self.edit_copy_action,
+                self.edit_cut_action, self.edit_paste_action)
 
 
     @property
     def edit_actions_for_toolbar(self):
-        return (self.edit_copy_action, self.edit_cut_action,
-                self.edit_paste_action)
+        return (self.edit_refresh_action, None, self.edit_copy_action,
+                self.edit_cut_action, self.edit_paste_action)
 
 
     def edit_update_ui(self):
+        self.edit_refresh_action.setEnabled(bool(self.db))
         for action in (self.edit_copy_action, self.edit_cut_action,
                        self.edit_paste_action):
             action.setEnabled(False)
@@ -52,6 +57,15 @@ class Mixin:
             self.edit_copy_action.setEnabled(enable)
             self.edit_cut_action.setEnabled(enable)
             self.edit_paste_action.setEnabled(widget.canPaste())
+
+
+    def edit_refresh(self):
+        widget = qApp.focusWidget()
+        while widget is not None:
+            if isinstance(widget, QMdiSubWindow):
+                widget.widget().refresh()
+                break
+            widget = widget.parent()
 
 
     def edit_copy(self):

@@ -12,6 +12,8 @@ src/PragmaView.py
 src/Ui.py
 src/TableWidget.py
 src/TableModel.py
+src/SQLLineEdit.py # TODO color syntax highlighting
+src/SQLEdit.py # TODO color syntax highlighting
 src/Db.py
 src/Sql.py
 src/RecentFiles.py
@@ -24,21 +26,22 @@ README.md
 
 # TODO
 # - TableWidget: use QSplitter for QPlainTextEdit & QTableView
-# - Sql.py: Use Parsy or Lark  to implement a proper
-#   fields_from_select() that passes the tests at the end
-# - TableWidget: [Refresh -or- Requery] (F5) for when the user edits the SQL
+# - Sql.py: Implement a proper fields_from_select() that passes the tests at the end
+# - TableWidget: [Refresh -or- Requery] (F5) for when the user edits the
+# WHERE or ORDER BY
 # - TableWidget: SQL color syntax highlighting
-# - TableWidget add buttons (see below) and voila, I'll have the list
-#   view part of the QueryWidget described below...
+# - TableWidget add buttons (see below) and voila
 
-# - create QueryWidget (to show: ad hoc SELECT, Table, View)
+# - create QueryWidget (for ad-hoc DDL and DML incl. SELECT, INSERT,
+#			CREATE, etc.)
 #     -- list view --
 #   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
 #   -- splitter --
 #   QTableView with custom QueryModel (using OFFSET & LIMIT if rows > 1K)
 #   -- splitter --
 #   QPlainTextEdit for errors & info
-#   [Insert][Update][Delete][Form View] # saves when any clicked
+#   [Insert][Update][Refresh -or- Requery](F5)[Delete][Form View]
+#   # saves when any clicked
 #      -- form view --
 #   QLabel1 editor1
 #	:

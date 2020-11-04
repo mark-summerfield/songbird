@@ -14,6 +14,14 @@ class TableModel(QAbstractTableModel):
         self.select = select
 
 
+    def refresh(self, select):
+        self.beginResetModel()
+        try:
+            self.select = select
+        finally:
+            self.endResetModel()
+
+
     def rowCount(self, parent=QModelIndex()):
         return self.db.select_row_count(self.select)
 
@@ -38,5 +46,3 @@ class TableModel(QAbstractTableModel):
         if orientation == Qt.Horizontal:
             return Sql.fields_from_select(self.select)[section]
         return f'{section + 1:,}'
-
-    # TODO make editable?
