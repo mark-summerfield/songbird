@@ -25,7 +25,6 @@ st.sh
 README.md
 
 # TODO
-# - Sql.py: Implement a proper fields_from_select() that passes the tests at the end
 # - TableWidget: SQL color syntax highlighting
 # - TableWidget add buttons (see below) -OR- menu options?
 

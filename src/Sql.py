@@ -33,27 +33,44 @@ def select_from_create_view(sql):
 
 @functools.lru_cache
 def fields_from_select(select):
-    r'''
-    stmt ::= SELECT\s+column_expr(\s*,\s*column_expr)*\s+FROM
-    column_expr ::= field_expr (\s+AS\s+field_alias)?
-    # field_expr may contain ','s, but only within '()'s
-    field_expr  ::= identifier
-    field_alias ::= identifier
-    identifier ::= ['"][^'"]+?['"] | \S+
-    '''
-    # TODO FIXME
-
-
-    ############
-    import re
-    rx = re.compile(r'select\s+(?P<fields>.*?)\s+from',
-                    re.IGNORECASE | re.DOTALL)
-    match = rx.search(select)
+    as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
+    select_rx = re.compile(r'select\s+(?P<fields>.*?)\s+from',
+                           re.IGNORECASE | re.DOTALL)
+    results = []
+    match = select_rx.search(select)
     if match is not None:
         fields = match.group('fields')
         if fields == '*':
             raise Error('Cannot determine field names from SELECT *')
-        return tuple([name.strip() for name in fields.split(',')])
+        if '(' not in fields:
+            fields = fields.split(',')
+        else:
+            parts = []
+            parens = 0
+            for c in fields:
+                if c == ',' and parens:
+                    parts.append('\f')
+                    continue
+                if c == '(':
+                    parens += 1
+                elif c == ')':
+                    parens -= 1
+                parts.append(c)
+            parts = ''.join(parts)
+            fields = [part.replace('\f', ',') for part in parts.split(',')]
+        for field in fields:
+            alias = None
+            match = as_rx.match(field)
+            if match is None:
+                i = field.rfind('.')
+                if i > -1:
+                    i += 1
+                    if len(field[i:]):
+                        field = field[i:]
+            else:
+                alias = match.group('alias')
+            results.append((alias or field).strip().strip('\'"'))
+        return tuple(results)
     raise Error('Failed to determine field names')
 
 
@@ -105,8 +122,8 @@ t1.h as "T H #1", t2.i as 'T 2 I' FROM t1, t2 WHERE t1.id = t2.id
 ORDER BY t2.name DESC;'''
     tests += 1
     errors += check_fields_from_select(
-        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i',
-              'fa', 'gbh', 'xy', 'E', 'T H #1', 'T 2 I'))
+        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 'h', 'i', 'fa', 'gbh',
+              'xy', 'E', 'T H #1', 'T 2 I'))
     tests += 1
     errors += check_fields_from_select(
         'SELECT COUNT(*) FROM Stations WHERE zone >= 1.5;', ('COUNT(*)',))

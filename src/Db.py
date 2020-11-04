@@ -50,6 +50,7 @@ class Db:
 
     def check_select(self, select):
         if self._db is not None:
+            select = select.rstrip(';') + ' LIMIT 1'
             cursor = self._db.cursor()
             with self._db:
                 try:
