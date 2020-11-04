@@ -25,12 +25,9 @@ st.sh
 README.md
 
 # TODO
-# - TableWidget: use QSplitter for QPlainTextEdit & QTableView
 # - Sql.py: Implement a proper fields_from_select() that passes the tests at the end
-# - TableWidget: [Refresh -or- Requery] (F5) for when the user edits the
-# WHERE or ORDER BY
 # - TableWidget: SQL color syntax highlighting
-# - TableWidget add buttons (see below) and voila
+# - TableWidget add buttons (see below) -OR- menu options?
 
 # - create QueryWidget (for ad-hoc DDL and DML incl. SELECT, INSERT,
 #			CREATE, etc.)
@@ -46,7 +43,8 @@ README.md
 #   QLabel1 editor1
 #	:
 #   QLabelN editorN
-#   [Insert][Update][Delete][List View][Previous][Next] # saves when any clicked
+#   [Insert][Update][Delete][List View][Previous][Next] 
+#   saves when any clicked -OR- menu options?
 #
 # - for pure SQLite dbs remember the last 100 opened (in songbird.sbc):
 #   CREATE TABLE recent_files (
