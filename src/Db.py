@@ -8,7 +8,8 @@ import apsw
 from Const import UNCHANGED
 from Sql import (
     CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_OR_VIEW_SQL, ContentDetail,
-    ContentSummary, Pragmas, first, select_from_create_view)
+    ContentSummary, Pragmas, first, select_from_create_view,
+    select_limit_1_from_select)
 
 
 class Db:
@@ -118,18 +119,8 @@ class Db:
 
 
     def table_row(self, select, row): # Rely on SQLite to cache
-        limit_rx = re.compile(
-            r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
         if self._db is not None:
-            match = limit_rx.search(select)
-            if match is None: # No limit set
-                select = select.rstrip(';') + ' LIMIT 1'
-            else:
-                offset = match.group('offset')
-                if offset:
-                    row += int(offset)
-                select = limit_rx.sub(' LIMIT 1', select)
-            select += f' OFFSET {row}'
+            select = select_limit_1_from_select(select, row)
             cursor = self._db.cursor()
             with self._db:
                 return cursor.execute(select).fetchone()

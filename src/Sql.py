@@ -34,6 +34,19 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
     return bool(int(value)) if isinstance(Class, bool) else Class(value)
 
 
+def select_limit_1_from_select(select, row=0):
+    limit_rx = re.compile(
+        r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
+    if match := limit_rx.search(select):
+        offset = match.group('offset')
+        if offset:
+            row += int(offset)
+        select = limit_rx.sub(' LIMIT 1', select)
+    else: # No original limit set
+        select = select.rstrip(';') + ' LIMIT 1'
+    return select + f' OFFSET {row}'
+
+
 def select_from_create_view(sql):
     match = re.search(r'create\s+view.+?\s+as\s+(?P<sql>.+)\s*;?', sql,
                       re.IGNORECASE | re.DOTALL)
@@ -41,11 +54,16 @@ def select_from_create_view(sql):
         return match.group('sql')
 
 
+def field_count_from_select(select):
+    return field_names_from_select(select, count=True)
+
+
 @functools.lru_cache
-def fields_from_select(select):
+def field_names_from_select(select, *, count=False):
     as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
     results = []
-    match = re.search(r'select\s+(?P<fields>.*?)\s+from', select,
+    match = re.search(r'select(?:\s+(:?all|distinct))?\s+'
+                      r'(?P<fields>.*?)\s+from', select,
                       re.IGNORECASE | re.DOTALL)
     if match is not None:
         fields = match.group('fields')
@@ -67,16 +85,11 @@ def fields_from_select(select):
                 parts.append(c)
             parts = ''.join(parts)
             fields = [part.replace('\f', ',') for part in parts.split(',')]
+        if count:
+            return len(fields)
         for field in fields:
             alias = None
-            match = as_rx.match(field)
-            if match is None:
-                i = field.rfind('.')
-                if i > -1:
-                    i += 1
-                    if len(field[i:]):
-                        field = field[i:]
-            else:
+            if match := as_rx.match(field):
                 alias = match.group('alias')
             results.append((alias or field).strip().strip('\'"'))
         return tuple(results)
@@ -98,7 +111,7 @@ TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name'
 
 if __name__ == '__main__':
     def check_fields_from_select(sql, expected=None):
-        actual = fields_from_select(sql)
+        actual = field_names_from_select(sql)
         if actual != expected:
             sql = ' '.join(sql.split())
             print(f'SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
@@ -112,7 +125,7 @@ stations.zone, kiosks.name as "Kiosk Name"
 FROM stations, kiosks WHERE stations.id = kiosks.sid;'''
     tests += 1
     errors += check_fields_from_select(
-        sql, ('Station ID', 'Station', 'zone', 'Kiosk Name'))
+        sql, ('Station ID', 'Station', 'stations.zone', 'Kiosk Name'))
     sql = '''
 SELECT f(a), g(b, h(c, d)), x + y, e, t1.h, t2.i,
 f(a) as fa, g(b, h(c, d)) as gbh, x + y as xy, e as E,
@@ -120,8 +133,8 @@ t1.h as "T H #1", t2.i as 'T 2 I' FROM t1, t2 WHERE t1.id = t2.id
 ORDER BY t2.name DESC;'''
     tests += 1
     errors += check_fields_from_select(
-        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 'h', 'i', 'fa', 'gbh',
-              'xy', 'E', 'T H #1', 'T 2 I'))
+        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i', 'fa',
+              'gbh', 'xy', 'E', 'T H #1', 'T 2 I'))
     tests += 1
     errors += check_fields_from_select(
         'SELECT COUNT(*) FROM Stations WHERE zone >= 1.5;', ('COUNT(*)',))
