@@ -57,6 +57,7 @@ class Db:
                 content = ContentSummary(*row)
                 if content.name.startswith(('sqlite_', 'songbird_')):
                     continue
+                # TODO also skip FTS implementation tables
                 yield content
 
 

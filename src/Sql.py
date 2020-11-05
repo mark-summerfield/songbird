@@ -52,8 +52,7 @@ def select_limit_1_from_select(select, row=0):
     limit_rx = re.compile(
         r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
     if match := limit_rx.search(select):
-        offset = match.group('offset')
-        if offset:
+        if offset := match.group('offset'):
             row += int(offset)
         select = limit_rx.sub(' LIMIT 1', select)
     else: # No original limit set
@@ -62,9 +61,8 @@ def select_limit_1_from_select(select, row=0):
 
 
 def select_from_create_view(sql):
-    match = re.search(r'create\s+view.+?\s+as\s+(?P<sql>.+)\s*;?', sql,
-                      re.IGNORECASE | re.DOTALL)
-    if match is not None:
+    if match := re.search(r'CREATE\s+VIEW.+?\s+AS\s+(?P<sql>.+)\s*;?', sql,
+                          re.IGNORECASE | re.DOTALL):
         return match.group('sql')
 
 
@@ -76,10 +74,9 @@ def field_count_from_select(select):
 def field_names_from_select(select, *, count=False):
     as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
     results = []
-    match = re.search(r'select(?:\s+(:?all|distinct))?\s+'
-                      r'(?P<fields>.*?)\s+from', select,
-                      re.IGNORECASE | re.DOTALL)
-    if match is not None:
+    if match := re.search(r'SELECT(?:\s+(:?ALL|DISTINCT))?\s+'
+                          r'(?P<fields>.*?)\s+from', select,
+                          re.IGNORECASE | re.DOTALL):
         fields = match.group('fields')
         if fields == '*':
             raise Error('Cannot determine field names from SELECT *')

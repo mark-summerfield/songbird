@@ -10,7 +10,7 @@ src/HelpActions.py
 src/ContentsView.py
 src/PragmaView.py
 src/Ui.py
-src/TableWidget.py # TODO xform SELECT * to SELECT fieldname, fieldname, ...
+src/TableWidget.py
 src/TableModel.py
 src/SQLEdit.py # TODO color syntax highlighting
 src/Db.py
@@ -24,27 +24,22 @@ st.sh
 README.md
 
 # TODO
-# - xform SELECT * to SELECT fieldname, fieldname, ...
-#
 # - TableWidget: SQL color syntax highlighting
-# - TableWidget add buttons (see below) -OR- menu options?
-
-# - create QueryWidget (for ad-hoc DDL and DML incl. SELECT, INSERT,
-#			CREATE, etc.)
-#     -- list view --
-#   QPlainTextEdit + QSyntaxHighlighter to show raw SQL
-#   -- splitter --
-#   QTableView with custom QueryModel
-#   -- splitter --
-#   QPlainTextEdit for errors & info
-#   [Insert][Update][Refresh -or- Requery](F5)[Delete][Form View]
-#   # saves when any clicked
-#      -- form view --
-#   QLabel1 editor1
-#	:
-#   QLabelN editorN
-#   [Insert][Update][Delete][List View][Previous][Next] 
-#   saves when any clicked -OR- menu options?
+#
+# - QueryWidget
+#	copy TableWidget.py to QueryWidget.py
+#	put QTableView in a QWidgetStack? with a QPlainTextEdit
+#	if query is SELECT then switch to the QTableView and do as now;
+#	otherwise switch to the QPlainTextEdit and do:
+#	    try:
+#		self.db.execute(sql)
+#	    ...
+#   If this all works, then replace the TableWidget with the QueryWidget
+#
+# - buttons or menu options for insert/update/delete? or only in form view?
+#
+# - How to handle form view insert/update/delete/previous/next/save?
+#
 #
 # - for pure SQLite dbs remember the last 100 opened (in songbird.sbc):
 #   CREATE TABLE recent_files (

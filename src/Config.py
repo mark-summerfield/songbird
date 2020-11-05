@@ -207,9 +207,9 @@ class _Singleton_Config:
                 options.show_pragmas = first(
                     cursor, _GET, dict(key=SHOW_PRAGMAS), Class=bool)
                 for n in range(1, RECENT_FILES_MAX + 1):
-                    name = first(cursor, _GET,
-                                 dict(key=f'{RECENT_FILE}/{n}'), Class=str)
-                    if name:
+                    if name := first(
+                            cursor, _GET, dict(key=f'{RECENT_FILE}/{n}'),
+                            Class=str):
                         name = pathlib.Path(name)
                         if name.exists():
                             options.recent_files.append(str(name.resolve()))

@@ -83,8 +83,7 @@ class View(QWidget):
         saved = False
         errors = False
         if self.dirty and bool(self.db):
-            errors = self.db.pragmas_save(self.pragmas)
-            if errors:
+            if errors := self.db.pragmas_save(self.pragmas):
                 if not closing:
                     error = '\n'.join(errors)
                     QMessageBox.warning(
