@@ -138,7 +138,7 @@ class Db:
 
 
     def field_names_for_select(self, select):
-        # Always try Sql.field_names_for_select first
+        # Usually try Sql.field_names_for_select() first
         if self._db is not None:
             select = select_limit_1_from_select(select)
             cursor = self._db.cursor()

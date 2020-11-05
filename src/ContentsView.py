@@ -30,6 +30,7 @@ class Mixin:
             if kind in {'table', 'view'}:
                 select = self.db.select_make(kind, name)
                 widget = TableWidget.TableWidget(self.db, name, select)
+                widget.sqlEdit.textChanged.connect(self.edit_update_ui)
                 sub_window = self.mdiArea.addSubWindow(widget)
                 self.mdiWidgets[(kind, name)] = sub_window
                 widget.show()
