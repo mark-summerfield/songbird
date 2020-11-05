@@ -34,6 +34,7 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
     return bool(int(value)) if isinstance(Class, bool) else Class(value)
 
 
+@functools.lru_cache
 def select_limit_1_from_select(select, row=0):
     limit_rx = re.compile(
         r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
