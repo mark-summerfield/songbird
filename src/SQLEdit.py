@@ -3,11 +3,14 @@
 
 from PySide2.QtWidgets import QPlainTextEdit
 
+import SQLSyntaxHighlighter
+
 
 class SQLEdit(QPlainTextEdit):
 
     def __init__(self, text=''):
         super().__init__(text)
+        SQLSyntaxHighlighter.SQLSyntaxHighlighter(self.document())
 
 
     def sizeHint(self):

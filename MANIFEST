@@ -12,7 +12,8 @@ src/PragmaView.py
 src/Ui.py
 src/TableWidget.py
 src/TableModel.py
-src/SQLEdit.py # TODO color syntax highlighting
+src/SQLEdit.py
+src/SQLSyntaxHighlighter.py # TODO color syntax highlighting
 src/Db.py
 src/Sql.py
 src/RecentFiles.py
@@ -24,7 +25,7 @@ st.sh
 README.md
 
 # TODO
-# - TableWidget: SQL color syntax highlighting
+# - SQL color syntax highlighting
 #
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py

@@ -7,9 +7,9 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import (
     QLineEdit, QMdiSubWindow, QPlainTextEdit, QTextEdit)
 
+import apsw
 import Config
 import Sql
-from Const import TIMEOUT_SHORT
 from Ui import make_action
 
 
@@ -86,17 +86,22 @@ class Mixin:
 
     def edit_replace_star(self):
         widget = qApp.focusWidget()
-        if widget is not None:
+        if widget is not None and isinstance(widget, (QPlainTextEdit,
+                                                      QTextEdit)):
             select = widget.toPlainText()
             try:
                 names = ', '.join([Sql.quoted(name) for name in
                                   self.db.field_names_for_select(select)])
                 widget.setPlainText(re.sub(
-                    r'(SELECT(:?\s+(:?ALL|DISTINCT))?\s)\s*\*', r'\1' +
-                    names, widget.toPlainText(), flags=re.IGNORECASE))
+                    r'(SELECT(:?\s+(:?ALL|DISTINCT))?\s)\s*\*',
+                    lambda match: match.group(1).upper() + names,
+                    widget.toPlainText(), flags=re.IGNORECASE))
             except apsw.SQLError as err:
-                self.statusBar().showMessage(
-                    'Failed to convert * to field names', TIMEOUT_SHORT)
+                while widget is not None and not isinstance(widget,
+                                                            QMdiSubWindow):
+                    widget = widget.parent()
+                if widget is not None:
+                    widget.widget().on_sql_error(str(err))
 
 
     def edit_copy(self):
