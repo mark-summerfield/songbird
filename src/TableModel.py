@@ -59,11 +59,15 @@ class TableModel(QAbstractTableModel):
 
 
     def headerData(self, section, orientation, role):
-        try:
-            if role != Qt.DisplayRole:
-                return
-            if orientation == Qt.Horizontal:
-                return Sql.field_names_from_select(self.select)[section]
-            return f'{section + 1:,}'
-        except (apsw.SQLError, Sql.Error) as err:
-            self.sql_error.emit(str(err))
+        if role != Qt.DisplayRole:
+            return
+        if orientation == Qt.Horizontal:
+            try:
+                try:
+                    return Sql.field_names_from_select(self.select)[section]
+                except Sql.Error: # SELECT *
+                    return self.db.field_names_for_select(
+                        self.select)[section]
+            except apsw.SQLError as err:
+                self.sql_error.emit(str(err))
+        return f'{section + 1:,}'

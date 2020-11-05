@@ -24,6 +24,8 @@ st.sh
 README.md
 
 # TODO
+# - xform SELECT * to SELECT fieldname, fieldname, ...
+#
 # - TableWidget: SQL color syntax highlighting
 # - TableWidget add buttons (see below) -OR- menu options?
 

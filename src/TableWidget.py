@@ -54,12 +54,20 @@ class TableWidget(QWidget):
 
     def refresh(self):
         select = self.sqlEdit.toPlainText()
-        uncommented = re.sub(r'--.*$', '', select)
-        if not uncommented.lstrip().upper().startswith('SELECT '):
+        uncommented = Sql.uncommented_sql(select).lstrip().upper()
+        if not re.match(r'SELECT\s', uncommented):
             self.statusLabel.setText('<font color=red>Only SELECT '
                                      'statements are supported here</font>')
         else:
-            # TODO if 'select *' replace * with actual field names
+            if re.match(r'SELECT\s+\*', uncommented):
+                try:
+                    names = ', '.join(
+                        [Sql.quoted(name) for name in
+                        self.db.field_names_for_select(select)])
+                    select = select.replace('*', names, 1)
+                except apsw.SQLError as err:
+                    self.on_sql_error(str(err))
+                    return
             self.tableModel.refresh(select)
             self.update_status(select)
 

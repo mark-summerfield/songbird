@@ -35,6 +35,19 @@ def first(cursor, sql, d=None, *, default=None, Class=int):
 
 
 @functools.lru_cache
+def quoted(name, *, quote='"', force=False):
+    name = name.strip('\'"')
+    return (f'{quote}{name}{quote}' if force or
+            not re.fullmatch(r'\w+', name) else name)
+
+
+@functools.lru_cache
+def uncommented_sql(sql):
+    # Simple-minded, e.g., incorrect if -- is inside a string
+    return re.sub(r'--.*$', '', sql)
+
+
+@functools.lru_cache
 def select_limit_1_from_select(select, row=0):
     limit_rx = re.compile(
         r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)

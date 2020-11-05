@@ -8,7 +8,7 @@ import apsw
 from Const import UNCHANGED
 from Sql import (
     CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_OR_VIEW_SQL, ContentDetail,
-    ContentSummary, Pragmas, first, select_from_create_view,
+    ContentSummary, Pragmas, first, quoted, select_from_create_view,
     select_limit_1_from_select)
 
 
@@ -55,7 +55,7 @@ class Db:
             cursor = self._db.cursor()
             for row in cursor.execute(CONTENT_SUMMARY):
                 content = ContentSummary(*row)
-                if content.name.startswith(('sqlite_', 'songbird')):
+                if content.name.startswith(('sqlite_', 'songbird_')):
                     continue
                 yield content
 
@@ -100,9 +100,9 @@ class Db:
 
 
     def select_row_count(self, select):
-        select.rstrip(';')
-        sql = f'SELECT COUNT(*) FROM ({select})'
         if self._db is not None:
+            select.rstrip(';')
+            sql = f'SELECT COUNT(*) FROM ({select})'
             cursor = self._db.cursor()
             with self._db:
                 return first(cursor, sql, default=0)
@@ -113,9 +113,9 @@ class Db:
     def table_make_select(self, name):
         fields = []
         for detail in self.content_detail(name):
-            fields.append(detail.name)
+            fields.append(quoted(detail.name))
         fields = ', '.join(fields)
-        return f'SELECT {fields} FROM {name}'
+        return f'SELECT {fields} FROM {quoted(name)}'
 
 
     def table_row(self, select, row): # Rely on SQLite to cache
@@ -134,3 +134,13 @@ class Db:
                 sql = first(cursor, TABLE_OR_VIEW_SQL, dict(name=name),
                             Class=str)
                 return select_from_create_view(sql)
+
+
+    def field_names_for_select(self, select):
+        # Always try Sql.field_names_for_select first
+        if self._db is not None:
+            select = select_limit_1_from_select(select)
+            cursor = self._db.cursor()
+            with self._db:
+                cursor.execute(select)
+                return [quoted(item[0]) for item in cursor.getdescription()]
