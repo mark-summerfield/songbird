@@ -54,7 +54,7 @@ class TableWidget(QWidget):
 
     def refresh(self):
         select = self.sqlEdit.toPlainText()
-        uncommented = Sql.uncommented_sql(select)
+        uncommented = Sql.uncommented(select)
         if not re.match(r'\s*SELECT\s', uncommented, re.IGNORECASE):
             self.statusLabel.setText('<font color=red>Only SELECT '
                                      'statements are supported here</font>')

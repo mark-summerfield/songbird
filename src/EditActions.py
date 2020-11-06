@@ -64,7 +64,7 @@ class Mixin:
         elif isinstance(widget, (QPlainTextEdit, QTextEdit)):
             if enable: 
                 if sql := widget.toPlainText().strip():
-                    sql = Sql.uncommented_sql(sql)
+                    sql = Sql.uncommented(sql)
                     if re.match(r'\s*SELECT(:?\s+(:?ALL|DISTINCT))?\s+\*',
                                 sql, re.IGNORECASE):
                         self.edit_replace_star_action.setEnabled(True)

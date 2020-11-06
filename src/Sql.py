@@ -42,10 +42,10 @@ def quoted(name, *, quote='"', force=False):
 
 
 @functools.lru_cache
-def uncommented_sql(sql):
-    # Simple-minded, e.g., incorrect if -- is inside a string or
-    # if /* ... */ spans lines
-    return re.sub(r'/\*.*?\*/', '', re.sub(r'--.*', '', sql)).lstrip()
+def uncommented(sql):
+    # Simple-minded, e.g., incorrect if -- or /* is inside a string etc.
+    return re.sub(r'/\*.*?\*/', '', re.sub(r'--.*', '', sql),
+                  flags=re.DOTALL).lstrip()
 
 
 @functools.lru_cache
@@ -73,7 +73,7 @@ def field_count_from_select(select):
 
 @functools.lru_cache
 def field_names_from_select(select, *, count=False):
-    select = uncommented_sql(select)
+    select = uncommented(select)
     as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
     results = []
     if match := re.search(r'SELECT(?:\s+(:?ALL|DISTINCT))?\s+'
