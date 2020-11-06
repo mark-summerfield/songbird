@@ -1,41 +1,145 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QCursor, QSyntaxHighlighter
+import enum
+import re
 
-# See /home/mark/commercial/zOld/comparedir1/PythonEditor.py
+from PySide2.QtCore import Qt
+from PySide2.QtGui import (
+    QColor, QCursor, QFont, QSyntaxHighlighter, QTextCharFormat)
+
+FONT_FAMILY = 'monospace' # TODO make these user-configurable options
+FONT_SIZE = 12
+
+CONSTANTS = ('TRUE', 'FALSE', 'NULL')
+FUNCTIONS = (
+    'ABS', 'AVG', 'CHANGES', 'CHAR', 'COALESCE', 'COUNT', 'DATE',
+    'DATETIME', 'GROUP_CONCAT', 'HEX', 'IFNULL', 'IIF', 'INSTR',
+    'JULIANDAY', 'LAST_INSERT_ROWID', 'LENGTH', 'LIKELIHOOD', 'LIKELY',
+    'LOAD_EXTENSION', 'LOWER', 'LTRIM', 'MAX', 'MIN', 'NULLIF', 'PRINTF',
+    'QUOTE', 'RANDOM', 'RANDOMBLOB', 'REPLACE', 'ROUND', 'RTRIM', 'SOUNDEX',
+    'SQLITE_COMPILEOPTION_GET', 'SQLITE_COMPILEOPTION_USED',
+    'SQLITE_OFFSET', 'SQLITE_SOURCE_ID', 'SQLITE_VERSION', 'STRFTIME',
+    'SUBSTR', 'SUM', 'TIME', 'TOTAL', 'TOTAL_CHANGES', 'TRIM', 'TYPEOF',
+    'UNICODE', 'UNLIKELY', 'UPPER', 'ZEROBLOB')
+KEYWORDS = (
+    'ABORT', 'ACTION', 'ADD', 'AFTER', 'ALL', 'ALTER', 'ALWAYS', 'ANALYZE',
+    'AS', 'ASC', 'ATTACH', 'AUTOINCREMENT', 'BEFORE', 'BEGIN', 'BETWEEN',
+    'BY', 'CASCADE', 'CASE', 'CAST', 'CHECK', 'COLLATE', 'COLUMN', 'COMMIT',
+    'CONFLICT', 'CONSTRAINT', 'CREATE', 'CROSS', 'CURRENT', 'CURRENT_DATE',
+    'CURRENT_TIME', 'CURRENT_TIMESTAMP', 'DATABASE', 'DEFAULT',
+    'DEFERRABLE', 'DEFERRED', 'DELETE', 'DESC', 'DETACH', 'DISTINCT', 'DO',
+    'DROP', 'EACH', 'ELSE', 'END', 'ESCAPE', 'EXCEPT', 'EXCLUDE',
+    'EXCLUSIVE', 'EXISTS', 'EXPLAIN', 'FAIL', 'FILTER', 'FIRST',
+    'FOLLOWING', 'FOR', 'FOREIGN', 'FROM', 'FULL', 'GENERATED', 'GLOB',
+    'GROUP', 'GROUPS', 'HAVING', 'IF', 'IGNORE', 'IMMEDIATE', 'INDEX',
+    'INDEXED', 'INITIALLY', 'INNER', 'INSERT', 'INSTEAD', 'INTERSECT',
+    'INTO', 'ISNULL', 'JOIN', 'KEY', 'LAST', 'LEFT', 'LIKE', 'LIMIT',
+    'NATURAL', 'NO', 'NOTHING', 'NOTNULL', 'NULLS', 'OF', 'OFFSET', 'ON',
+    'ORDER', 'OTHERS', 'OUTER', 'OVER', 'PARTITION', 'PLAN', 'PRAGMA',
+    'PRECEDING', 'PRIMARY', 'QUERY', 'RAISE', 'RANGE', 'RECURSIVE',
+    'REFERENCES', 'REINDEX', 'RELEASE', 'RENAME', 'REPLACE', 'RESTRICT',
+    'RIGHT', 'ROLLBACK', 'ROW', 'ROWS', 'SAVEPOINT', 'SELECT', 'SET',
+    'TABLE', 'TEMP', 'TEMPORARY', 'THEN', 'TIES', 'TO', 'TRANSACTION',
+    'TRIGGER', 'UNBOUNDED', 'UNION', 'UNIQUE', 'UPDATE', 'USING', 'VACUUM',
+    'VALUES', 'VIEW', 'VIRTUAL', 'WHEN', 'WHERE', 'WINDOW', 'WITH',
+    'WITHOUT') 
+OPERATORS = ('IS', 'NOT', 'IN', 'LIKE', 'AND', 'OR', 'GLOB', 'MATCH',
+             'REGEXP')
+
+
+@enum.unique
+class State(enum.IntEnum):
+    CODE = 0
+    COMMENT = 1
+
+
+@enum.unique
+class Syntax(enum.Enum):
+    NORMAL = 0
+    CONSTANT = 1
+    FUNCTION = 2
+    KEYWORD = 3
+    NUMBER = 4
+    OPERATOR = 5
+    STRING = 6
+    COMMENT = 7
+
 
 class SQLSyntaxHighlighter(QSyntaxHighlighter):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.make_formats()
+
+
+    def make_formats(self):
+        self.formats = {}
+        base = QTextCharFormat()
+        base.setFontFamily(FONT_FAMILY)
+        base.setFontPointSize(FONT_SIZE)
+        for kind, color in (
+                (Syntax.NORMAL, Qt.black),
+                (Syntax.CONSTANT, Qt.darkCyan),
+                (Syntax.FUNCTION, Qt.blue),
+                (Syntax.KEYWORD, Qt.darkBlue),
+                (Syntax.NUMBER, Qt.darkRed),
+                (Syntax.OPERATOR, Qt.darkMagenta),
+                (Syntax.STRING, Qt.darkYellow),
+                (Syntax.COMMENT, Qt.darkGreen)):
+            fmt = QTextCharFormat(base)
+            fmt.setForeground(QColor(color))
+            if kind in {Syntax.KEYWORD, Syntax.FUNCTION}:
+                fmt.setFontWeight(QFont.Bold)
+            elif kind is Syntax.COMMENT:
+                fmt.setFontItalic(True)
+            self.formats[kind] = fmt
 
 
     def highlightBlock(self, text):
-        # TODO
-        # 1. 'strings' including 'strings with '' quotes'
-        # 2. "names of things"
-        # 3. -- comments to EOL and /* long comments */
-        # 4. SQL language:
-        #   ALTER\s+TABLE
-        #   ANALYZE
-        #   BEGIN(:?\s+TRANSACTION)?
-        #   CREATE\s+(:?(:?VIRTUAL\s+)?TABLE)|INDEX|TRIGGER|VIEW)
-        #   ...
-        # 5. SQLite functions:
-        #   AVG(?=\()
-        #   COUNT(?=\()
-        #   ...
-        # 6. SQL keywords:
-        #   ABORT
-        #   ACTION
-        #   ...
-        # 7. Constants:
-        #   TRUE
-        #   FALSE
-        #   NULL
-        print('highlightBlock', text)
+        state = State.CODE
+        prev_state = State(max(self.previousBlockState(), State.CODE))
+        i = 0
+        self.setFormat(i, len(text), self.formats[Syntax.NORMAL])
+        if prev_state is State.COMMENT:
+            i = text.find('*/')
+            if i > -1: # found the end of the comment
+                i += 2
+                self.setFormat(0, i, self.formats[Syntax.COMMENT])
+            else: # whole line is inside the comment
+                self.setFormat(0, len(text), self.formats[Syntax.COMMENT])
+                self.setCurrentBlockState(State.COMMENT)
+                return # All in comments
+
+        for pattern, syntax in (
+                (r'\b' + f'({"|".join(CONSTANTS)})' + r'\b',
+                 Syntax.CONSTANT),
+                (r'\b' + f'(?P<func>{"|".join(FUNCTIONS)})(?=[(])',
+                 Syntax.FUNCTION),
+                (r'\b' + f'({"|".join(KEYWORDS)})' + r'\b', Syntax.KEYWORD),
+                (r'\b(\d+(?:\.\d+)?|\.\d+)\b', Syntax.NUMBER),
+                (r'([-+/%*"|<>&=!])', Syntax.OPERATOR),
+                (r'\b' + f'({"|".join(OPERATORS)})' + r'\b',
+                 Syntax.OPERATOR),
+                (r"('[^']+?')", Syntax.STRING),
+                (r'(/\*.*?\*/|--.*$)', Syntax.COMMENT),
+                ):
+            for match in re.finditer(pattern, text,
+                                     re.IGNORECASE | re.DOTALL):
+                start = max(i, match.start(1))
+                end = match.end(1)
+                if end >= start:
+                    self.setFormat(start, end - start, self.formats[syntax])
+
+        j = text.find('/*', i)
+        if j > -1:
+            k = text.find('*/', j)
+            if k == -1: # Multi-line comment started but not finished
+                self.setFormat(j, len(text),
+                               self.formats[Syntax.COMMENT])
+                self.setCurrentBlockState(State.COMMENT)
+                return
+        self.setCurrentBlockState(State.CODE)
 
 
     def rehighlight(self):
