@@ -121,48 +121,54 @@ TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name'
 
 
 if __name__ == '__main__':
-    def check_fields_from_select(sql, expected=None):
+    def check_fields_from_select(n, sql, expected=None):
         actual = field_names_from_select(sql)
         if actual != expected:
             sql = ' '.join(sql.split())
-            print(f'SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
+            print(f'{n} SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
             return 1
         return 0
 
-    tests = errors = 0
+    n = errors = 0
+    n += 1
+    sql = 'select distinct kid, name as "Kiosk Name" from kiosks'
+    errors += check_fields_from_select(n, sql, ('kid', 'Kiosk Name')) # 1
+    n += 1
+    sql = 'select id from stations'
+    errors += check_fields_from_select(n, sql, ('id',)) # 2
     sql = '''
 SELECT stations.id AS 'Station ID', stations.name as Station,
 stations.zone, kiosks.name as "Kiosk Name"
 FROM stations, kiosks WHERE stations.id = kiosks.sid;'''
-    tests += 1
-    errors += check_fields_from_select(
-        sql, ('Station ID', 'Station', 'stations.zone', 'Kiosk Name'))
+    n += 1
+    errors += check_fields_from_select( # 3
+        n, sql, ('Station ID', 'Station', 'stations.zone', 'Kiosk Name'))
     sql = '''
 SELECT f(a), g(b, h(c, d)), x + y, e, t1.h, t2.i,
 f(a) as fa, g(b, h(c, d)) as gbh, x + y as xy, e as E,
 t1.h as "T H #1", t2.i as 'T 2 I' FROM t1, t2 WHERE t1.id = t2.id
 ORDER BY t2.name DESC;'''
-    tests += 1
-    errors += check_fields_from_select(
-        sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i', 'fa',
-              'gbh', 'xy', 'E', 'T H #1', 'T 2 I'))
-    tests += 1
-    errors += check_fields_from_select(
-        'SELECT COUNT(*) FROM Stations WHERE zone >= 1.5;', ('COUNT(*)',))
-    tests += 1
+    n += 1
+    errors += check_fields_from_select( # 4
+        n, sql, ('f(a)', 'g(b, h(c, d))', 'x + y', 'e', 't1.h', 't2.i',
+                 'fa', 'gbh', 'xy', 'E', 'T H #1', 'T 2 I'))
+    n += 1
+    errors += check_fields_from_select( # 5
+        n, 'SELECT COUNT(*) FROM Stations WHERE zone >= 1.5;',
+        ('COUNT(*)',))
+    n += 1
     try:
-        check_fields_from_select('SELECT * FROM Kiosks;')
+        check_fields_from_select(n, 'SELECT * FROM Kiosks;') # 6
         errors += 1 # unexpected
     except Error:
         pass # expected
-    tests += 1
+    n += 1
     try:
-        check_fields_from_select('SELECT FROM stations;')
+        check_fields_from_select(n, 'SELECT FROM stations;') # 7
         errors += 1 # unexpected
     except Error:
         pass # expected
     if errors:
-        print(f'{tests - errors:,}/{tests:,} passed, '
-              f'{errors:,}/{tests:,} failed')
+        print(f'{n - errors:,}/{n:,} passed, {errors:,}/{n:,} failed')
     else:
-        print(f'All {tests:,} OK')
+        print(f'All {n:,} OK')

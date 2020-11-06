@@ -74,8 +74,8 @@ README.md
 #     list or form view
 #   . songbird_config (key, value) e.g., show_contents, show_pragmas,
 #     use tabs (vs MDI) etc.
-# - ultimately aim to be able to replace both Biller and Notebox with
-#  custom songbird databases
+# - ultimately aim to be able to replace Biller and Notebox and Film/TV
+#   spreadsheet with custom Songbird databases
 
 # Toggle Form View toggles between a form for adding/editing and a list
 # for viewing (and possibly in-place adding/editing).
