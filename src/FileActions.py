@@ -89,9 +89,8 @@ class Mixin:
 
 
     def file_new(self):
-        filename = self._file_new_or_open('New',
-                                          QFileDialog.getSaveFileName)
-        if filename:
+        if filename := self._file_new_or_open('New',
+                                              QFileDialog.getSaveFileName):
             if filename.exists():
                 QMessageBox.warning(
                     self, f'Database exists — {qApp.applicationName()}',
@@ -102,9 +101,8 @@ class Mixin:
 
 
     def file_open(self):
-        filename = self._file_new_or_open('Open',
-                                          QFileDialog.getOpenFileName)
-        if filename:
+        if filename := self._file_new_or_open('Open',
+                                              QFileDialog.getOpenFileName):
             if not filename.exists():
                 QMessageBox.warning(
                     self, f'Database missing — {qApp.applicationName()}',
