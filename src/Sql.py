@@ -25,11 +25,9 @@ class Pragmas:
 
 def first(cursor, sql, d=None, *, default=None, Class=int):
     d = {} if d is None else d
-    record = cursor.execute(sql, d).fetchone()
-    if record is None:
+    if (record := cursor.execute(sql, d).fetchone()) is None:
         return default # Deliberately ignores Class
-    value = record[0]
-    if value is None:
+    if (value := record[0]) is None:
         return value
     return bool(int(value)) if isinstance(Class, bool) else Class(value)
 
@@ -79,8 +77,7 @@ def field_names_from_select(select, *, count=False):
     if match := re.search(r'SELECT(?:\s+(:?ALL|DISTINCT))?\s+'
                           r'(?P<fields>.*?)\s+from', select,
                           re.IGNORECASE | re.DOTALL):
-        fields = match.group('fields')
-        if fields == '*':
+        if (fields := match.group('fields')) == '*':
             raise Error('Cannot determine field names from SELECT *')
         if '(' not in fields:
             fields = fields.split(',')
@@ -124,8 +121,7 @@ TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name'
 
 if __name__ == '__main__':
     def check_fields_from_select(n, sql, expected=None):
-        actual = field_names_from_select(sql)
-        if actual != expected:
+        if (actual := field_names_from_select(sql)) != expected:
             sql = ' '.join(sql.split())
             print(f'{n} SQL: {sql}\n  Exp: {expected}\n  Act: {actual}')
             return 1

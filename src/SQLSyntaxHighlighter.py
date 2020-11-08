@@ -102,8 +102,7 @@ class SQLSyntaxHighlighter(QSyntaxHighlighter):
         i = 0
         self.setFormat(i, len(text), self.formats[Syntax.NORMAL])
         if prev_state is State.COMMENT:
-            i = text.find('*/')
-            if i > -1: # found the end of the comment
+            if (i := text.find('*/')) > -1: # found the end of the comment
                 i += 2
                 self.setFormat(0, i, self.formats[Syntax.COMMENT])
             else: # whole line is inside the comment
@@ -131,11 +130,9 @@ class SQLSyntaxHighlighter(QSyntaxHighlighter):
                 if end >= start:
                     self.setFormat(start, end - start, self.formats[syntax])
 
-        j = text.find('/*', i)
-        if j > -1:
-            k = text.find('*/', j)
-            if k == -1: # Multi-line comment started but not finished
-                self.setFormat(j, len(text),
+        if (j := text.find('/*', i)) > -1:
+            if (k := text.find('*/', j)) == -1: # Multi-line comment
+                self.setFormat(j, len(text),    # started but not finished
                                self.formats[Syntax.COMMENT])
                 self.setCurrentBlockState(State.COMMENT)
                 return
