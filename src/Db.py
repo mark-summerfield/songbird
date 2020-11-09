@@ -9,7 +9,7 @@ from Const import UNCHANGED
 from Sql import (
     CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_OR_VIEW_SQL, ContentDetail,
     ContentSummary, Pragmas, first, quoted, select_from_create_view,
-    select_limit_1_from_select)
+    select_limit_1_from_select, uncommented)
 
 
 class Db:
@@ -102,8 +102,7 @@ class Db:
 
     def select_row_count(self, select):
         if self._db is not None:
-            select.rstrip(';')
-            sql = f'SELECT COUNT(*) FROM ({select})'
+            sql = f'SELECT COUNT(*) FROM ({uncommented(select)})'
             cursor = self._db.cursor()
             with self._db:
                 return first(cursor, sql, default=0)
@@ -116,7 +115,8 @@ class Db:
         for detail in self.content_detail(name):
             fields.append(quoted(detail.name))
         fields = ', '.join(fields)
-        return f'SELECT {fields}\nFROM {quoted(name)}'
+        return (
+            f'SELECT {fields}\nFROM {quoted(name)}\n--WHERE \n--ORDER BY ')
 
 
     def table_row(self, select, row): # Rely on SQLite to cache

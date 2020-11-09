@@ -43,11 +43,12 @@ def quoted(name, *, quote='"', force=False):
 def uncommented(sql):
     # Simple-minded, e.g., incorrect if -- or /* is inside a string etc.
     return re.sub(r'/\*.*?\*/', '', re.sub(r'--.*', '', sql),
-                  flags=re.DOTALL).lstrip()
+                  flags=re.DOTALL).strip()
 
 
 @functools.lru_cache
 def select_limit_1_from_select(select, row=0):
+    select = uncommented(select)
     limit_rx = re.compile(
         r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
     if match := limit_rx.search(select):

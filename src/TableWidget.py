@@ -28,8 +28,8 @@ class TableWidget(QWidget):
     def make_widgets(self, select):
         self.sqlEdit = SQLEdit.SQLEdit(select)
         self.sqlEdit.setTabChangesFocus(True)
-        # TODO color syntax highlighting
-        self.tableModel = TableModel.TableModel(self.db, select)
+        self.tableModel = TableModel.TableModel(self.db,
+                                                Sql.uncommented(select))
         self.tableView = QTableView()
         self.tableView.setModel(self.tableModel)
         self.statusLabel = QLabel()
@@ -53,14 +53,13 @@ class TableWidget(QWidget):
 
 
     def refresh(self):
-        select = self.sqlEdit.toPlainText()
-        uncommented = Sql.uncommented(select)
-        if not re.match(r'\s*SELECT\s', uncommented, re.IGNORECASE):
+        select = Sql.uncommented(self.sqlEdit.toPlainText())
+        if not re.match(r'\s*SELECT\s', select, re.IGNORECASE):
             self.statusLabel.setText('<font color=red>Only SELECT '
                                      'statements are supported here</font>')
         else:
             if re.match(r'\s*SELECT(:?\s+(:?ALL|DISTINCT))?\s+\*',
-                        uncommented, re.IGNORECASE):
+                        select, re.IGNORECASE):
                 try:
                     names = ', '.join(
                         [Sql.quoted(name) for name in
