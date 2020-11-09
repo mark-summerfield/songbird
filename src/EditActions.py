@@ -105,8 +105,7 @@ class Mixin:
 
 
     def edit_copy(self):
-        widget = qApp.focusWidget()
-        if widget is not None:
+        if (widget := qApp.focusWidget()) is not None:
             try:
                 widget.copy()
             except AttributeError:
@@ -114,8 +113,7 @@ class Mixin:
 
 
     def edit_cut(self):
-        widget = qApp.focusWidget()
-        if widget is not None:
+        if (widget := qApp.focusWidget()) is not None:
             try:
                 widget.cut()
             except AttributeError:
@@ -123,8 +121,7 @@ class Mixin:
 
 
     def edit_paste(self):
-        widget = qApp.focusWidget()
-        if widget is not None:
+        if (widget := qApp.focusWidget()) is not None:
             try:
                 widget.paste()
             except AttributeError:
