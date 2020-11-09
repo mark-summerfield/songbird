@@ -116,7 +116,7 @@ class Db:
         for detail in self.content_detail(name):
             fields.append(quoted(detail.name))
         fields = ', '.join(fields)
-        return f'SELECT {fields} FROM {quoted(name)}'
+        return f'SELECT {fields}\nFROM {quoted(name)}'
 
 
     def table_row(self, select, row): # Rely on SQLite to cache
@@ -134,7 +134,9 @@ class Db:
             with self._db:
                 sql = first(cursor, TABLE_OR_VIEW_SQL, dict(name=name),
                             Class=str)
-                return select_from_create_view(sql)
+                return re.sub(r'\s+(from|where|order\s+by)\s', r'\n\1 ',
+                              select_from_create_view(sql),
+                              flags=re.IGNORECASE | re.DOTALL)
 
 
     def field_names_for_select(self, select):

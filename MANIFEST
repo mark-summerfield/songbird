@@ -107,10 +107,13 @@ README.md
 # if/when possible.
 
 # Ideas
-# - Excel import/export using try .. except ImportError so it is
-#   available but not required
-#   (& similarly for dBase II, Access, etc., if suitable modules are
-#   available)
+# - Implement a plugin system? (Using a PyPI lib'y?), e.g., to support:
+#   . Excel import/export using try .. except ImportError so it is
+#     available but not required
+#     (& similarly for dBase II, Access, etc., if suitable modules are
+#     available)
+#   . Songbird (& SQLite?) merge
+#   ...
 # - implement Undo/Redo by using a temporary memory database; see
 #   https://www.sqlite.org/undoredo.html
 
