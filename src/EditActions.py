@@ -3,14 +3,14 @@
 
 import re
 
-from PySide2.QtGui import QKeySequence
+from PySide2.QtGui import QKeySequence, QTextCursor
 from PySide2.QtWidgets import (
     QLineEdit, QMdiSubWindow, QPlainTextEdit, QTextEdit)
 
 import apsw
 import Config
 import Sql
-from Ui import make_action
+from Ui import EditBlock, make_action
 
 
 class Mixin:
@@ -92,10 +92,13 @@ class Mixin:
             try:
                 names = ', '.join([Sql.quoted(name) for name in
                                   self.db.field_names_for_select(select)])
-                widget.setPlainText(re.sub(
-                    r'(SELECT(:?\s+(:?ALL|DISTINCT))?\s)\s*\*',
-                    lambda match: match.group(1).upper() + names,
-                    widget.toPlainText(), flags=re.IGNORECASE))
+                with EditBlock(widget) as cursor:
+                    cursor.select(QTextCursor.Document)
+                    text = cursor.selectedText()
+                    cursor.insertText(re.sub(
+                        r'(SELECT(:?\s+(:?ALL|DISTINCT))?\s)\s*\*',
+                        lambda match: match.group(1).upper() + names,
+                        text, flags=re.IGNORECASE))
             except apsw.SQLError as err:
                 while widget is not None and not isinstance(widget,
                                                             QMdiSubWindow):

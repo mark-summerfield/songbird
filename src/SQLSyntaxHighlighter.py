@@ -8,8 +8,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import (
     QColor, QCursor, QFont, QSyntaxHighlighter, QTextCharFormat)
 
-FONT_FAMILY = 'monospace' # TODO make these user-configurable options
-FONT_SIZE = 12
+from Const import WIN
 
 CONSTANTS = ('TRUE', 'FALSE', 'NULL')
 FUNCTIONS = (
@@ -75,9 +74,6 @@ class SQLSyntaxHighlighter(QSyntaxHighlighter):
 
     def make_formats(self):
         self.formats = {}
-        base = QTextCharFormat()
-        base.setFontFamily(FONT_FAMILY)
-        base.setFontPointSize(FONT_SIZE)
         for kind, color in (
                 (Syntax.NORMAL, Qt.black),
                 (Syntax.CONSTANT, Qt.darkCyan),
@@ -87,10 +83,16 @@ class SQLSyntaxHighlighter(QSyntaxHighlighter):
                 (Syntax.OPERATOR, Qt.darkMagenta),
                 (Syntax.STRING, Qt.darkYellow),
                 (Syntax.COMMENT, Qt.darkGreen)):
-            fmt = QTextCharFormat(base)
+            fmt = QTextCharFormat()
+            fmt.setFontFamily('Consolas' if WIN else 'Monospace')
+            fmt.setFontFixedPitch(True)
+            fmt.setFontStyleHint(QFont.Monospace)
             fmt.setForeground(QColor(color))
-            if kind in {Syntax.KEYWORD, Syntax.FUNCTION}:
-                fmt.setFontWeight(QFont.Bold)
+            if kind in {Syntax.CONSTANT, Syntax.FUNCTION, Syntax.KEYWORD,
+                        Syntax.OPERATOR}:
+                fmt.setFontCapitalization(QFont.AllUppercase)
+                if kind is Syntax.KEYWORD:
+                    fmt.setFontWeight(QFont.DemiBold)
             elif kind is Syntax.COMMENT:
                 fmt.setFontItalic(True)
             self.formats[kind] = fmt

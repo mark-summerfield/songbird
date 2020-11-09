@@ -5,6 +5,21 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QAction, QDockWidget, QToolBar, QToolButton
 
 
+class EditBlock:
+
+    def __init__(self, widget):
+        self.cursor = widget.textCursor()
+
+
+    def __enter__(self):
+        self.cursor.beginEditBlock()
+        return self.cursor
+
+
+    def __exit__(self, _exc_type, _exc_val, _exc_tb):
+        self.cursor.endEditBlock()
+
+
 class BlockSignals:
 
     def __init__(self, *widgets):
