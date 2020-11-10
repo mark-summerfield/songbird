@@ -25,6 +25,8 @@ st.sh
 README.md
 
 # TODO
+# 
+# - implement Contents→Toggle Tabs
 #
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:
@@ -41,13 +43,15 @@ README.md
 #	fid -- FK
 #	title
 #	sql
-#	x
+#	x -- this and below are all nullable
 #	y
 #	width
 #	height
-#	z -- this is tab pos or z-order depending on mode
+#	z
+#	tab_pos
 #	edit_height -- the splitter gives this much to the editor; rest
 #		    -- to the table view (edit_height could be 0)
+#   cascade delete windows if a files record is deleted
 #
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py

@@ -12,7 +12,6 @@ from Ui import make_action
 # C&ollapse Contents Item    TODO
 # [ ] Show &Pragmas
 # -------------------
-# Toggle &Form View TODO
 # &Toggle Tabs  TODO
 # -------------------
 # C&ascade TODO only enable if in MDI mode
