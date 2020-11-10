@@ -39,17 +39,17 @@ class TableModel(QAbstractTableModel):
     def columnCount(self, parent=QModelIndex()):
         try:
             return Sql.field_count_from_select(self.select)
-        except (apsw.SQLError, Sql.Error) as err:
+        except Sql.Error:
+            return len(self.db.field_names_for_select(self.select))
+        except apsw.SQLError as err:
             self.sql_error.emit(str(err))
             return 0
 
 
     def data(self, index, role):
         try:
-            if (not index.isValid() or
-                    index.row() >= self.db.select_row_count(self.select) or
-                    index.column() >=
-                    Sql.field_count_from_select(self.select)):
+            if (not index.isValid() or index.row() >= self.rowCount() or
+                    index.column() >= self.columnCount()):
                 return
             if role == Qt.DisplayRole:
                 row = self.db.table_row(self.select, index.row())
@@ -64,10 +64,10 @@ class TableModel(QAbstractTableModel):
         if orientation == Qt.Horizontal:
             try:
                 try:
-                    return Sql.field_names_from_select(self.select)[section]
-                except Sql.Error: # SELECT *
-                    return self.db.field_names_for_select(
-                        self.select)[section]
+                    names = Sql.field_names_from_select(self.select)
+                except Sql.Error:
+                    names = self.db.field_names_for_select(self.select)
+                return names[section]
             except apsw.SQLError as err:
                 self.sql_error.emit(str(err))
         return f'{section + 1:,}'

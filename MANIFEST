@@ -28,7 +28,7 @@ README.md
 #
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc):
-#   CREATE TABLE db_filenames (
+#   CREATE TABLE files (
 #	fid -- PK
 #	filename -- full path to SQLite file
 #	updated -- integer epoch secs
@@ -36,7 +36,7 @@ README.md
 #	show_contents -- bool
 #	show_pragmas -- bool
 #	show_calendar -- bool
-#   CREATE TABLE recent_windows (
+#   CREATE TABLE windows (
 #	wid -- PK
 #	fid -- FK
 #	title

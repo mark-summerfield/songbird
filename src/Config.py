@@ -236,6 +236,9 @@ class _Singleton_Config:
                                   WHERE key = '{SHOW_PRAGMAS}');''')
             # 5
             cursor.execute('''DELETE FROM config WHERE key = 'Blink';''')
+            # 6
+            # CREATE TABLE IF NOT EXISTS FILES (...
+            # CREATE TABLE IF NOT EXISTS WINDOWS (...
 
 
 _VERSION = 5
@@ -264,6 +267,20 @@ INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
 INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
+
+-- TODO
+/*
+CREATE TABLE files (
+    fid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    filename TEXT,
+    updated INTEGER DEFAULT STRFTIME('%s', 'NOW'),
+    -- etc.
+);
+
+CREATE TABLE windows (
+    -- etc.
+);
+*/
 '''
 
 _INSERT_RECENT = 'INSERT INTO config (key, value) VALUES (:key, NULL);'

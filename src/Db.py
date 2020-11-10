@@ -5,11 +5,8 @@ import functools
 import re
 
 import apsw
+import Sql
 from Const import UNCHANGED
-from Sql import (
-    CONTENT_DETAIL, CONTENT_SUMMARY, IS_SONGBIRD, TABLE_OR_VIEW_SQL,
-    ContentDetail, ContentSummary, Pragmas, first, quoted,
-    select_from_create_view, select_limit_1_from_select, uncommented)
 
 
 class Db:
@@ -55,15 +52,15 @@ class Db:
         if self._db is not None:
             cursor = self._db.cursor()
             with self._db:
-                return bool(first(cursor, IS_SONGBIRD, default=0))
+                return bool(Sql.first(cursor, Sql.IS_SONGBIRD, default=0))
         return False
 
 
     def content_summary(self):
         if self._db is not None:
             cursor = self._db.cursor()
-            for row in cursor.execute(CONTENT_SUMMARY):
-                content = ContentSummary(*row)
+            for row in cursor.execute(Sql.CONTENT_SUMMARY):
+                content = Sql.ContentSummary(*row)
                 if content.name.startswith(('sqlite_', 'songbird_')):
                     continue
                 # TODO also skip FTS implementation tables
@@ -73,16 +70,16 @@ class Db:
     def content_detail(self, name):
         if self._db is not None:
             cursor = self._db.cursor()
-            for row in cursor.execute(CONTENT_DETAIL, dict(name=name)):
-                yield ContentDetail(*row[1:])
+            for row in cursor.execute(Sql.CONTENT_DETAIL, dict(name=name)):
+                yield Sql.ContentDetail(*row[1:])
 
 
     def pragmas(self):
-        pragmas = Pragmas()
+        pragmas = Sql.Pragmas()
         if self._db is not None:
             cursor = self._db.cursor()
             with self._db:
-                pragmas.user_version = first(
+                pragmas.user_version = Sql.first(
                     cursor, 'PRAGMA user_version', default=0)
         return pragmas
 
@@ -111,10 +108,10 @@ class Db:
 
     def select_row_count(self, select):
         if self._db is not None:
-            sql = f'SELECT COUNT(*) FROM ({uncommented(select)})'
+            sql = f'SELECT COUNT(*) FROM ({Sql.uncommented(select)})'
             cursor = self._db.cursor()
             with self._db:
-                return first(cursor, sql, default=0)
+                return Sql.first(cursor, sql, default=0)
         return 0
 
 
@@ -122,15 +119,15 @@ class Db:
     def table_make_select(self, name):
         fields = []
         for detail in self.content_detail(name):
-            fields.append(quoted(detail.name))
+            fields.append(Sql.quoted(detail.name))
         fields = ', '.join(fields)
-        return (
-            f'SELECT {fields}\nFROM {quoted(name)}\n--WHERE \n--ORDER BY ')
+        return (f'SELECT {fields}\nFROM {Sql.quoted(name)}\n'
+                '--WHERE \n--ORDER BY ')
 
 
     def table_row(self, select, row): # Rely on SQLite to cache
         if self._db is not None:
-            select = select_limit_1_from_select(select, row)
+            select = Sql.select_limit_1_from_select(select, row)
             cursor = self._db.cursor()
             with self._db:
                 return cursor.execute(select).fetchone()
@@ -141,22 +138,22 @@ class Db:
         if self._db is not None:
             cursor = self._db.cursor()
             with self._db:
-                sql = first(cursor, TABLE_OR_VIEW_SQL, dict(name=name),
-                            Class=str)
+                sql = Sql.first(cursor, Sql.TABLE_OR_VIEW_SQL,
+                                dict(name=name), Class=str)
                 return re.sub(r'\s+(from|where|order\s+by)\s', r'\n\1 ',
-                              select_from_create_view(sql),
+                              Sql.select_from_create_view(sql),
                               flags=re.IGNORECASE | re.DOTALL)
 
 
     def field_names_for_select(self, select):
-        # Usually try Sql.field_names_for_select() first
+        # Usually try Sql.field_names_from_select() first
         if self._db is not None:
-            select = select_limit_1_from_select(select)
+            select = Sql.select_limit_1_from_select(select)
             cursor = self._db.cursor()
             with self._db:
                 try:
                     cursor.execute(select)
-                    return [quoted(item[0])
+                    return [Sql.quoted(item[0])
                             for item in cursor.getdescription()]
-                except apsw.ExecutionCompleteError:
+                except (apsw.SQLError, apsw.ExecutionCompleteError):
                     return () # No matching rows
