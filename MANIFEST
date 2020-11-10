@@ -27,11 +27,11 @@ README.md
 # TODO
 #
 # - for pure SQLite dbs remember those opened in the past year (in
-#   songbird.sbc):
+#   songbird.sbc), so on quit delete any older than one year:
 #   CREATE TABLE files (
 #	fid -- PK
 #	filename -- full path to SQLite file
-#	updated -- integer epoch secs
+#	updated -- text datetime timestamp
 #	mdi -- bool FALSE means tabs
 #	show_contents -- bool
 #	show_pragmas -- bool
