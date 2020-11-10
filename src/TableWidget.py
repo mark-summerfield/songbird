@@ -52,12 +52,18 @@ class TableWidget(QWidget):
         self.tableModel.sql_error.connect(self.on_sql_error)
 
 
-    def refresh(self):
+    @property
+    def is_select(self):
         select = Sql.uncommented(self.sqlEdit.toPlainText())
-        if not re.match(r'\s*SELECT\s', select, re.IGNORECASE):
+        return re.match(r'\s*SELECT\s', select, re.IGNORECASE) is not None
+
+
+    def refresh(self):
+        if not self.is_select:
             self.statusLabel.setText('<font color=red>Only SELECT '
                                      'statements are supported here</font>')
         else:
+            select = Sql.uncommented(self.sqlEdit.toPlainText())
             if re.match(r'\s*SELECT(:?\s+(:?ALL|DISTINCT))?\s+\*',
                         select, re.IGNORECASE):
                 try:

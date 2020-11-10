@@ -26,6 +26,29 @@ README.md
 
 # TODO
 #
+# - for pure SQLite dbs remember those opened in the past year (in
+#   songbird.sbc):
+#   CREATE TABLE db_filenames (
+#	fid -- PK
+#	filename -- full path to SQLite file
+#	updated -- integer epoch secs
+#	mdi -- bool FALSE means tabs
+#	show_contents -- bool
+#	show_pragmas -- bool
+#	show_calendar -- bool
+#   CREATE TABLE recent_windows (
+#	wid -- PK
+#	fid -- FK
+#	title
+#	sql
+#	x
+#	y
+#	width
+#	height
+#	z -- this is tab pos or z-order depending on mode
+#	edit_height -- the splitter gives this much to the editor; rest
+#		    -- to the table view (edit_height could be 0)
+#
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py
 #	put QTableView in a QWidgetStack? with a QPlainTextEdit
@@ -40,13 +63,6 @@ README.md
 #
 # - How to handle form view insert/update/delete/previous/next/save?
 #
-#
-# - for pure SQLite dbs remember the last 100 opened (in songbird.sbc):
-#   CREATE TABLE recent_files (
-#	filename PK -- full path to SQLite file
-#	wid -- FK to recent_windows
-#   CREATE TABLE recent_windows (
-#	wid PK, sql, x, y, width, height, tab_pos)
 #
 # - create TriggerEditor for adding/editing/deleting triggers
 #

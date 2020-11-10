@@ -117,7 +117,10 @@ CONTENT_DETAIL = 'SELECT * FROM pragma_table_info(:name);'
 ContentDetail = collections.namedtuple(
     'ContentDetail', ('name', 'type', 'notnull', 'default', 'pk'))
 
-TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name'
+TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name;'
+
+IS_SONGBIRD = '''
+SELECT COUNT(*) FROM sqlite_master WHERE name LIKE 'songbird_%';'''
 
 
 if __name__ == '__main__':

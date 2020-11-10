@@ -7,9 +7,9 @@ import re
 import apsw
 from Const import UNCHANGED
 from Sql import (
-    CONTENT_DETAIL, CONTENT_SUMMARY, TABLE_OR_VIEW_SQL, ContentDetail,
-    ContentSummary, Pragmas, first, quoted, select_from_create_view,
-    select_limit_1_from_select, uncommented)
+    CONTENT_DETAIL, CONTENT_SUMMARY, IS_SONGBIRD, TABLE_OR_VIEW_SQL,
+    ContentDetail, ContentSummary, Pragmas, first, quoted,
+    select_from_create_view, select_limit_1_from_select, uncommented)
 
 
 class Db:
@@ -48,6 +48,15 @@ class Db:
     def refresh(self):
         self.table_make_select.cache_clear()
         self.view_make_select.cache_clear()
+
+
+    @property
+    def is_songbird(self):
+        if self._db is not None:
+            cursor = self._db.cursor()
+            with self._db:
+                return bool(first(cursor, IS_SONGBIRD, default=0))
+        return False
 
 
     def content_summary(self):
@@ -145,5 +154,9 @@ class Db:
             select = select_limit_1_from_select(select)
             cursor = self._db.cursor()
             with self._db:
-                cursor.execute(select)
-                return [quoted(item[0]) for item in cursor.getdescription()]
+                try:
+                    cursor.execute(select)
+                    return [quoted(item[0])
+                            for item in cursor.getdescription()]
+                except apsw.ExecutionCompleteError:
+                    return () # No matching rows
