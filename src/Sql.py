@@ -76,7 +76,7 @@ def field_names_from_select(select, *, count=False):
     as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
     results = []
     if match := re.search(r'SELECT(?:\s+(:?ALL|DISTINCT))?\s+'
-                          r'(?P<fields>.*?)\s+from', select,
+                          r'(?P<fields>.*?)(:?\s+FROM|\s*$)', select,
                           re.IGNORECASE | re.DOTALL):
         if (fields := match.group('fields')) == '*':
             raise Error('Cannot determine field names from SELECT *')
