@@ -249,7 +249,7 @@ class _Singleton_Config:
                 SELECT '{SHOW_AS_TABS}', FALSE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_AS_TABS}');''')
-            # 7
+            # 7 TODO
             # CREATE TABLE IF NOT EXISTS FILES (...
             # CREATE TABLE IF NOT EXISTS WINDOWS (...
 
