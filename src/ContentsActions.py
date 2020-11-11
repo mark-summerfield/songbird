@@ -2,17 +2,18 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtWidgets import QMdiArea
 
 import Config
 from Ui import make_action
 
-# [X] Show &Contents
 # &View Contents Item
-# E&xpand Contents Item  TODO
-# C&ollapse Contents Item    TODO
+# [X] Show &Contents
+# [ ] Show &As Tabs|Windows
 # [ ] Show &Pragmas
 # -------------------
-# &Toggle Tabs  TODO
+# E&xpand Contents Item  TODO
+# C&ollapse Contents Item    TODO
 # -------------------
 # C&ascade TODO only enable if in MDI mode
 # &Tile TODO only enable if in MDI mode
@@ -33,14 +34,18 @@ class Mixin:
 
     def make_contents_actions(self):
         path = Config.path() / 'images'
+        self.contents_view_content_action = make_action(
+            self, path / 'window-new.svg', '&View Contents Item',
+            self.contents_view_content, QKeySequence.AddTab)
         self.contents_toggle_action = self.contentsDock.toggleViewAction()
         self.contents_toggle_action.setIcon(QIcon(str(path / 'folder.svg')))
         self.contents_toggle_action.setText('Show &Contents')
         self.contents_toggle_action.toggled.connect(
             self.contents_update_toggle_action)
-        self.contents_view_content_action = make_action(
-            self, path / 'window-new.svg', '&View Contents Item',
-            self.contents_view_content, QKeySequence.AddTab)
+        self.contents_toggle_tabs_action = make_action(
+            self, path / 'toggletabs.svg', 'Show &As Tabs',
+            self.contents_toggle_tabs)
+        self.contents_toggle_tabs_action.setCheckable(True)
         self.contents_pragmas_toggle_action = (
             self.pragmasDock.toggleViewAction())
         self.contents_pragmas_toggle_action.setIcon(QIcon(
@@ -66,18 +71,35 @@ class Mixin:
             ('Hide' if on else 'Show') + ' &Pragmas')
 
 
+    def contents_toggle_tabs(self):
+        mode = self.mdiArea.viewMode()
+        if mode == QMdiArea.TabbedView:
+            text = 'Show &As Tabs'
+            mode = QMdiArea.SubWindowView
+            on = False
+        else:
+            text = 'Show &As Windows'
+            mode = QMdiArea.TabbedView
+            on = True
+        self.contents_toggle_tabs_action.setText(text)
+        self.contents_toggle_tabs_action.setChecked(on)
+        self.mdiArea.setViewMode(mode)
+
+
     @property
     def contents_actions_for_menu(self):
-        return (self.contents_toggle_action,
-                self.contents_view_content_action,
-                self.contents_pragmas_toggle_action)
+        return (self.contents_view_content_action,
+                self.contents_toggle_action,
+                self.contents_toggle_tabs_action,
+                self.contents_pragmas_toggle_action, None)
 
 
     @property
     def contents_actions_for_toolbar(self):
-        return (self.contents_toggle_action,
-                self.contents_view_content_action,
-                self.contents_pragmas_toggle_action)
+        return (self.contents_view_content_action,
+                self.contents_toggle_action,
+                self.contents_toggle_tabs_action,
+                self.contents_pragmas_toggle_action, None)
 
 
     def contents_view_content(self):

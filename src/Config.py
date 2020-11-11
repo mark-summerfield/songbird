@@ -7,24 +7,27 @@ import pathlib
 import apsw
 from Const import (
     APPNAME, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED,
-    RECENT_FILE, RECENT_FILES_MAX, SHOW_CONTENTS, SHOW_PRAGMAS, WIN)
+    RECENT_FILE, RECENT_FILES_MAX, SHOW_AS_TABS, SHOW_CONTENTS,
+    SHOW_PRAGMAS, WIN)
 from Sql import first
 
 
 class MainWindowOptions:
 
     def __init__(self, *, state=None, geometry=None, last_filename=None,
-                 recent_files=None, show_contents=True, show_pragmas=False):
+                 recent_files=None, show_contents=True, show_pragmas=False,
+                 show_as_tabs=False):
         self.state = state
         self.geometry = geometry
         self.last_filename = last_filename
         self.recent_files = recent_files if recent_files is not None else []
         self.show_contents = show_contents
         self.show_pragmas = show_pragmas
+        self.show_as_tabs = show_as_tabs
 
 
-ToggleOptions = collections.namedtuple('ToggleOptions', ('show_contents',
-                                                         'show_pragmas'))
+ToggleOptions = collections.namedtuple(
+    'ToggleOptions', ('show_contents', 'show_pragmas', 'show_tabs'))
 
 
 def path():
@@ -179,6 +182,8 @@ class _Singleton_Config:
                                           value=options.show_contents))
                 cursor.execute(_SET, dict(key=SHOW_PRAGMAS,
                                           value=options.show_pragmas))
+                cursor.execute(_SET, dict(key=SHOW_AS_TABS,
+                                          value=options.show_as_tabs))
                 cursor.execute(_CLEAR_RECENT_FILES)
                 for n, name in enumerate(options.recent_files, 1):
                     if name and pathlib.Path(name).exists():
@@ -206,6 +211,8 @@ class _Singleton_Config:
                     cursor, _GET, dict(key=SHOW_CONTENTS), Class=bool)
                 options.show_pragmas = first(
                     cursor, _GET, dict(key=SHOW_PRAGMAS), Class=bool)
+                options.show_as_tabs = first(
+                    cursor, _GET, dict(key=SHOW_AS_TABS), Class=bool)
                 for n in range(1, RECENT_FILES_MAX + 1):
                     if name := first(
                             cursor, _GET, dict(key=f'{RECENT_FILE}/{n}'),
@@ -237,11 +244,17 @@ class _Singleton_Config:
             # 5
             cursor.execute('''DELETE FROM config WHERE key = 'Blink';''')
             # 6
+            cursor.execute(f''' 
+                INSERT INTO config (key, value)
+                SELECT '{SHOW_AS_TABS}', FALSE
+                WHERE NOT EXISTS (SELECT 1 FROM config
+                                  WHERE key = '{SHOW_AS_TABS}');''')
+            # 7
             # CREATE TABLE IF NOT EXISTS FILES (...
             # CREATE TABLE IF NOT EXISTS WINDOWS (...
 
 
-_VERSION = 5
+_VERSION = 6
 
 
 _PREPARE = f'''
@@ -267,6 +280,7 @@ INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
 INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
+INSERT INTO config (key, value) VALUES ('{SHOW_AS_TABS}', FALSE);
 
 -- TODO
 /*

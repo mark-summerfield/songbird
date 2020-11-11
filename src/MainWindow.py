@@ -47,7 +47,8 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
             last_filename=str(self.db.filename or ''),
             recent_files=list(self.recent_files),
             show_contents=self.contentsDock.isVisible(),
-            show_pragmas=self.pragmasDock.isVisible())
+            show_pragmas=self.pragmasDock.isVisible(),
+            show_as_tabs=self.mdiArea.viewMode() == QMdiArea.TabbedView)
         Config.write_main_window_options(options)
         self.clear()
         event.accept()
@@ -66,6 +67,8 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.mdiArea = QMdiArea()
         self.mdiArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.mdiArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.mdiArea.setTabsClosable(True)
+        self.mdiArea.setTabsMovable(True)
         self.setCentralWidget(self.mdiArea)
         allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
         view = ContentsView.View(self.db)
@@ -152,6 +155,10 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         show_pragmas = bool(self.db) and options.show_pragmas
         self.pragmasDock.setVisible(show_pragmas)
         self.contents_pragmas_update_toggle_action(show_pragmas)
+        self.mdiArea.setViewMode(
+            QMdiArea.SubWindowView if options.show_as_tabs else
+            QMdiArea.TabbedView) # Start with the opposite
+        self.contents_toggle_tabs() # Toggle to correct & set action
 
 
     def update_ui(self):

@@ -11,6 +11,7 @@ MAX_I32 = (2**31) - 1
 OPENED = 'Opened'
 RECENT_FILE = 'RecentFile'
 RECENT_FILES_MAX = 9
+SHOW_AS_TABS = 'ShowAsTabs'
 SHOW_CONTENTS = 'ShowContents'
 SHOW_PRAGMAS = 'ShowPragmas'
 SUFFIX = '.sb'

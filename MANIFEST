@@ -26,8 +26,6 @@ README.md
 
 # TODO
 # 
-# - implement Contents→Toggle Tabs
-#
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:
 #   CREATE TABLE files (
@@ -127,6 +125,7 @@ README.md
 # if/when possible.
 
 # Ideas
+# - Show/Hide row numbers per MDI window?
 # - Completion in SQLEdit?
 # - A plugin system? (Using a PyPI lib'y?), e.g., to support:
 #   . Excel import/export using try .. except ImportError so it is
