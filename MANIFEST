@@ -38,7 +38,7 @@ README.md
 #	filename -- full path to SQLite file
 #	updated -- text datetime timestamp
 #	mdi -- bool FALSE means tabs
-#	show_contents -- bool
+#	show_items_tree -- bool
 #	show_pragmas -- bool
 #	show_calendar -- bool
 #   CREATE TABLE windows (
@@ -51,8 +51,8 @@ README.md
 #	width
 #	height
 #	tab_pos
-#	edit_height -- the splitter gives this much to the editor; rest
-#		    -- to the table view (edit_height could be 0)
+#	editor_height -- the splitter gives this much to the editor; rest
+#		      -- to the table view (edit_height could be 0)
 #   cascade delete windows if a files record is deleted
 #
 # - QueryWidget
