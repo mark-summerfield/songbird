@@ -36,24 +36,36 @@ class Mixin:
         path = Config.path() / 'images'
         self.view_show_item_action = make_action(
             self, path / 'window-new.svg', '&Show Item',
-            self.view_show_item, QKeySequence.AddTab)
+            self.view_show_item, QKeySequence.AddTab,
+            "Show the current item tree's item either by creating a tab "
+            'or window or by bringing an existing tab or window to the '
+            'front')
         self.view_items_tree_toggle_action = (
             self.itemsTreeDock.toggleViewAction())
         self.view_items_tree_toggle_action.setIcon(
             QIcon(str(path / 'folder.svg')))
         self.view_items_tree_toggle_action.setText('Show Items &Tree')
+        tip = 'Show or hide the tree of queries and database items'
+        self.view_items_tree_toggle_action.setToolTip(tip)
+        self.view_items_tree_toggle_action.setStatusTip(tip)
         self.view_items_tree_toggle_action.toggled.connect(
             self.view_update_toggle_action)
         self.view_items_tree_toggle_tabs_action = make_action(
             self, path / 'toggletabs.svg', 'Show &Items in Tabs',
             self.view_items_tree_toggle_tabs)
         self.view_items_tree_toggle_tabs_action.setCheckable(True)
+        tip = 'Show items in tabs or in windows' 
+        self.view_items_tree_toggle_tabs_action.setToolTip(tip)
+        self.view_items_tree_toggle_tabs_action.setStatusTip(tip)
         self.view_pragmas_toggle_action = (
             self.pragmasDock.toggleViewAction())
         self.view_pragmas_toggle_action.setIcon(QIcon(
             str(path / 'preferences-desktop.svg')))
         self.view_pragmas_toggle_action.setText('Show &Pragmas')
         self.view_pragmas_toggle_action.setChecked(False) # Starts hid
+        tip = "Show or hide the database's pragmas"
+        self.view_pragmas_toggle_action.setToolTip(tip)
+        self.view_pragmas_toggle_action.setStatusTip(tip)
         self.view_pragmas_toggle_action.toggled.connect(
             self.view_pragmas_update_toggle_action)
 

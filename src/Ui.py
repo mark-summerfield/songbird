@@ -37,15 +37,16 @@ class BlockSignals:
             widget.blockSignals(self.blocked[i])
 
 
-def make_action(widget, icon, text, slot=None, shortcut=None, tooltip=None,
+def make_action(widget, icon, text, slot=None, shortcut=None, tip=None,
                 *, menu=None):
     action = QAction(QIcon(str(icon)), text, widget)
     if slot is not None:
         action.triggered.connect(slot)
     if shortcut is not None:
         action.setShortcut(shortcut)
-    if tooltip is not None:
-        action.setToolTip(tooltip)
+    if tip is not None:
+        action.setToolTip(tip)
+        action.setStatusTip(tip)
     if menu is not None:
         action.setMenu(menu)
     return action

@@ -30,7 +30,6 @@ st.sh
 README.md
 
 # TODO
-# - tooltips
 #
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:

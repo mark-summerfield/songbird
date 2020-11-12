@@ -15,7 +15,7 @@ class Mixin:
         path = Config.path() / 'images'
         self.options_restore_toolbars_action = make_action(
             self, path / 'emblem-symbolic-link.svg', 'Restore &Toolbars',
-            self.options_restore_toolbars)
+            self.options_restore_toolbars, tip='Make every toolbar visible')
         # TODO
 
 

@@ -19,19 +19,20 @@ class Mixin:
         path = Config.path() / 'images'
         self.edit_refresh_action = make_action(
             self, path / 'view-refresh.svg', '&Refresh', self.edit_refresh,
-            QKeySequence.Refresh)
+            QKeySequence.Refresh, '(Re)-execute the current query')
         self.edit_replace_star_action = make_action(
             self, path / 'format-indent-more.svg', "Replace &SELECT's *",
-            self.edit_replace_star)
+            self.edit_replace_star, tip="Replace the SELECT's * with "
+            "the table or view's field names")
         self.edit_copy_action = make_action(
             self, path / 'edit-copy.svg', '&Copy', self.edit_copy,
-            QKeySequence.Copy)
+            QKeySequence.Copy, 'Copy the selected text')
         self.edit_cut_action = make_action(
             self, path / 'edit-cut.svg', 'C&ut', self.edit_cut,
-            QKeySequence.Cut)
+            QKeySequence.Cut, 'Cut the selected text')
         self.edit_paste_action = make_action(
             self, path / 'edit-paste.svg', '&Paste', self.edit_paste,
-            QKeySequence.Paste)
+            QKeySequence.Paste, 'Paste text from the clipboard')
 
 
     @property
