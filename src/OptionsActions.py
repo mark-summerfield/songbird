@@ -38,6 +38,6 @@ class Mixin:
 
     def options_restore_toolbars(self):
         for toolbar in (self.file_toolbar, self.edit_toolbar,
-                        self.contents_toolbar):
+                        self.view_toolbar):
             if toolbar.isHidden():
                 toolbar.show()

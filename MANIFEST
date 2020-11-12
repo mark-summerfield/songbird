@@ -2,8 +2,9 @@ src/songbird.pyw
 src/MainWindow.py
 src/FileActions.py
 src/EditActions.py
-src/ContentsActions.py
-# src/SQLActions.py
+# src/RecordActions.py
+# src/DatabaseActions.py
+src/ViewActions.py
 src/OptionsActions.py
 # src/WindowsActions.py
 src/HelpActions.py
@@ -41,11 +42,10 @@ README.md
 #	fid -- FK
 #	title
 #	sql
-#	x -- this and below are all nullable
+#	x -- this and below are all nullable (z doesn't appear to be avail)
 #	y
 #	width
 #	height
-#	z
 #	tab_pos
 #	edit_height -- the splitter gives this much to the editor; rest
 #		    -- to the table view (edit_height could be 0)
@@ -104,21 +104,17 @@ README.md
 # - applying some kind of transform using a wizard
 # The result is added to the contents view and added as an MDI window
 
-# &SQL                
-#   Create &Query...
-#   ---------         
-#   Create &Table...  
-#   Create &View...  
-#   &Create Trigger...
-#   ---------        
-#   &Alter Table...  
-#   Alter Vie&w...   
-#   A&lter Trigger...
-
-# &Window # SDI! (max of 9)
-#   &1 <sdi name>        
-#      :	         
-#   &9 <sdi name>        
+# &Record         &Database           &Window # SDI! (max of 9)
+#     &Next         New &Query...       &1 <sdi name>        
+#     &Previous     ---------              :	         
+#     ---------     Create &Table...    &9 <sdi name>        
+#     &Insert...    Create &View...  
+#     &Update...    &Create Trigger...
+#     &Delete...    ---------        
+#                   &Alter Table...  
+#                   Alter Vie&w...   
+#                   A&lter Trigger...
+#
 
 # Initially insert/update can only be done in form view and delete in
 # form or list view. Ideally allow in-place insert/update in list view

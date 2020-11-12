@@ -8,22 +8,22 @@ from PySide2.QtCore import QStandardPaths, Qt, QTimer
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 import Config
-import ContentsActions
 import ContentsView
+import Db
 import EditActions
 import FileActions
 import HelpActions
-import Db
 import OptionsActions
 import PragmaView
 import RecentFiles
+import ViewActions
 from Const import RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions, make_dock_widget
 
 
-class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
-             EditActions.Mixin, FileActions.Mixin, HelpActions.Mixin,
-             OptionsActions.Mixin, PragmaView.Mixin):
+class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
+             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin,
+             PragmaView.Mixin, ViewActions.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -95,15 +95,15 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         self.edit_toolbar.setObjectName('Edit')
         add_actions(self.edit_toolbar, self.edit_actions_for_toolbar)
 
-        self.make_contents_actions()
-        self.contents_menu = self.menuBar().addMenu('&Contents')
-        add_actions(self.contents_menu, self.contents_actions_for_menu)
-        self.contents_toolbar = self.addToolBar('Contents')
-        self.contents_toolbar.setObjectName('Contents')
-        add_actions(self.contents_toolbar,
-                    self.contents_actions_for_toolbar)
+        self.make_view_actions()
+        self.view_menu = self.menuBar().addMenu('&View')
+        add_actions(self.view_menu, self.view_actions_for_menu)
+        self.view_toolbar = self.addToolBar('View')
+        self.view_toolbar.setObjectName('View')
+        add_actions(self.view_toolbar, self.view_actions_for_toolbar)
 
-        # TODO sql actions + update OptionsActions options_restore_toolbars()
+        # TODO record actions & database actions & (sdi) window actions +
+        # update OptionsActions options_restore_toolbars()
 
         self.make_options_actions()
         self.options_menu = self.menuBar().addMenu('&Options')
@@ -111,8 +111,6 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
         # self.options_toolbar = self.addToolBar('Options')
         # self.options_toolbar.setObjectName('Options')
         # add_actions(self.options_toolbar, self.options_actions_for_toolbar)
-
-        # TODO sdi window actions + update OptionsActions options_restore_toolbars()
 
         self.make_help_actions()
         self.help_menu = self.menuBar().addMenu('&Help')
@@ -122,7 +120,7 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
     def make_connections(self):
         widget = self.contentsDock.widget()
         widget.itemDoubleClicked.connect(self.maybe_show_content)
-        widget.itemSelectionChanged.connect(self.contents_update_ui)
+        widget.itemSelectionChanged.connect(self.view_update_ui)
         # TODO
 
 
@@ -151,20 +149,20 @@ class Window(QMainWindow, ContentsActions.Mixin, ContentsView.Mixin,
 
     def initalize_toggle_actions(self, options):
         self.contentsDock.setVisible(options.show_contents)
-        self.contents_update_toggle_action(options.show_contents)
+        self.view_update_toggle_action(options.show_contents)
         show_pragmas = bool(self.db) and options.show_pragmas
         self.pragmasDock.setVisible(show_pragmas)
-        self.contents_pragmas_update_toggle_action(show_pragmas)
+        self.view_pragmas_update_toggle_action(show_pragmas)
         self.mdiArea.setViewMode(
             QMdiArea.SubWindowView if options.show_as_tabs else
             QMdiArea.TabbedView) # Start with the opposite
-        self.contents_toggle_tabs() # Toggle to correct & set action
+        self.view_toggle_tabs() # Toggle to correct & set action
 
 
     def update_ui(self):
         self.file_update_ui()
         self.edit_update_ui()
-        self.contents_update_ui()
+        self.view_update_ui()
         # TODO sql actions
         self.options_update_ui()
         # TODO sdi window actions
