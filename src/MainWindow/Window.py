@@ -161,20 +161,20 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         self.file_update_ui()
         self.edit_update_ui()
         self.view_update_ui()
-        # TODO sql actions
+        # TODO record & database & (sdi) window actions
         self.options_update_ui()
-        # TODO sdi window actions
 
 
     def clear(self):
         widget = self.pragmasDock.widget()
         widget.save(closing=self.closing)
         widget.clear()
-        for widget in self.mdi_widgets():
+        for widget in self.mdi_widgets:
             widget.close() # Will save if dirty
         self.mdiWidgets.clear()
 
 
+    @property
     def mdi_widgets(self):
         to_delete = []
         widgets = []

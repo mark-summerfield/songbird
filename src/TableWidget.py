@@ -65,7 +65,7 @@ class TableWidget(QWidget):
         else:
             select = Sql.uncommented(self.sqlEdit.toPlainText())
             if re.match(r'\s*SELECT(:?\s+(:?ALL|DISTINCT))?\s+\*',
-                        select, re.IGNORECASE):
+                        select, re.IGNORECASE | re.DOTALL):
                 try:
                     names = ', '.join(
                         [Sql.quoted(name) for name in

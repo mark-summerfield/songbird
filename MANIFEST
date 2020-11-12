@@ -30,6 +30,7 @@ st.sh
 README.md
 
 # TODO
+# - View → &Goto Item Tree
 #
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:
@@ -53,7 +54,7 @@ README.md
 #	tab_pos
 #	editor_height -- the splitter gives this much to the editor; rest
 #		      -- to the table view (edit_height could be 0)
-#   cascade delete windows if a files record is deleted
+#   CREATE TRIGGER to cascade delete windows if a files record is deleted
 #
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py
@@ -74,18 +75,26 @@ README.md
 #
 # - create IndexEditor for adding/editing/deleting indexes
 #
-# - complete menus: File (Edit) Contents SQL Options Windows[SDI] Help
+# - complete menus
+#
 # - pure SQL
+#
 # - options dialog:
 #   default suffix; default database (SQLite | Songbird);
 #   [X] Show Row Numbers (in list views)
+#
 # - custom types using songbird_types (tablename, fieldname, type)
+#
 # - custom forms
+#
 # - See DB Browser for SQLite's Tools menu (Optimize, Check, etc.)
+#
 # - See DB Browser for SQLite's File menu & Edit→Preferences dialog
+#
 # - provide an editor/dialog/? for creating transforms e.g., applying
 #   some math function to every column in a table (or selection of a
 #   table), etc.
+#
 # - Songbird:
 #   . File→New Songbird
 #   . songbird_types (tablename, fieldname, tid, minimum, maximum)
@@ -97,17 +106,13 @@ README.md
 #     use tabs (vs MDI) etc.
 # - ultimately aim to be able to replace Biller and Notebox and Film/TV
 #   spreadsheet with custom Songbird databases
-
-# Toggle Form View toggles between a form for adding/editing and a list
-# for viewing (and possibly in-place adding/editing).
-# Toggle Tabs toggles between MDI and tabs view.
-
-# SQL->Create Query leads to a dialog for creating:
+#
+# Database->New Query leads to a dialog for creating:
 # - a raw SQL query
 # - SELECT|INSERT|UPDATE|DELETE using using a wizard
 # - applying some kind of transform using a wizard
 # The result is added to the contents view and added as an MDI window
-
+#
 # &Record         &Database           &Window # SDI! (max of 9)
 #     &Next         New &Query...       &1 <sdi name>        
 #     &Previous     ---------              :	         
@@ -119,11 +124,6 @@ README.md
 #                   Alter Vie&w...   
 #                   A&lter Trigger...
 #
-
-# Initially insert/update can only be done in form view and delete in
-# form or list view. Ideally allow in-place insert/update in list view
-# if/when possible.
-
 # Ideas
 # - Show/Hide row numbers per MDI window?
 # - Completion in SQLEdit?

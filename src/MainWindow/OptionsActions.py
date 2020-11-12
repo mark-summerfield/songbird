@@ -5,7 +5,6 @@ import Config
 from Ui import make_action
 
 # Restore &Toolbars
-# [ ] Show C&alendar TODO
 # &Options... TODO
 
 

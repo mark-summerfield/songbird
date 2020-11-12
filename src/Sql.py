@@ -50,7 +50,8 @@ def uncommented(sql):
 def select_limit_1_from_select(select, row=0):
     select = uncommented(select)
     limit_rx = re.compile(
-        r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?', re.IGNORECASE)
+        r'\sLIMIT\s+\d+(:?\s+OFFSET\s+(?P<offset>\d+))?',
+        re.IGNORECASE | re.DOTALL)
     if match := limit_rx.search(select):
         if offset := match.group('offset'):
             row += int(offset)
@@ -73,7 +74,8 @@ def field_count_from_select(select):
 @functools.lru_cache
 def field_names_from_select(select, *, count=False):
     select = uncommented(select)
-    as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*')
+    as_rx = re.compile(r'\s*(:?.*)\s+[Aa][Ss]\s+(?P<alias>.*)\s*',
+                       re.DOTALL)
     results = []
     if match := re.search(r'SELECT(?:\s+(:?ALL|DISTINCT))?\s+'
                           r'(?P<fields>.*?)(:?\s+FROM|\s*$)', select,

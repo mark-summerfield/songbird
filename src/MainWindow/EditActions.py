@@ -67,7 +67,7 @@ class Mixin:
                 if sql := widget.toPlainText().strip():
                     sql = Sql.uncommented(sql)
                     if re.match(r'\s*SELECT(:?\s+(:?ALL|DISTINCT))?\s+\*',
-                                sql, re.IGNORECASE):
+                                sql, re.IGNORECASE | re.DOTALL):
                         self.edit_replace_star_action.setEnabled(True)
             text_cursor = widget.textCursor()
             enable = text_cursor.hasSelection()
@@ -99,7 +99,7 @@ class Mixin:
                     cursor.insertText(re.sub(
                         r'(SELECT(:?\s+(:?ALL|DISTINCT))?\s)\s*\*',
                         lambda match: match.group(1).upper() + names,
-                        text, flags=re.IGNORECASE))
+                        text, flags=re.IGNORECASE | re.DOTALL))
             except apsw.SQLError as err:
                 while widget is not None and not isinstance(widget,
                                                             QMdiSubWindow):

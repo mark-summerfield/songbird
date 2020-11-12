@@ -11,9 +11,12 @@ from Ui import make_action
 # [X] Show Items &Tree
 # [ ] Show &Items in Tabs|Windows
 # [ ] Show &Pragmas
+# [ ] Show Ca&lendar TODO
 # -------------------
 # E&xpand Tree Item  TODO
 # C&ollapse Tree Item    TODO
+# -------------------
+# &Goto Item Tree TODO
 # -------------------
 # C&ascade TODO only enable if in MDI mode
 # &Tile TODO only enable if in MDI mode
@@ -88,14 +91,15 @@ class Mixin:
     def view_items_tree_toggle_tabs(self):
         mode = self.mdiArea.viewMode()
         if mode == QMdiArea.TabbedView:
-            text = 'Show &Items in Tabs'
+            what = 'Tabs'
             mode = QMdiArea.SubWindowView
             on = False
         else:
-            text = 'Show &Items in Windows'
+            what = 'Windows'
             mode = QMdiArea.TabbedView
             on = True
-        self.view_items_tree_toggle_tabs_action.setText(text)
+        self.view_items_tree_toggle_tabs_action.setText(
+            f'Show &Items in {what}')
         self.view_items_tree_toggle_tabs_action.setChecked(on)
         self.mdiArea.setViewMode(mode)
 

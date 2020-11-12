@@ -50,7 +50,7 @@ class Mixin:
 <font color=navy><b>{app} {version}</b></font></p>
 <p>
 <font color=navy>{app} is an easy to learn and use GUI application for
-viewing, creating, editing, and updating SQLite and Songbird databases.
+viewing, creating, editing, and updating SQLite and {APPNAME} databases.
 </font>
 </p>
 <p><a href="https://github.com/mark-summerfield/songbird">Source Code</a>

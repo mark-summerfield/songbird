@@ -59,6 +59,7 @@ class Mixin:
                 self.file_import_action, self.file_export_action, None,
                 self.file_quit_action)
 
+
     @property
     def file_actions_for_toolbar(self):
         return (self.file_new_action, self.file_open_action,
@@ -154,7 +155,7 @@ class Mixin:
         saved = 0
         if bool(self.db):
             saved += self.pragmasDock.widget().save()
-            for widget in self.mdi_widgets():
+            for widget in self.mdi_widgets:
                 saved += widget.save()
         message = 'Saved changes' if saved else 'No changes to save'
         self.statusBar().showMessage(message, TIMEOUT_SHORT)

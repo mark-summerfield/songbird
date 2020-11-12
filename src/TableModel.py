@@ -38,9 +38,10 @@ class TableModel(QAbstractTableModel):
 
     def columnCount(self, parent=QModelIndex()):
         try:
-            return Sql.field_count_from_select(self.select)
-        except Sql.Error:
-            return len(self.db.field_names_for_select(self.select))
+            try:
+                return Sql.field_count_from_select(self.select)
+            except Sql.Error:
+                return len(self.db.field_names_for_select(self.select))
         except apsw.SQLError as err:
             self.sql_error.emit(str(err))
             return 0
