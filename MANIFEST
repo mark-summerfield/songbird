@@ -19,6 +19,7 @@ src/Db.py
 src/Sql.py
 src/RecentFiles.py
 src/Config.py
+src/ConfigConst.py
 src/Const.py
 
 st.sh
