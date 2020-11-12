@@ -12,11 +12,11 @@ import TableWidget
 
 class Mixin:
 
-    def refresh_contents(self):
-        self.contentsDock.widget().refresh()
+    def refresh_items(self):
+        self.itemsTreeDock.widget().refresh()
 
 
-    def maybe_show_content(self, item, _=None):
+    def maybe_show_item(self, item, _=None):
         if item.parent() is None:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
@@ -37,7 +37,7 @@ class Mixin:
                 widget.show()
             else:
                 # TODO create a new QueryWidget or TriggerEditWidget etc.
-                print('maybe_show_content', kind, name) # TODO
+                print('maybe_show_item', kind, name) # TODO
         if sub_window is not None:
             self.mdiArea.setActiveSubWindow(sub_window)
 
@@ -63,24 +63,28 @@ class View(QTreeWidget):
             triggerItem = QTreeWidgetItem(self, ('Triggers',))
             indexItem = QTreeWidgetItem(self, ('Indexes',))
             firstItem = None
-            for content in self.db.content_summary():
-                item = QTreeWidgetItem((content.name,))
-                if content.kind == 'table':
+            for item in self.db.item_summary():
+                new_item = QTreeWidgetItem((item.name,))
+                if item.kind == 'table':
                     parent = tableItem
-                    self._add_table_item(content.name, item, parent)
+                    self._add_table_item(item.name, new_item, parent)
                     if firstItem is None:
-                        firstItem = item
-                elif content.kind == 'view':
+                        firstItem = new_item
+                elif item.kind == 'view':
                     parent = viewItem
-                elif content.kind == 'trigger':
+                elif item.kind == 'trigger':
                     parent = triggerItem
-                elif content.kind == 'index':
+                elif item.kind == 'index':
                     parent = indexItem
-                parent.addChild(item)
-            self.expandItem(tableItem)
-            if firstItem is not None:
-                self.setCurrentItem(firstItem)
-                self.expandItem(firstItem)
+                parent.addChild(new_item)
+            if self.queryItem.childCount() < 11:
+                self.expandItem(self.queryItem)
+            if tableItem.childCount() < 11:
+                self.expandItem(tableItem)
+                if firstItem is not None:
+                    self.setCurrentItem(firstItem)
+            if viewItem.childCount() < 11:
+                self.expandItem(viewItem)
 
 
     def _prepare(self):
@@ -92,7 +96,7 @@ class View(QTreeWidget):
 
 
     def _add_table_item(self, tablename, item, parent):
-        for detail in self.db.content_detail(tablename):
+        for detail in self.db.item_detail(tablename):
             if detail.pk:
                 color = Qt.darkGreen
             elif detail.notnull:

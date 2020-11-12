@@ -10,7 +10,7 @@ from ConfigConst import (
     _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
 from Const import (
     APPNAME, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED,
-    RECENT_FILE, RECENT_FILES_MAX, SHOW_AS_TABS, SHOW_CONTENTS,
+    RECENT_FILE, RECENT_FILES_MAX, SHOW_AS_TABS, SHOW_ITEMS_TREE,
     SHOW_PRAGMAS, WIN)
 from Sql import first
 
@@ -18,19 +18,19 @@ from Sql import first
 class MainWindowOptions:
 
     def __init__(self, *, state=None, geometry=None, last_filename=None,
-                 recent_files=None, show_contents=True, show_pragmas=False,
-                 show_as_tabs=False):
+                 recent_files=None, show_items_tree=True,
+                 show_pragmas=False, show_as_tabs=False):
         self.state = state
         self.geometry = geometry
         self.last_filename = last_filename
         self.recent_files = recent_files if recent_files is not None else []
-        self.show_contents = show_contents
+        self.show_items_tree = show_items_tree
         self.show_pragmas = show_pragmas
         self.show_as_tabs = show_as_tabs
 
 
 ToggleOptions = collections.namedtuple(
-    'ToggleOptions', ('show_contents', 'show_pragmas', 'show_tabs'))
+    'ToggleOptions', ('show_items_tree', 'show_pragmas', 'show_tabs'))
 
 
 def path():
@@ -181,8 +181,8 @@ class _Singleton_Config:
                                           value=options.geometry))
                 cursor.execute(_SET, dict(key=LAST_FILE,
                                           value=options.last_filename))
-                cursor.execute(_SET, dict(key=SHOW_CONTENTS,
-                                          value=options.show_contents))
+                cursor.execute(_SET, dict(key=SHOW_ITEMS_TREE,
+                                          value=options.show_items_tree))
                 cursor.execute(_SET, dict(key=SHOW_PRAGMAS,
                                           value=options.show_pragmas))
                 cursor.execute(_SET, dict(key=SHOW_AS_TABS,
@@ -210,8 +210,8 @@ class _Singleton_Config:
                     Class=bytes)
                 options.last_filename = first(
                     cursor, _GET, dict(key=LAST_FILE), Class=str)
-                options.show_contents = first(
-                    cursor, _GET, dict(key=SHOW_CONTENTS), Class=bool)
+                options.show_items_tree = first(
+                    cursor, _GET, dict(key=SHOW_ITEMS_TREE), Class=bool)
                 options.show_pragmas = first(
                     cursor, _GET, dict(key=SHOW_PRAGMAS), Class=bool)
                 options.show_as_tabs = first(
@@ -232,12 +232,6 @@ class _Singleton_Config:
     def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
         with db:
-            # 3
-            cursor.execute(f'''
-                INSERT INTO config (key, value)
-                SELECT '{SHOW_CONTENTS}', TRUE
-                WHERE NOT EXISTS (SELECT 1 FROM config
-                                  WHERE key = '{SHOW_CONTENTS}');''')
             # 4
             cursor.execute(f'''
                 INSERT INTO config (key, value)
@@ -252,6 +246,13 @@ class _Singleton_Config:
                 SELECT '{SHOW_AS_TABS}', FALSE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_AS_TABS}');''')
-            # 7 TODO
+            # 7
+            cursor.execute(f'''
+                DELETE FROM config WHERE key = 'ShowContents';
+                INSERT INTO config (key, value)
+                SELECT '{SHOW_ITEMS_TREE}', TRUE
+                WHERE NOT EXISTS (SELECT 1 FROM config
+                                  WHERE key = '{SHOW_ITEMS_TREE}');''')
+            # 8 TODO
             # CREATE TABLE IF NOT EXISTS FILES (...
             # CREATE TABLE IF NOT EXISTS WINDOWS (...

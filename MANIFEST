@@ -11,7 +11,7 @@ src/MainWindow/OptionsActions.py
 # src/MainWindow/WindowsActions.py
 src/MainWindow/HelpActions.py
 
-src/ContentsView.py
+src/ItemsTreeView.py
 src/PragmaView.py
 src/Ui.py
 src/TableWidget.py
@@ -30,7 +30,8 @@ st.sh
 README.md
 
 # TODO
-# 
+# - tooltips
+#
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:
 #   CREATE TABLE files (

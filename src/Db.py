@@ -56,22 +56,22 @@ class Db:
         return False
 
 
-    def content_summary(self):
+    def item_summary(self):
         if self._db is not None:
             cursor = self._db.cursor()
-            for row in cursor.execute(Sql.CONTENT_SUMMARY):
-                content = Sql.ContentSummary(*row)
-                if content.name.startswith(('sqlite_', 'songbird_')):
+            for row in cursor.execute(Sql.ITEM_SUMMARY):
+                item = Sql.ItemSummary(*row)
+                if item.name.startswith(('sqlite_', 'songbird_')):
                     continue
                 # TODO also skip FTS implementation tables
-                yield content
+                yield item
 
 
-    def content_detail(self, name):
+    def item_detail(self, name):
         if self._db is not None:
             cursor = self._db.cursor()
-            for row in cursor.execute(Sql.CONTENT_DETAIL, dict(name=name)):
-                yield Sql.ContentDetail(*row[1:])
+            for row in cursor.execute(Sql.ITEM_DETAIL, dict(name=name)):
+                yield Sql.ItemDetail(*row[1:])
 
 
     def pragmas(self):
@@ -118,7 +118,7 @@ class Db:
     @functools.lru_cache
     def table_make_select(self, name):
         fields = []
-        for detail in self.content_detail(name):
+        for detail in self.item_detail(name):
             fields.append(Sql.quoted(detail.name))
         fields = ', '.join(fields)
         return (f'SELECT {fields}\nFROM {Sql.quoted(name)}\n'

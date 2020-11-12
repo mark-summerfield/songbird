@@ -8,8 +8,8 @@ from PySide2.QtCore import QStandardPaths, Qt, QTimer
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 import Config
-import ContentsView
 import Db
+import ItemsTreeView
 import PragmaView
 import RecentFiles
 from Const import RECENT_FILES_MAX, TIMEOUT_LONG
@@ -19,8 +19,8 @@ from . import (
     EditActions, FileActions, HelpActions, OptionsActions, ViewActions)
 
 
-class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
-             FileActions.Mixin, HelpActions.Mixin, OptionsActions.Mixin,
+class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
+             HelpActions.Mixin, ItemsTreeView.Mixin, OptionsActions.Mixin,
              PragmaView.Mixin, ViewActions.Mixin):
 
     def __init__(self, filename):
@@ -44,7 +44,7 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
             geometry=self.saveGeometry(),
             last_filename=str(self.db.filename or ''),
             recent_files=list(self.recent_files),
-            show_contents=self.contentsDock.isVisible(),
+            show_items_tree=self.itemsTreeDock.isVisible(),
             show_pragmas=self.pragmasDock.isVisible(),
             show_as_tabs=self.mdiArea.viewMode() == QMdiArea.TabbedView)
         Config.write_main_window_options(options)
@@ -69,9 +69,9 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
         self.mdiArea.setTabsMovable(True)
         self.setCentralWidget(self.mdiArea)
         allowedAreas = Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea
-        view = ContentsView.View(self.db)
-        self.contentsDock = make_dock_widget(
-            self, 'Contents', view, Qt.LeftDockWidgetArea, allowedAreas)
+        view = ItemsTreeView.View(self.db)
+        self.itemsTreeDock = make_dock_widget(
+            self, 'Items Tree', view, Qt.LeftDockWidgetArea, allowedAreas)
         view = PragmaView.View(self.db)
         self.pragmasDock = make_dock_widget(
             self, 'Pragmas', view, Qt.RightDockWidgetArea, allowedAreas)
@@ -116,8 +116,8 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
 
 
     def make_connections(self):
-        widget = self.contentsDock.widget()
-        widget.itemDoubleClicked.connect(self.maybe_show_content)
+        widget = self.itemsTreeDock.widget()
+        widget.itemDoubleClicked.connect(self.maybe_show_item)
         widget.itemSelectionChanged.connect(self.view_update_ui)
         # TODO
 
@@ -146,15 +146,15 @@ class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
 
 
     def initalize_toggle_actions(self, options):
-        self.contentsDock.setVisible(options.show_contents)
-        self.view_update_toggle_action(options.show_contents)
+        self.itemsTreeDock.setVisible(options.show_items_tree)
+        self.view_update_toggle_action(options.show_items_tree)
         show_pragmas = bool(self.db) and options.show_pragmas
         self.pragmasDock.setVisible(show_pragmas)
         self.view_pragmas_update_toggle_action(show_pragmas)
         self.mdiArea.setViewMode(
             QMdiArea.SubWindowView if options.show_as_tabs else
             QMdiArea.TabbedView) # Start with the opposite
-        self.view_toggle_tabs() # Toggle to correct & set action
+        self.view_items_tree_toggle_tabs() # Toggle to correct & set action
 
 
     def update_ui(self):

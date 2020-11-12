@@ -107,15 +107,14 @@ def field_names_from_select(select, *, count=False):
     raise Error('Failed to determine field names')
 
 
-CONTENT_SUMMARY = '''
-SELECT type, name FROM sqlite_master ORDER BY UPPER(name);'''
+ITEM_SUMMARY = 'SELECT type, name FROM sqlite_master ORDER BY UPPER(name);'
 
-ContentSummary = collections.namedtuple('ContentSummary', ('kind', 'name'))
+ItemSummary = collections.namedtuple('ItemSummary', ('kind', 'name'))
 
-CONTENT_DETAIL = 'SELECT * FROM pragma_table_info(:name);'
+ITEM_DETAIL = 'SELECT * FROM pragma_table_info(:name);'
 
-ContentDetail = collections.namedtuple(
-    'ContentDetail', ('name', 'type', 'notnull', 'default', 'pk'))
+ItemDetail = collections.namedtuple(
+    'ItemDetail', ('name', 'type', 'notnull', 'default', 'pk'))
 
 TABLE_OR_VIEW_SQL = 'SELECT sql FROM sqlite_master WHERE name = :name;'
 

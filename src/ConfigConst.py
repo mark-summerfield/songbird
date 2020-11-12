@@ -3,9 +3,9 @@
 
 from Const import (
     LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED, RECENT_FILE,
-    SHOW_AS_TABS, SHOW_CONTENTS, SHOW_PRAGMAS)
+    SHOW_AS_TABS, SHOW_ITEMS_TREE, SHOW_PRAGMAS)
 
-_VERSION = 6
+_VERSION = 7
 
 _PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
@@ -28,7 +28,7 @@ INSERT INTO config (key, value) VALUES ('{OPENED}', 1);
 INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_STATE}', NULL);
 INSERT INTO config (key, value) VALUES ('{MAIN_WINDOW_GEOMETRY}', NULL);
 INSERT INTO config (key, value) VALUES ('{LAST_FILE}', NULL);
-INSERT INTO config (key, value) VALUES ('{SHOW_CONTENTS}', TRUE);
+INSERT INTO config (key, value) VALUES ('{SHOW_ITEMS_TREE}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
 INSERT INTO config (key, value) VALUES ('{SHOW_AS_TABS}', FALSE);
 
