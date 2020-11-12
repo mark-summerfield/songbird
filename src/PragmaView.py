@@ -8,7 +8,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
     QFormLayout, QLabel, QMessageBox, QSpinBox, QWidget)
 
-from Const import MAX_I32
+from Const import APPNAME, MAX_I32
 from Sql import Pragmas
 from Ui import BlockSignals
 
@@ -86,9 +86,8 @@ class View(QWidget):
             if errors := self.db.pragmas_save(self.pragmas):
                 if not closing:
                     error = '\n'.join(errors)
-                    QMessageBox.warning(
-                        self, f'Pragma error — {qApp.applicationName()}',
-                        f'Failed to save pragmas:\n{error}')
+                    QMessageBox.warning(self, f'Pragma error — {APPNAME}',
+                                        f'Failed to save pragmas:\n{error}')
             else:
                 saved = True
                 self.dirty = False

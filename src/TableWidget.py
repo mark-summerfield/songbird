@@ -11,6 +11,7 @@ import apsw
 import Sql
 import SQLEdit
 import TableModel
+from Const import APPNAME
 
 
 class TableWidget(QWidget):
@@ -106,9 +107,8 @@ class TableWidget(QWidget):
             if errors:
                 if not closing:
                     error = '\n'.join(errors)
-                    QMessageBox.warning(
-                        self, f'Save error — {qApp.applicationName()}',
-                        f'Failed to save:\n{error}')
+                    QMessageBox.warning(self, f'Save error — {APPNAME}',
+                                        f'Failed to save:\n{error}')
             else:
                 saved = True
                 self.dirty = False

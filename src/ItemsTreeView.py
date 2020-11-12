@@ -77,14 +77,11 @@ class View(QTreeWidget):
                 elif item.kind == 'index':
                     parent = indexItem
                 parent.addChild(new_item)
-            if self.queryItem.childCount() < 11:
-                self.expandItem(self.queryItem)
-            if tableItem.childCount() < 11:
-                self.expandItem(tableItem)
-                if firstItem is not None:
-                    self.setCurrentItem(firstItem)
-            if viewItem.childCount() < 11:
-                self.expandItem(viewItem)
+            for item in (self.queryItem, tableItem, viewItem):
+                if item.childCount() < 11:
+                    self.expandItem(item)
+            if firstItem is not None:
+                self.setCurrentItem(firstItem)
 
 
     def _prepare(self):

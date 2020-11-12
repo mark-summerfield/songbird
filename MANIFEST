@@ -21,7 +21,7 @@ src/SQLSyntaxHighlighter.py
 src/Db.py
 src/Sql.py
 src/RecentFiles.py
-src/Const.py
+src/Const.py # VERSION
 src/Config.py
 src/ConfigConst.py
 

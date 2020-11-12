@@ -104,7 +104,7 @@ class Mixin:
                                               QFileDialog.getSaveFileName):
             if filename.exists():
                 QMessageBox.warning(
-                    self, f'Database exists — {qApp.applicationName()}',
+                    self, f'Database exists — {APPNAME}',
                     f'Will not overwrite an existing database '
                     '({filename}) with a new one')
             else:
@@ -115,20 +115,18 @@ class Mixin:
         if filename := self._file_new_or_open('Open',
                                               QFileDialog.getOpenFileName):
             if not filename.exists():
-                QMessageBox.warning(
-                    self, f'Database missing — {qApp.applicationName()}',
-                    f'Cannot find database {filename}')
+                QMessageBox.warning(self, f'Database missing — {APPNAME}',
+                                    f'Cannot find database {filename}')
             else:
                 self.file_load(filename)
 
 
     def _file_new_or_open(self, prefix, dialog):
         suffixes = '*' + ' *'.join(SUFFIXES)
-        filename, _ = dialog(
-            self, f'{prefix} database — {qApp.applicationName()}',
-            str(self.path),
-            f'SQLite ({suffixes});;{qApp.applicationName()} ({SUFFIX});;'
-            'Any file (*.*)')
+        filename, _ = dialog(self, f'{prefix} database — {APPNAME}',
+                             str(self.path),
+                             f'SQLite ({suffixes});;{APPNAME} ({SUFFIX});;'
+                             'Any file (*.*)')
         if filename:
             filename = pathlib.Path(filename)
             self.path = filename.parent
@@ -142,7 +140,7 @@ class Mixin:
         self.db.open(filename) # previous is automatically closed
         self.recent_files.add(filename)
         filename = pathlib.Path(filename).resolve()
-        self.setWindowTitle(f'{filename.name} — {qApp.applicationName()}')
+        self.setWindowTitle(f'{filename.name} — {APPNAME}')
         message = (f'Created new empty database {filename}' if new else
                    f'Opened database {filename}')
         self.statusBar().showMessage(message, TIMEOUT_SHORT)

@@ -10,7 +10,7 @@ from PySide2.QtWidgets import QApplication
 
 import Config
 import MainWindow
-from Const import APPNAME
+from Const import APPNAME, VERSION
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
     app.setOrganizationName('Mark Summerfield')
     app.setOrganizationDomain('qtrac.eu')
     app.setApplicationName(APPNAME)
-    app.setApplicationVersion('0.1.0')
+    app.setApplicationVersion(VERSION)
     Config.initialize(pathlib.Path(__file__).resolve().parent)
     app.setWindowIcon(QIcon(str(Config.path() / 'images/icon.svg')))
     filename = sys.argv[1] if len(sys.argv) == 2 else None

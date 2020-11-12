@@ -4,6 +4,8 @@
 import sys
 
 APPNAME = 'Songbird'
+VERSION = '0.2.1'
+
 LAST_FILE = 'LastFile'
 MAIN_WINDOW_GEOMETRY = 'MainWindow/Geometry'
 MAIN_WINDOW_STATE = 'MainWindow/State'

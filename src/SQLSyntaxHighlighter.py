@@ -5,8 +5,7 @@ import enum
 import re
 
 from PySide2.QtCore import Qt
-from PySide2.QtGui import (
-    QColor, QCursor, QFont, QSyntaxHighlighter, QTextCharFormat)
+from PySide2.QtGui import QColor, QFont, QSyntaxHighlighter, QTextCharFormat
 
 from Const import WIN
 
@@ -139,9 +138,3 @@ class SQLSyntaxHighlighter(QSyntaxHighlighter):
                 self.setCurrentBlockState(State.COMMENT)
                 return
         self.setCurrentBlockState(State.CODE)
-
-
-    def rehighlight(self):
-        qApp.setOverrideCursor(QCursor(Qt.WaitCursor))
-        QSyntaxHighlighter.rehighlight(self)
-        qApp.restoreOverrideCursor()

@@ -12,7 +12,7 @@ from PySide2.QtWidgets import QMessageBox
 
 import apsw
 import Config
-from Const import APPNAME
+from Const import APPNAME, VERSION
 from Ui import make_action
 
 
@@ -46,10 +46,10 @@ class Mixin:
             apsw.sqlitelibversion(), QSysInfo.prettyProductName(),
             platform.platform())
         QMessageBox.about(
-            self, f'About — {qApp.applicationName()}', '''<p>
-<font color=navy><b>{app} {version}</b></font></p>
+            self, f'About — {APPNAME}', f'''<p>
+<font color=navy><b>{APPNAME} {VERSION}</b></font></p>
 <p>
-<font color=navy>{app} is an easy to learn and use GUI application for
+<font color=navy>{APPNAME} is an easy to learn and use GUI application for
 viewing, creating, editing, and updating SQLite and {APPNAME} databases.
 </font>
 </p>
@@ -63,8 +63,7 @@ GNU Public License version 3 (GPLv3).
 </p>
 <hr>
 <p><font color=teal>{info}</font></p>
-'''.format(app=qApp.applicationName(), version=qApp.applicationVersion(),
-           year=year, info=info)) # noqa
+'''.format(year=year, info=info)) # noqa
 
 
     def help(self):

@@ -12,7 +12,7 @@ import Db
 import ItemsTreeView
 import PragmaView
 import RecentFiles
-from Const import RECENT_FILES_MAX, TIMEOUT_LONG
+from Const import APPNAME, RECENT_FILES_MAX, TIMEOUT_LONG, VERSION
 from Ui import add_actions, make_dock_widget
 
 from . import (
@@ -25,8 +25,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
     def __init__(self, filename):
         super().__init__()
-        self.setWindowTitle(
-            f'{qApp.applicationName()} {qApp.applicationVersion()}')
+        self.setWindowTitle(f'{APPNAME} {VERSION}')
         self.make_variables()
         self.make_widgets()
         self.make_actions()
