@@ -10,15 +10,13 @@ from PySide2.QtWidgets import QMainWindow, QMdiArea
 import Config
 import ContentsView
 import Db
-import EditActions
-import FileActions
-import HelpActions
-import OptionsActions
 import PragmaView
 import RecentFiles
-import ViewActions
 from Const import RECENT_FILES_MAX, TIMEOUT_LONG
 from Ui import add_actions, make_dock_widget
+
+from . import (
+    EditActions, FileActions, HelpActions, OptionsActions, ViewActions)
 
 
 class Window(QMainWindow, ContentsView.Mixin, EditActions.Mixin,
