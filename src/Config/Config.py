@@ -7,14 +7,15 @@ import pathlib
 from PySide2.QtCore import QStandardPaths
 
 import apsw
-from ConfigConst import (
-    _CLEAR_RECENT_FILES, _CREATE, _GET, _GET_VERSION, _INCREMENT,
-    _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
 from Const import (
     APPNAME, LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED,
     RECENT_FILE, RECENT_FILES_MAX, SHOW_AS_TABS, SHOW_ITEMS_TREE,
     SHOW_PRAGMAS, WIN)
 from Sql import first
+
+from .Const import (
+    _CLEAR_RECENT_FILES, _CREATE, _GET, _GET_VERSION, _INCREMENT,
+    _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
 
 
 class MainWindowOptions:
