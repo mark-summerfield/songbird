@@ -5,8 +5,9 @@ import functools
 import re
 
 import apsw
-import Sql
 from Const import UNCHANGED
+
+from . import Sql
 
 
 class Db:

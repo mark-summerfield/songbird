@@ -4,7 +4,7 @@
 from PySide2.QtCore import QAbstractTableModel, QModelIndex, Qt, Signal
 
 import apsw
-import Sql
+from Db import Sql
 
 
 class TableModel(QAbstractTableModel):

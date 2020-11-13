@@ -8,26 +8,27 @@ from PySide2.QtCore import QtMsgType, qInstallMessageHandler
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication
 
-import MainWindow
 from AppData import ICON_SVG, get_icon
 from Const import APPNAME, VERSION
+from MainWindow import Window
 
 
 def main():
-    if len(sys.argv) > 1:
-        if sys.argv[1] in {'-h', '--help'}:
+    filename = None
+    for arg in sys.argv[1:]:
+        if arg in {'-h', '--help'}:
             raise SystemExit(USAGE)
-        if sys.argv[1] in {'-D', '--debug'}:
+        if arg in {'-D', '--debug'}:
             _messageHandler.debug = True
-            sys.argv.pop(1)
+        else:
+            filename = arg
     app = QApplication(sys.argv)
     app.setOrganizationName('Mark Summerfield')
     app.setOrganizationDomain('qtrac.eu')
     app.setApplicationName(APPNAME)
     app.setApplicationVersion(VERSION)
     app.setWindowIcon(get_icon(ICON_SVG))
-    filename = sys.argv[1] if len(sys.argv) == 2 else None
-    window = MainWindow.Window(filename)
+    window = Window.Window(filename)
     window.show()
     sys.exit(app.exec_())
 

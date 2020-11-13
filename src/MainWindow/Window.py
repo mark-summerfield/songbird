@@ -9,10 +9,10 @@ from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 import Config
 import Db
-from View import ItemsTreeView, PragmaView
 import RecentFiles
 from Const import APPNAME, RECENT_FILES_MAX, TIMEOUT_LONG, VERSION
 from Ui import add_actions, make_dock_widget
+from View import ItemsTreeView, PragmaView
 
 from . import (
     EditActions, FileActions, HelpActions, OptionsActions, ViewActions)

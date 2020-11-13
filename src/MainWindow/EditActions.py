@@ -8,10 +8,10 @@ from PySide2.QtWidgets import (
     QLineEdit, QMdiSubWindow, QPlainTextEdit, QTextEdit)
 
 import apsw
-import Sql
 from AppData import (
     EDIT_COPY_SVG, EDIT_CUT_SVG, EDIT_PASTE_SVG, FORMAT_INDENT_MORE_SVG,
     VIEW_REFRESH_SVG, get_icon)
+from Db import Sql
 from Ui import EditBlock, make_action
 
 

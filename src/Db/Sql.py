@@ -5,7 +5,10 @@ import collections
 import functools
 import re
 
-from Const import UNCHANGED
+try:
+    from Const import UNCHANGED
+except ImportError: # when testing stand-alone
+    UNCHANGED = object()
 
 
 class Error(Exception):

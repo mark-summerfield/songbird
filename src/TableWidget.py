@@ -8,10 +8,10 @@ from PySide2.QtWidgets import (
     QLabel, QMessageBox, QSplitter, QTableView, QVBoxLayout, QWidget)
 
 import apsw
-import Sql
-import SQLEdit
 import TableModel
 from Const import APPNAME
+from Db import Sql
+from SQLEdit import SQLEdit
 
 
 class TableWidget(QWidget):

@@ -11,7 +11,7 @@ from PySide2.QtWidgets import (
 
 import Config
 from Const import APPNAME, MAX_I32
-from Sql import Pragmas
+from Db.Sql import Pragmas
 from Ui import BlockSignals
 
 

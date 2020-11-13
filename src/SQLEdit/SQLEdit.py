@@ -3,7 +3,7 @@
 
 from PySide2.QtWidgets import QPlainTextEdit
 
-import SQLSyntaxHighlighter
+from . import SQLSyntaxHighlighter
 
 
 class SQLEdit(QPlainTextEdit):
