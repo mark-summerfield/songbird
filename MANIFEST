@@ -13,6 +13,7 @@ src/MainWindow/HelpActions.py
 
 src/ItemsTreeView.py
 src/PragmaView.py
+
 src/Ui.py
 src/TableWidget.py
 src/TableModel.py
@@ -130,6 +131,8 @@ src/AppData.py
 #
 # Ideas
 # - Show/Hide row numbers per MDI window?
+# - If the user clicks a column header add/edit the SELECT's ORDER BY
+#   accordingly (like Borland Pascal/Delphi two-way editing)
 # - Completion in SQLEdit?
 # - A plugin system? (Using a PyPI lib'y?), e.g., to support:
 #   . Excel import/export using try .. except ImportError so it is

@@ -46,7 +46,7 @@ class View(QWidget):
         form.addRow('User Version', self.userVersionSpinbox)
         # TODO add all widgets
         self._add_grouped(form, 'Database Path', self.pathLabel)
-        self._add_grouped(form, 'Configuration Filename', self.configLabel)
+        self._add_grouped(form, 'Configuration File', self.configLabel)
         self.setLayout(form)
 
 
