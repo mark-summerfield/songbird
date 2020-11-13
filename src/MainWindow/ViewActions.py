@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtGui import QKeySequence
+from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QMdiArea
 
 from AppData import (
-    FOLDER_SVG, PREFERENCES_DESKTOP_SVG, TOGGLETABS_SVG, WINDOW_NEW_SVG,
-    get_icon)
+    FOLDER_SVG, GOTOTREE_SVG, PREFERENCES_DESKTOP_SVG, TOGGLETABS_SVG,
+    WINDOW_NEW_SVG, get_icon)
 from Ui import make_action
 
 # &Show Item
@@ -16,9 +16,9 @@ from Ui import make_action
 # [ ] Show Ca&lendar TODO
 # -------------------
 # E&xpand Tree Item  TODO
-# C&ollapse Tree Item    TODO
+# C&ollapse Tree Item TODO
 # -------------------
-# &Goto Item Tree TODO
+# &Goto Item Tree
 # -------------------
 # C&ascade TODO only enable if in MDI mode
 # &Tile TODO only enable if in MDI mode
@@ -71,6 +71,11 @@ class Mixin:
         self.view_pragmas_toggle_action.setStatusTip(tip)
         self.view_pragmas_toggle_action.toggled.connect(
             self.view_pragmas_update_toggle_action)
+        self.view_goto_item_tree_action = make_action(
+            self, get_icon(GOTOTREE_SVG), '&Goto Item Tree',
+            self.view_goto_item_tree,
+            QKeySequence(Qt.CTRL + Qt.SHIFT + Qt.Key_T),
+            'Put the keyboard focus in the Items Tree')
 
 
     def view_update_toggle_action(self, on=None):
@@ -109,7 +114,8 @@ class Mixin:
         return (self.view_show_item_action,
                 self.view_items_tree_toggle_action,
                 self.view_items_tree_toggle_tabs_action,
-                self.view_pragmas_toggle_action, None)
+                self.view_pragmas_toggle_action, None,
+                self.view_goto_item_tree_action)
 
 
     @property
@@ -117,7 +123,7 @@ class Mixin:
         return (self.view_show_item_action,
                 self.view_items_tree_toggle_action,
                 self.view_items_tree_toggle_tabs_action,
-                self.view_pragmas_toggle_action, None)
+                self.view_pragmas_toggle_action)
 
 
     def view_show_item(self):
@@ -131,3 +137,11 @@ class Mixin:
         self.view_show_item_action.setEnabled(
             widget is not None and enable and widget.can_view())
         self.view_pragmas_toggle_action.setEnabled(enable)
+        self.view_goto_item_tree_action.setEnabled(enable)
+
+
+    def view_goto_item_tree(self):
+        if not self.itemsTreeDock.isVisible():
+            self.view_items_tree_toggle_action.toggle()
+            self.itemsTreeDock.setVisible(True)
+        self.itemsTreeDock.widget().setFocus()

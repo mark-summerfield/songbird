@@ -32,9 +32,9 @@ st.sh
 README.md
 
 make_appdata.py
+src/AppData.py
 
 # TODO
-# - View → &Goto Item Tree
 #
 # - for pure SQLite dbs remember those opened in the past year (in
 #   songbird.sbc), so on quit delete any older than one year:
