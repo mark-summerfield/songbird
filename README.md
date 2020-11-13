@@ -9,7 +9,7 @@ SQLite and Songbird databases.
 
 ## Dependencies
 
-Python 3.6+, PySide 2, APSW.
+Python 3.8, PySide 2, APSW.
 
 ## License
 
