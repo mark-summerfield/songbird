@@ -6,8 +6,10 @@ import pathlib
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import (
-    QFormLayout, QLabel, QMessageBox, QSpinBox, QWidget)
+    QFormLayout, QGroupBox, QLabel, QMessageBox, QSpinBox,
+    QVBoxLayout, QWidget)
 
+import Config
 from Const import APPNAME, MAX_I32
 from Sql import Pragmas
 from Ui import BlockSignals
@@ -36,20 +38,29 @@ class View(QWidget):
         self.userVersionSpinbox.setRange(0, MAX_I32)
         # TODO make all widgets
         self.pathLabel = QLabel()
-        self.pathLabel.setTextFormat(Qt.RichText)
+        self.configLabel = QLabel(Config.filename())
 
 
     def make_layout(self):
         form = QFormLayout()
         form.addRow('User Version', self.userVersionSpinbox)
         # TODO add all widgets
-        form.addRow(self.pathLabel)
+        self._add_grouped(form, 'Database Path', self.pathLabel)
+        self._add_grouped(form, 'Configuration Filename', self.configLabel)
         self.setLayout(form)
+
+
+    def _add_grouped(self, form, title, widget):
+        box = QGroupBox(title)
+        vbox = QVBoxLayout()
+        vbox.addWidget(widget)
+        box.setLayout(vbox)
+        form.addRow(box)
 
 
     def make_connections(self):
         self.userVersionSpinbox.valueChanged.connect(self.on_user_version)
-        # TODO connect all widgets
+        # TODO connect all widgets (excl. configLabel)
 
 
     def on_user_version(self):
@@ -63,18 +74,18 @@ class View(QWidget):
             pragmas = self.db.pragmas()
             with BlockSignals(self):
                 self.userVersionSpinbox.setValue(pragmas.user_version)
-                # TODO refresh all widgets
+                # TODO refresh all widgets (excl. configLabel)
                 path = str(pathlib.Path(self.db.filename).parent)
                 if not path.endswith(('/', '\\')):
                     path += os.sep
-                self.pathLabel.setText(_PATH_TEMPLATE.format(path=path))
+                self.pathLabel.setText(path)
         self.dirty = False
 
 
     def clear(self):
         with BlockSignals(self):
             self.userVersionSpinbox.setValue(0)
-            # TODO clear all widgets
+            # TODO clear all widgets (excl. configLabel)
             self.pathLabel.clear()
         self.dirty = False
 
@@ -92,6 +103,3 @@ class View(QWidget):
                 saved = True
                 self.dirty = False
         return saved
-
-
-_PATH_TEMPLATE = 'Path <font color=navy>{path}</font>'
