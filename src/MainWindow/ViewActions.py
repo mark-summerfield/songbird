@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtGui import QIcon, QKeySequence
+from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QMdiArea
 
 from AppData import (
