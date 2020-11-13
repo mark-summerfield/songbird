@@ -8,30 +8,31 @@ from PySide2.QtWidgets import (
     QLineEdit, QMdiSubWindow, QPlainTextEdit, QTextEdit)
 
 import apsw
-import Config
 import Sql
+from AppData import (
+    EDIT_COPY_SVG, EDIT_CUT_SVG, EDIT_PASTE_SVG, FORMAT_INDENT_MORE_SVG,
+    VIEW_REFRESH_SVG, get_icon)
 from Ui import EditBlock, make_action
 
 
 class Mixin:
 
     def make_edit_actions(self):
-        path = Config.path() / 'images'
         self.edit_refresh_action = make_action(
-            self, path / 'view-refresh.svg', '&Refresh', self.edit_refresh,
+            self, get_icon(VIEW_REFRESH_SVG), '&Refresh', self.edit_refresh,
             QKeySequence.Refresh, '(Re)-execute the current query')
         self.edit_replace_star_action = make_action(
-            self, path / 'format-indent-more.svg', "Replace &SELECT's *",
+            self, get_icon(FORMAT_INDENT_MORE_SVG), "Replace &SELECT's *",
             self.edit_replace_star, tip="Replace the SELECT's * with "
             "the table or view's field names")
         self.edit_copy_action = make_action(
-            self, path / 'edit-copy.svg', '&Copy', self.edit_copy,
+            self, get_icon(EDIT_COPY_SVG), '&Copy', self.edit_copy,
             QKeySequence.Copy, 'Copy the selected text')
         self.edit_cut_action = make_action(
-            self, path / 'edit-cut.svg', 'C&ut', self.edit_cut,
+            self, get_icon(EDIT_CUT_SVG), 'C&ut', self.edit_cut,
             QKeySequence.Cut, 'Cut the selected text')
         self.edit_paste_action = make_action(
-            self, path / 'edit-paste.svg', '&Paste', self.edit_paste,
+            self, get_icon(EDIT_PASTE_SVG), '&Paste', self.edit_paste,
             QKeySequence.Paste, 'Paste text from the clipboard')
 
 

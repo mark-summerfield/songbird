@@ -29,6 +29,8 @@ st.sh
 
 README.md
 
+make_appdata.py
+
 # TODO
 # - View → &Goto Item Tree
 #

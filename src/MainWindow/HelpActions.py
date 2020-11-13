@@ -11,7 +11,7 @@ from PySide2.QtGui import QKeySequence
 from PySide2.QtWidgets import QMessageBox
 
 import apsw
-import Config
+from AppData import HELP_SVG, ICON_SVG, get_icon
 from Const import APPNAME, VERSION
 from Ui import make_action
 
@@ -19,12 +19,11 @@ from Ui import make_action
 class Mixin:
 
     def make_help_actions(self):
-        path = Config.path() / 'images'
         self.help_action = make_action(
-            self, path / 'help.svg', '&Help', self.help,
+            self, get_icon(HELP_SVG), '&Help', self.help,
             QKeySequence.HelpContents, 'Show the online help')
         self.help_about_action = make_action(
-            self, path / 'icon.svg', '&About', self.help_about,
+            self, get_icon(ICON_SVG), '&About', self.help_about,
             tip=f"Show {APPNAME}'s about box")
 
 

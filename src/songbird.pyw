@@ -8,8 +8,8 @@ from PySide2.QtCore import QtMsgType, qInstallMessageHandler
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QApplication
 
-import Config
 import MainWindow
+from AppData import ICON_SVG, get_icon
 from Const import APPNAME, VERSION
 
 
@@ -25,8 +25,7 @@ def main():
     app.setOrganizationDomain('qtrac.eu')
     app.setApplicationName(APPNAME)
     app.setApplicationVersion(VERSION)
-    Config.initialize(pathlib.Path(__file__).resolve().parent)
-    app.setWindowIcon(QIcon(str(Config.path() / 'images/icon.svg')))
+    app.setWindowIcon(get_icon(ICON_SVG))
     filename = sys.argv[1] if len(sys.argv) == 2 else None
     window = MainWindow.Window(filename)
     window.show()

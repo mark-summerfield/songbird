@@ -4,6 +4,8 @@
 import collections
 import pathlib
 
+from PySide2.QtCore import QStandardPaths
+
 import apsw
 from ConfigConst import (
     _CLEAR_RECENT_FILES, _CREATE, _GET, _GET_VERSION, _INCREMENT,
@@ -33,50 +35,30 @@ ToggleOptions = collections.namedtuple(
     'ToggleOptions', ('show_items_tree', 'show_pragmas', 'show_tabs'))
 
 
-def path():
-    return _the.config.path
-
-
 def filename():
-    return _the.config.filename
+    return _Config.filename
 
 
 def get(key):
-    return _the.config[key]
+    return _Config[key]
 
 
 def set(key, value):
-    _the.config[key] = value
-
-
-def initialize(path):
-    _the(path)
+    _Config[key] = value
 
 
 def write_main_window_options(options):
-    _the.config.write_main_window_options(options)
+    _Config.write_main_window_options(options)
 
 
 def read_main_window_options():
-    return _the.config.read_main_window_options()
-
-
-def _the(path):
-    if _the.config is None:
-        _the.config = _Singleton_Config(path)
-_the.config = None # noqa
+    return _Config.read_main_window_options()
 
 
 class _Singleton_Config:
 
-    def __init__(self, path):
-        self._path = path
+    def __init__(self):
         self._set_filename()
-
-
-    @property
-    def path(self):
-        return self._path
 
 
     @property
@@ -96,20 +78,23 @@ class _Singleton_Config:
 
     def _set_filename(self):
         name = APPNAME.lower() + '.sbc'
-        if WIN:
-            names = [pathlib.Path.home() / name, self.path / name]
-            index = 0
+        path = QStandardPaths.writableLocation(
+            QStandardPaths.AppConfigLocation)
+        if path:
+            path = pathlib.Path(path) / name
+        elif WIN:
+            path = pathlib.Path.home() / name
         else:
-            names = [pathlib.Path.home() / '.config' / name,
-                     pathlib.Path.home() / f'.{name}', self.path / name]
-            index = 0 if (pathlib.Path.home() / '.config').is_dir() else 1
-        for name in names:
-            if name.exists():
-                self._filename = str(name.resolve())
-                self._update_opened()
-                return
-        self._filename = str(names[index].resolve())
-        self._make_default_sbc()
+            path = pathlib.Path.home() / '.config'
+            if path.exists():
+                path /= name
+            else:
+                path = pathlib.Path.home() / f'.{name}'
+        self._filename = str(path.resolve())
+        if path.exists():
+            self._update_opened()
+        else:
+            self._make_default_sbc()
 
 
     def _make_default_sbc(self):
@@ -256,3 +241,6 @@ class _Singleton_Config:
             # 8 TODO
             # CREATE TABLE IF NOT EXISTS FILES (...
             # CREATE TABLE IF NOT EXISTS WINDOWS (...
+
+
+_Config = _Singleton_Config()

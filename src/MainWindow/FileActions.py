@@ -7,7 +7,9 @@ from PySide2.QtCore import QTimer
 from PySide2.QtGui import QKeySequence, Qt
 from PySide2.QtWidgets import QFileDialog, QMenu, QMessageBox
 
-import Config
+from AppData import (
+    DOCUMENT_NEW_SVG, DOCUMENT_OPEN_SVG, EDIT_CLEAR_SVG, EXPORT_SVG,
+    FILESAVE_SVG, FILESAVEAS_SVG, IMPORT_SVG, SHUTDOWN_SVG, get_icon)
 from Const import APPNAME, SUFFIX, SUFFIX_DEFAULT, SUFFIXES, TIMEOUT_SHORT
 from Ui import make_action
 
@@ -15,38 +17,37 @@ from Ui import make_action
 class Mixin:
 
     def make_file_actions(self):
-        path = Config.path() / 'images'
         self.file_new_action = make_action(
-            self, path / 'document-new.svg', '&New...', self.file_new,
+            self, get_icon(DOCUMENT_NEW_SVG), '&New...', self.file_new,
             QKeySequence.New, f'Create a new SQLite or {APPNAME} database')
         self.file_open_action = make_action(
-            self, path / 'document-open.svg', '&Open...', self.file_open,
+            self, get_icon(DOCUMENT_OPEN_SVG), '&Open...', self.file_open,
             QKeySequence.Open,
             f'Open an existing SQLite or {APPNAME} database')
         self.file_open_recent_action = make_action(
-            self, path / 'document-open.svg', 'Open &Recent')
+            self, get_icon(DOCUMENT_OPEN_SVG), 'Open &Recent')
         self.file_open_recent_menu = QMenu(self)
         self.file_open_recent_action.setMenu(self.file_open_recent_menu)
         self.file_save_action = make_action(
-            self, path / 'filesave.svg', '&Save', self.file_save,
+            self, get_icon(FILESAVE_SVG), '&Save', self.file_save,
             QKeySequence.Save, 'Save any unsaved changes to the database')
         self.file_saveas_action = make_action(
-            self, path / 'filesaveas.svg', 'Save &As...', self.file_saveas,
+            self, get_icon(FILESAVEAS_SVG), 'Save &As...', self.file_saveas,
             QKeySequence.SaveAs, 'Save the database under a new name and '
             'open the database with the new name')
         self.file_backup_action = make_action(
-            self, path / 'filesaveas.svg', '&Backup...', self.file_backup,
+            self, get_icon(FILESAVEAS_SVG), '&Backup...', self.file_backup,
             tip='Save a copy of the database')
         self.file_import_action = make_action(
-            self, path / 'import.svg', '&Import...', self.file_import,
+            self, get_icon(IMPORT_SVG), '&Import...', self.file_import,
             tip='Import an external data file (e.g., CSV) as a new '
             'table in the current database')
         self.file_export_action = make_action(
-            self, path / 'export.svg', '&Export...', self.file_export,
+            self, get_icon(EXPORT_SVG), '&Export...', self.file_export,
             tip="Export a table, view or SELECT query's data as an "
             'external data file (e.g., CSV)')
         self.file_quit_action = make_action(
-            self, path / 'shutdown.svg', '&Quit', self.close,
+            self, get_icon(SHUTDOWN_SVG), '&Quit', self.close,
             QKeySequence(Qt.CTRL + Qt.Key_Q),
             'Save any unsaved changes and quit')
 
@@ -79,7 +80,7 @@ class Mixin:
         self.file_open_recent_menu.clear()
         filenames = [str(filename) for filename in list(self.recent_files)]
         self.file_open_recent_menu.setEnabled(bool(filenames))
-        icon = Config.path() / 'images/document-open.svg'
+        icon = get_icon(DOCUMENT_OPEN_SVG)
         for i, filename in enumerate(filenames, 1):
             action = make_action(
                 self, icon, '&{} {}'.format(i, filename),
@@ -89,7 +90,7 @@ class Mixin:
         if filenames:
             self.file_open_recent_menu.addSeparator()
             self.file_open_recent_menu.addAction(make_action(
-                self, Config.path() / 'images/edit-clear.svg', '&Clear',
+                self, get_icon(EDIT_CLEAR_SVG), '&Clear',
                 self.file_clear_recent_files,
                 tip='Clear the list of recently opened databases'))
 

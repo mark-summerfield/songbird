@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QAction, QDockWidget, QToolBar, QToolButton
 
 
@@ -39,7 +38,7 @@ class BlockSignals:
 
 def make_action(widget, icon, text, slot=None, shortcut=None, tip=None,
                 *, menu=None):
-    action = QAction(QIcon(str(icon)), text, widget)
+    action = QAction(icon, text, widget)
     if slot is not None:
         action.triggered.connect(slot)
     if shortcut is not None:

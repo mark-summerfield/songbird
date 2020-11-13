@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-import Config
+from AppData import EMBLEM_SYMBOLIC_LINK_SVG, get_icon
 from Ui import make_action
 
 # Restore &Toolbars
@@ -11,9 +11,8 @@ from Ui import make_action
 class Mixin:
 
     def make_options_actions(self):
-        path = Config.path() / 'images'
         self.options_restore_toolbars_action = make_action(
-            self, path / 'emblem-symbolic-link.svg', 'Restore &Toolbars',
+            self, get_icon(EMBLEM_SYMBOLIC_LINK_SVG), 'Restore &Toolbars',
             self.options_restore_toolbars, tip='Make every toolbar visible')
         # TODO
 
