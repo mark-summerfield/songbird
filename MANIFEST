@@ -11,8 +11,9 @@ src/MainWindow/OptionsActions.py
 # src/MainWindow/WindowsActions.py
 src/MainWindow/HelpActions.py
 
-src/ItemsTreeView.py
-src/PragmaView.py
+src/View/__init__.py
+src/View/ItemsTreeView.py
+src/View/PragmaView.py
 
 src/Ui.py
 src/TableWidget.py

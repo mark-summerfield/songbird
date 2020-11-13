@@ -9,8 +9,7 @@ from PySide2.QtWidgets import QMainWindow, QMdiArea
 
 import Config
 import Db
-import ItemsTreeView
-import PragmaView
+from View import ItemsTreeView, PragmaView
 import RecentFiles
 from Const import APPNAME, RECENT_FILES_MAX, TIMEOUT_LONG, VERSION
 from Ui import add_actions, make_dock_widget

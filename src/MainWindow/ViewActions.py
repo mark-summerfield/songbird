@@ -13,7 +13,7 @@ from Ui import make_action
 # [X] Show Items &Tree
 # [ ] Show &Items in Tabs|Windows
 # [ ] Show &Pragmas
-# [ ] Show Ca&lendar TODO
+# [ ] Show Ca&lendar TODO i.e., CalendarView
 # -------------------
 # E&xpand Tree Item  TODO
 # C&ollapse Tree Item TODO
