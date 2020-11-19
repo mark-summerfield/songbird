@@ -40,10 +40,6 @@ src/AppData.py
 
 # TODO
 #
-#   on database Close:
-#	. delete from files where filename = ... (and rely on cascade
-#	  for window deletions)
-#	. insert into files (and if there are open windows, into windows)
 #   on database Open:
 #	. read from files & if present set UI accordingly;
 #	. read from windows & for each one found _try_ the sql & if it

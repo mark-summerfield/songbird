@@ -5,7 +5,7 @@ from Const import (
     LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED, RECENT_FILE,
     SHOW_AS_TABS, SHOW_ITEMS_TREE, SHOW_PRAGMAS)
 
-_VERSION = 11
+_VERSION = 12
 
 _PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
@@ -65,14 +65,12 @@ CREATE TABLE windows (
     y INTEGER,
     width INTEGER,
     height INTEGER,
-    tab_pos INTEGER,
     editor_height INTEGER,
 
     CHECK(x IS NULL OR x >= 0),
     CHECK(y IS NULL OR y >= 0),
     CHECK(width IS NULL OR width > 0),
     CHECK(height IS NULL OR height > 0),
-    CHECK(tab_pos IS NULL OR tab_pos >= 0),
     CHECK(editor_height IS NULL OR editor_height >= 0),
     UNIQUE(wid, fid),
     FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
@@ -102,3 +100,15 @@ _DELETE_OLD = '''
 DELETE FROM files WHERE updated < STRFTIME('%s', 'NOW', '-1 YEAR');'''
 # Delete record of opened databases that haven't been opened in more than a
 # year: really ought to be a user-specified time.
+
+_CLEAR_FILE_UI = 'DELETE FROM files WHERE filename = :filename'
+
+_INSERT_FILE_UI = '''
+INSERT INTO files
+    (filename, mdi, show_items_tree, show_pragmas, show_calendar) VALUES
+    (:filename, :mdi, :show_items_tree, :show_pragmas, :show_calendar);'''
+
+_INSERT_WINDOW_UI = '''
+INSERT INTO windows
+    (fid, title, sql_select, x, y, width, height, editor_height) VALUES
+    (:fid, :title, :sql_select, :x, :y, :width, :height, :editor_height);'''

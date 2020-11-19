@@ -39,12 +39,12 @@ class TableWidget(QWidget):
 
 
     def make_layout(self):
-        splitter = QSplitter(Qt.Vertical)
-        splitter.addWidget(self.sqlEdit)
-        splitter.addWidget(self.tableView)
-        splitter.setStretchFactor(1, 11)
+        self.splitter = QSplitter(Qt.Vertical)
+        self.splitter.addWidget(self.sqlEdit)
+        self.splitter.addWidget(self.tableView)
+        self.splitter.setStretchFactor(1, 11)
         vbox = QVBoxLayout()
-        vbox.addWidget(splitter)
+        vbox.addWidget(self.splitter)
         vbox.addWidget(self.statusLabel)
         self.setLayout(vbox)
 
@@ -54,9 +54,19 @@ class TableWidget(QWidget):
 
 
     @property
+    def editor_height(self):
+        return self.splitter.sizes()[0]
+
+
+    @property
     def is_select(self):
         select = Sql.uncommented(self.sqlEdit.toPlainText())
         return re.match(r'\s*SELECT\s', select, re.IGNORECASE) is not None
+
+
+    @property
+    def sql(self):
+        return self.sqlEdit.toPlainText()
 
 
     def refresh(self):

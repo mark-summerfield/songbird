@@ -14,8 +14,9 @@ from Const import (
 from Db.Sql import first
 
 from .Const import (
-    _CLEAR_RECENT_FILES, _CREATE, _DELETE_OLD, _GET, _GET_VERSION,
-    _INCREMENT, _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
+    _CLEAR_FILE_UI, _CLEAR_RECENT_FILES, _CREATE, _DELETE_OLD, _GET,
+    _GET_VERSION, _INCREMENT, _INSERT_FILE_UI, _INSERT_RECENT,
+    _INSERT_WINDOW_UI, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
 
 
 class MainWindowOptions:
@@ -38,28 +39,45 @@ ToggleOptions = collections.namedtuple(
 
 class DbUi:
 
-    def __init__(self, filename, mdi=True, show_items_tree=True,
+    def __init__(self, filename, *, mdi=True, show_items_tree=True,
                  show_pragmas=False, show_calendar=False, windows=None):
         self.filename = filename
         self.mdi = mdi
         self.show_items_tree = show_items_tree
         self.show_pragmas = show_pragmas
         self.show_calendar = show_calendar
-        self.windows = windows
+        self.windows = [] if windows is None else windows
+
+
+    def __str__(self): # debug
+        parts = [f'''Db={self.filename}
+    mdi={self.mdi}
+    show_items_tree={self.show_items_tree}
+    show_pragmas={self.show_pragmas}
+    show_calendar={self.show_calendar}
+    show_items_tree={self.show_items_tree}''']
+        for window in self.windows:
+            parts.append(f'        {window}')
+        return '\n'.join(parts)
 
 
 class DbWindowUi:
 
-    def __init__(self, title, sql_select, x=None, y=None, width=None,
-                 height=None, tab_pos=None, editor_height=None):
+    def __init__(self, title, sql_select, *, x=None, y=None, width=None,
+                 height=None, editor_height=None):
         self.title = title
         self.sql_select = sql_select
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.tab_pos = tab_pos
         self.editor_height = editor_height
+
+
+    def __str__(self): # debug
+        sql = ' '.join(self.sql_select.split()).strip()
+        return (f'window={self.title} ({self.x},{self.y}+{self.width}+'
+                f'{self.height}) {self.editor_height} {sql!r}')
 
 
 def filename():
@@ -251,8 +269,21 @@ class _Singleton_Config:
 
 
     def write_db_ui(self, ui):
-        # TODO save to .sbc
-        print('write_db_ui', vars(ui))
+        ui.filename = str(pathlib.Path(ui.filename).resolve())
+        db = None
+        try:
+            db, cursor = self._open()
+            with db:
+                cursor.execute(_CLEAR_FILE_UI, dict(filename=ui.filename))
+                cursor.execute(_INSERT_FILE_UI, vars(ui))
+                fid = db.last_insert_rowid()
+                for window in ui.windows:
+                    d = vars(window)
+                    d['fid'] = fid
+                    cursor.execute(_INSERT_WINDOW_UI, d)
+        finally:
+            if db is not None:
+                db.close()
 
 
     def read_db_ui(self, filename): # TODO
@@ -300,26 +331,6 @@ class _Singleton_Config:
                     CHECK(show_items_tree IN (0, 1)),
                     CHECK(show_pragmas IN (0, 1)),
                     CHECK(show_calendar IN (0, 1))
-                );
-                CREATE TABLE IF NOT EXISTS windows (
-                    wid INTEGER PRIMARY KEY NOT NULL,
-                    fid INTEGER NOT NULL,
-                    title TEXT NOT NULL,
-                    sql_select TEXT NOT NULL,
-                    x INTEGER,
-                    y INTEGER,
-                    width INTEGER,
-                    height INTEGER,
-                    tab_pos INTEGER,
-                    editor_height INTEGER,
-                    CHECK(x IS NULL OR x >= 0),
-                    CHECK(y IS NULL OR y >= 0),
-                    CHECK(width IS NULL OR width > 0),
-                    CHECK(height IS NULL OR height > 0),
-                    CHECK(tab_pos IS NULL OR tab_pos >= 0),
-                    CHECK(editor_height IS NULL OR editor_height >= 0),
-                    UNIQUE(wid, fid),
-                    FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
                 );''')
             # _VERSION = 10
             cursor.execute(f'''
@@ -329,6 +340,27 @@ class _Singleton_Config:
                         UPDATE files SET updated = STRFTIME('%s', 'NOW')
                         WHERE fid = OLD.fid;
                     END;''')
+            # _VERSION = 12
+            cursor.execute(f'''
+                DROP TABLE IF EXISTS windows;
+                CREATE TABLE windows (
+                    wid INTEGER PRIMARY KEY NOT NULL,
+                    fid INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    sql_select TEXT NOT NULL,
+                    x INTEGER,
+                    y INTEGER,
+                    width INTEGER,
+                    height INTEGER,
+                    editor_height INTEGER,
+                    CHECK(x IS NULL OR x >= 0),
+                    CHECK(y IS NULL OR y >= 0),
+                    CHECK(width IS NULL OR width > 0),
+                    CHECK(height IS NULL OR height > 0),
+                    CHECK(editor_height IS NULL OR editor_height >= 0),
+                    UNIQUE(wid, fid),
+                    FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
+                );''')
 
 
 _Config = _Singleton_Config()
