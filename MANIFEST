@@ -29,6 +29,7 @@ src/Const.py # VERSION
 
 src/Config/__init__.py
 src/Config/Config.py # TODO
+src/Config/Struct.py
 src/Config/Const.py
 
 st.sh
