@@ -9,6 +9,7 @@ src/MainWindow/ViewActions.py
 src/MainWindow/OptionsActions.py
 # src/MainWindow/WindowsActions.py
 src/MainWindow/HelpActions.py
+src/MainWindow/SaveRestoreUi.py
 
 src/View/ItemsTreeView.py
 src/View/PragmaView.py
@@ -39,29 +40,6 @@ src/AppData.py
 
 # TODO
 #
-# - for pure SQLite dbs remember those opened in the past year (in
-#   songbird.sbc), so on quit delete any older than one year:
-#   CREATE TABLE files (
-#	fid -- PK
-#	filename -- full path to SQLite file
-#	updated -- text datetime timestamp
-#	mdi -- bool FALSE means tabs
-#	show_items_tree -- bool
-#	show_pragmas -- bool
-#	show_calendar -- bool
-#   CREATE TABLE windows (
-#	wid -- PK
-#	fid -- FK
-#	title
-#	sql
-#	x -- this and below are all nullable (z doesn't appear to be avail)
-#	y
-#	width
-#	height
-#	tab_pos
-#	editor_height -- the splitter gives this much to the editor; rest
-#		      -- to the table view (edit_height could be 0)
-#   CREATE TRIGGER to cascade delete windows if a files record is deleted
 #   on database Close:
 #	. delete from files where filename = ... (and rely on cascade
 #	  for window deletions)

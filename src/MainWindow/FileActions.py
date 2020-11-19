@@ -147,6 +147,7 @@ class Mixin:
         self.statusBar().showMessage(message, TIMEOUT_SHORT)
         self.refresh_items()
         self.refresh_pragmas()
+        self.maybe_restore_ui()
         self.update_ui()
 
 

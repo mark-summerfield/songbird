@@ -15,12 +15,13 @@ from Ui import add_actions, make_dock_widget
 from View import ItemsTreeView, PragmaView
 
 from . import (
-    EditActions, FileActions, HelpActions, OptionsActions, ViewActions)
+    EditActions, FileActions, HelpActions, OptionsActions, ViewActions,
+    SaveRestoreUi)
 
 
 class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
              HelpActions.Mixin, ItemsTreeView.Mixin, OptionsActions.Mixin,
-             PragmaView.Mixin, ViewActions.Mixin):
+             PragmaView.Mixin, ViewActions.Mixin, SaveRestoreUi.Mixin):
 
     def __init__(self, filename):
         super().__init__()
@@ -164,6 +165,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
 
     def clear(self):
+        self.save_ui()
         widget = self.pragmasDock.widget()
         widget.save(closing=self.closing)
         widget.clear()
