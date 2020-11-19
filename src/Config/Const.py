@@ -5,7 +5,7 @@ from Const import (
     LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED, RECENT_FILE,
     SHOW_AS_TABS, SHOW_ITEMS_TREE, SHOW_PRAGMAS)
 
-_VERSION = 8
+_VERSION = 11
 
 _PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
@@ -17,6 +17,7 @@ PRAGMA temp_store = MEMORY;
 _CREATE = f'''
 PRAGMA user_version = {_VERSION};
 
+DROP TRIGGER IF EXISTS files_on_update;
 DROP TABLE IF EXISTS windows;
 DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS config;
@@ -48,6 +49,12 @@ CREATE TABLE files (
     CHECK(show_pragmas IN (0, 1)),
     CHECK(show_calendar IN (0, 1))
 );
+
+CREATE TRIGGER files_on_update AFTER UPDATE ON files
+    FOR EACH ROW BEGIN
+        UPDATE files SET updated = STRFTIME('%s', 'NOW')
+        WHERE fid = OLD.fid;
+    END;
 
 CREATE TABLE windows (
     wid INTEGER PRIMARY KEY NOT NULL,
@@ -90,3 +97,8 @@ UPDATE config SET value = NULL WHERE key LIKE '{RECENT_FILE}%';'''
 _GET_VERSION = 'PRAGMA user_version;'
 
 _UPDATE_VERSION = f'PRAGMA user_version = {_VERSION};'
+
+_DELETE_OLD = '''
+DELETE FROM files WHERE updated < STRFTIME('%s', 'NOW', '-1 YEAR');'''
+# Delete record of opened databases that haven't been opened in more than a
+# year: really ought to be a user-specified time.

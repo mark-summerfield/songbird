@@ -14,8 +14,8 @@ from Const import (
 from Db.Sql import first
 
 from .Const import (
-    _CLEAR_RECENT_FILES, _CREATE, _GET, _GET_VERSION, _INCREMENT,
-    _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
+    _CLEAR_RECENT_FILES, _CREATE, _DELETE_OLD, _GET, _GET_VERSION,
+    _INCREMENT, _INSERT_RECENT, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
 
 
 class MainWindowOptions:
@@ -36,6 +36,32 @@ ToggleOptions = collections.namedtuple(
     'ToggleOptions', ('show_items_tree', 'show_pragmas', 'show_tabs'))
 
 
+class FileUi:
+
+    def __init__(self, filename, mdi=True, show_items_tree=True,
+                 show_pragmas=False, show_calendar=False, windows=None):
+        self.filename = filename
+        self.mdi = mdi
+        self.show_items_tree = show_items_tree
+        self.show_pragmas = show_pragmas
+        self.show_calendar = show_calendar
+        self.windows = windows
+
+
+class WindowUi:
+
+    def __init__(self, title, sql_select, x=None, y=None, width=None,
+                 height=None, tab_pos=None, editor_height=None):
+        self.title = title
+        self.sql_select = sql_select
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.tab_pos = tab_pos
+        self.editor_height = editor_height
+
+
 def filename():
     return _Config.filename
 
@@ -54,6 +80,14 @@ def write_main_window_options(options):
 
 def read_main_window_options():
     return _Config.read_main_window_options()
+
+
+def write_file_ui(fileui):
+    _Config.write_file_ui(fileui)
+
+
+def read_file_ui(filename):
+    return _Config.read_file_ui(filename)
 
 
 class _Singleton_Config:
@@ -93,7 +127,7 @@ class _Singleton_Config:
                 path = pathlib.Path.home() / f'.{name}'
         self._filename = str(path.resolve())
         if path.exists():
-            self._update_opened()
+            self._update_on_open()
         else:
             self._make_default_sbc()
 
@@ -114,13 +148,14 @@ class _Singleton_Config:
                 db.close()
 
 
-    def _update_opened(self):
+    def _update_on_open(self):
         d = dict(key=OPENED)
         vacuum = False
         db = None
         try:
             db, cursor = self._open()
             with db:
+                cursor.execute(_DELETE_OLD)
                 cursor.execute(_INCREMENT, d)
                 if first(cursor, _GET, d) > 100:
                     d.update(value=1)
@@ -215,6 +250,18 @@ class _Singleton_Config:
                 db.close()
 
 
+    def write_file_ui(self, fileui):
+        # TODO save to .sbc
+        print('write_file_ui', vars(fileui))
+
+
+    def read_file_ui(self, filename): # TODO
+        fileui = FileUi(filename)
+        # TODO populate from .sbc if poss
+        print('read_file_ui', filename)
+        return fileui
+
+
     def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
         with db:
@@ -274,6 +321,14 @@ class _Singleton_Config:
                     UNIQUE(wid, fid),
                     FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
                 );''')
+            # _VERSION = 10
+            cursor.execute(f'''
+                CREATE TRIGGER IF NOT EXISTS files_on_update
+                    AFTER UPDATE ON files
+                    FOR EACH ROW BEGIN
+                        UPDATE files SET updated = STRFTIME('%s', 'NOW')
+                        WHERE fid = OLD.fid;
+                    END;''')
 
 
 _Config = _Singleton_Config()

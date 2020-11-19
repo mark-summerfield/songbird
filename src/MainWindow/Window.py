@@ -165,7 +165,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
 
 
     def clear(self):
-        self.save_ui()
+        self.maybe_save_ui()
         widget = self.pragmasDock.widget()
         widget.save(closing=self.closing)
         widget.clear()
