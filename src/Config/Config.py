@@ -36,7 +36,7 @@ ToggleOptions = collections.namedtuple(
     'ToggleOptions', ('show_items_tree', 'show_pragmas', 'show_tabs'))
 
 
-class FileUi:
+class DbUi:
 
     def __init__(self, filename, mdi=True, show_items_tree=True,
                  show_pragmas=False, show_calendar=False, windows=None):
@@ -48,7 +48,7 @@ class FileUi:
         self.windows = windows
 
 
-class WindowUi:
+class DbWindowUi:
 
     def __init__(self, title, sql_select, x=None, y=None, width=None,
                  height=None, tab_pos=None, editor_height=None):
@@ -82,12 +82,12 @@ def read_main_window_options():
     return _Config.read_main_window_options()
 
 
-def write_file_ui(fileui):
-    _Config.write_file_ui(fileui)
+def write_db_ui(ui):
+    _Config.write_db_ui(ui)
 
 
-def read_file_ui(filename):
-    return _Config.read_file_ui(filename)
+def read_db_ui(filename):
+    return _Config.read_db_ui(filename)
 
 
 class _Singleton_Config:
@@ -250,16 +250,16 @@ class _Singleton_Config:
                 db.close()
 
 
-    def write_file_ui(self, fileui):
+    def write_db_ui(self, ui):
         # TODO save to .sbc
-        print('write_file_ui', vars(fileui))
+        print('write_db_ui', vars(ui))
 
 
-    def read_file_ui(self, filename): # TODO
-        fileui = FileUi(filename)
+    def read_db_ui(self, filename): # TODO
+        ui = DbUi(filename)
         # TODO populate from .sbc if poss
-        print('read_file_ui', filename)
-        return fileui
+        print('read_db_ui', filename)
+        return ui
 
 
     def _update_sbc(self, db, cursor):
