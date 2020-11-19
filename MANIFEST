@@ -62,6 +62,16 @@ src/AppData.py
 #	editor_height -- the splitter gives this much to the editor; rest
 #		      -- to the table view (edit_height could be 0)
 #   CREATE TRIGGER to cascade delete windows if a files record is deleted
+#   on database Close:
+#	. delete from files where filename = ... (and rely on cascade
+#	  for window deletions)
+#	. insert into files (and if there are open windows, into windows)
+#   on database Open:
+#	. read from files & if present set UI accordingly;
+#	. read from windows & for each one found _try_ the sql & if it
+#	  works apply (i.e., create a window/tab etc.); otherwise
+#	  silently ignore (e.g., if the sql fails due to a change to the
+#	  database outside songbird)
 #
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py
