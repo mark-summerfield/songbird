@@ -218,30 +218,62 @@ class _Singleton_Config:
     def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
         with db:
-            # 4
+            # _VERSION = 4
             cursor.execute(f'''
                 INSERT INTO config (key, value)
                 SELECT '{SHOW_PRAGMAS}', FALSE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_PRAGMAS}');''')
-            # 5
+            # _VERSION = 5
             cursor.execute('''DELETE FROM config WHERE key = 'Blink';''')
-            # 6
+            # _VERSION = 6
             cursor.execute(f''' 
                 INSERT INTO config (key, value)
                 SELECT '{SHOW_AS_TABS}', FALSE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_AS_TABS}');''')
-            # 7
+            # _VERSION = 7
             cursor.execute(f'''
                 DELETE FROM config WHERE key = 'ShowContents';
                 INSERT INTO config (key, value)
                 SELECT '{SHOW_ITEMS_TREE}', TRUE
                 WHERE NOT EXISTS (SELECT 1 FROM config
                                   WHERE key = '{SHOW_ITEMS_TREE}');''')
-            # 8 TODO
-            # CREATE TABLE IF NOT EXISTS FILES (...
-            # CREATE TABLE IF NOT EXISTS WINDOWS (...
+            # _VERSION = 8
+            cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS files (
+                    fid INTEGER PRIMARY KEY NOT NULL,
+                    filename TEXT NOT NULL,
+                    updated INTEGER DEFAULT (STRFTIME('%s', 'NOW')) NOT NULL,
+                    mdi INTEGER DEFAULT TRUE NOT NULL,
+                    show_items_tree INTEGER DEFAULT TRUE NOT NULL,
+                    show_pragmas INTEGER DEFAULT FALSE NOT NULL,
+                    show_calendar INTEGER DEFAULT FALSE NOT NULL,
+                    CHECK(mdi IN (0, 1)),
+                    CHECK(show_items_tree IN (0, 1)),
+                    CHECK(show_pragmas IN (0, 1)),
+                    CHECK(show_calendar IN (0, 1))
+                );
+                CREATE TABLE IF NOT EXISTS windows (
+                    wid INTEGER PRIMARY KEY NOT NULL,
+                    fid INTEGER NOT NULL,
+                    title TEXT NOT NULL,
+                    sql_select TEXT NOT NULL,
+                    x INTEGER,
+                    y INTEGER,
+                    width INTEGER,
+                    height INTEGER,
+                    tab_pos INTEGER,
+                    editor_height INTEGER,
+                    CHECK(x IS NULL OR x >= 0),
+                    CHECK(y IS NULL OR y >= 0),
+                    CHECK(width IS NULL OR width > 0),
+                    CHECK(height IS NULL OR height > 0),
+                    CHECK(tab_pos IS NULL OR tab_pos >= 0),
+                    CHECK(editor_height IS NULL OR editor_height >= 0),
+                    UNIQUE(wid, fid),
+                    FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
+                );''')
 
 
 _Config = _Singleton_Config()

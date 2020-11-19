@@ -5,7 +5,7 @@ from Const import (
     LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED, RECENT_FILE,
     SHOW_AS_TABS, SHOW_ITEMS_TREE, SHOW_PRAGMAS)
 
-_VERSION = 7
+_VERSION = 8
 
 _PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
@@ -17,6 +17,8 @@ PRAGMA temp_store = MEMORY;
 _CREATE = f'''
 PRAGMA user_version = {_VERSION};
 
+DROP TABLE IF EXISTS windows;
+DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS config;
 
 CREATE TABLE config (
@@ -32,20 +34,47 @@ INSERT INTO config (key, value) VALUES ('{SHOW_ITEMS_TREE}', TRUE);
 INSERT INTO config (key, value) VALUES ('{SHOW_PRAGMAS}', FALSE);
 INSERT INTO config (key, value) VALUES ('{SHOW_AS_TABS}', FALSE);
 
--- TODO
-/*
 CREATE TABLE files (
-    fid INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    filename TEXT,
-    updated INTEGER DEFAULT STRFTIME('%s', 'NOW'),
-    -- etc.
+    fid INTEGER PRIMARY KEY NOT NULL,
+    filename TEXT NOT NULL,
+    updated INTEGER DEFAULT (STRFTIME('%s', 'NOW')) NOT NULL,
+    mdi INTEGER DEFAULT TRUE NOT NULL,
+    show_items_tree INTEGER DEFAULT TRUE NOT NULL,
+    show_pragmas INTEGER DEFAULT FALSE NOT NULL,
+    show_calendar INTEGER DEFAULT FALSE NOT NULL,
+
+    CHECK(mdi IN (0, 1)),
+    CHECK(show_items_tree IN (0, 1)),
+    CHECK(show_pragmas IN (0, 1)),
+    CHECK(show_calendar IN (0, 1))
 );
 
 CREATE TABLE windows (
-    -- etc.
+    wid INTEGER PRIMARY KEY NOT NULL,
+    fid INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    sql_select TEXT NOT NULL,
+    x INTEGER,
+    y INTEGER,
+    width INTEGER,
+    height INTEGER,
+    tab_pos INTEGER,
+    editor_height INTEGER,
+
+    CHECK(x IS NULL OR x >= 0),
+    CHECK(y IS NULL OR y >= 0),
+    CHECK(width IS NULL OR width > 0),
+    CHECK(height IS NULL OR height > 0),
+    CHECK(tab_pos IS NULL OR tab_pos >= 0),
+    CHECK(editor_height IS NULL OR editor_height >= 0),
+    UNIQUE(wid, fid),
+    FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
 );
-*/
 '''
+# Both tables above in effect AUTOINCREMENT because their PKs are ROWID
+# aliases
+# SQLite doesn't support compound PKs with one of them AUTOINCREMENT, so the
+# workaround is to use UNIQUE
 
 _INSERT_RECENT = 'INSERT INTO config (key, value) VALUES (:key, NULL);'
 
