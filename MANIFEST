@@ -9,7 +9,7 @@ src/MainWindow/ViewActions.py
 src/MainWindow/OptionsActions.py
 # src/MainWindow/WindowsActions.py
 src/MainWindow/HelpActions.py
-src/MainWindow/SaveRestoreUi.py # TODO
+src/MainWindow/SaveRestoreUi.py
 
 src/View/ItemsTreeView.py
 src/View/PragmaView.py
@@ -28,7 +28,7 @@ src/RecentFiles.py
 src/Const.py # VERSION
 
 src/Config/__init__.py
-src/Config/Config.py # TODO
+src/Config/Config.py
 src/Config/Struct.py
 src/Config/Const.py
 

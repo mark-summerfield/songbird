@@ -50,18 +50,6 @@ class DbUi:
         self.show_calendar = d.get('show_calendar', False)
 
 
-    def __str__(self): # debug
-        parts = [f'''Db={self.filename}
-    mdi={self.mdi}
-    show_items_tree={self.show_items_tree}
-    show_pragmas={self.show_pragmas}
-    show_calendar={self.show_calendar}
-    show_items_tree={self.show_items_tree}''']
-        for window in self.windows:
-            parts.append(f'        {window}')
-        return '\n'.join(parts)
-
-
 class DbWindowUi:
 
     def __init__(self, title, sql_select, *, x=None, y=None, width=None,
@@ -80,9 +68,3 @@ class DbWindowUi:
         return json.dumps(dict(title=self.title, sql_select=self.sql_select,
                                x=self.x, y=self.y, width=self.width,
                                height=self.height, sizes=self.sizes))
-
-
-    def __str__(self): # debug
-        sql = ' '.join(self.sql_select.split()).strip()
-        return (f'window={self.title} ({self.x},{self.y}+{self.width}+'
-                f'{self.height}) {self.sizes} {sql!r}')
