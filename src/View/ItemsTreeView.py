@@ -7,7 +7,7 @@ import shiboken2
 from PySide2.QtGui import QBrush, Qt
 from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
 
-import TableWidget
+from TableWidget import TableWidget
 
 
 class Mixin:
@@ -29,9 +29,8 @@ class Mixin:
         if sub_window is None:
             if kind in {'table', 'view'}:
                 select = self.db.select_make(kind, name)
-                widget = TableWidget.TableWidget(self.db, name, select)
-                widget.sqlEdit.textChanged.connect(self.edit_update_ui)
-                widget.sqlEdit.copyAvailable.connect(self.edit_update_ui)
+                widget = TableWidget(self.db, name, select,
+                                     self.edit_update_ui)
                 sub_window = self.mdiArea.addSubWindow(widget)
                 self.mdiWidgets[name] = sub_window
                 widget.show()

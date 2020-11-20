@@ -16,14 +16,14 @@ from SQLEdit import SQLEdit
 
 class TableWidget(QWidget):
 
-    def __init__(self, db, name, select):
+    def __init__(self, db, name, select, update_ui):
         super().__init__()
         self.db = db
         self.setWindowTitle(name)
         self.dirty = False
         self.make_widgets(select)
         self.make_layout()
-        self.make_connections()
+        self.make_connections(update_ui)
 
 
     def make_widgets(self, select):
@@ -49,7 +49,9 @@ class TableWidget(QWidget):
         self.setLayout(vbox)
 
 
-    def make_connections(self):
+    def make_connections(self, update_ui):
+        self.sqlEdit.textChanged.connect(update_ui)
+        self.sqlEdit.copyAvailable.connect(update_ui)
         self.tableModel.sql_error.connect(self.on_sql_error)
 
 

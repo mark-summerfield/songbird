@@ -37,9 +37,8 @@ class Mixin:
 
     def _restore_windows_ui(self, windows):
         for window in windows:
-            widget = TableWidget(self.db, window.title, window.sql_select)
-            widget.sqlEdit.textChanged.connect(self.edit_update_ui)
-            widget.sqlEdit.copyAvailable.connect(self.edit_update_ui)
+            widget = TableWidget(self.db, window.title, window.sql_select,
+                                 self.edit_update_ui)
             sub_window = self.mdiArea.addSubWindow(widget)
             sub_window.setGeometry(window.x, window.y, window.width,
                                    window.height)
