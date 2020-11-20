@@ -23,7 +23,7 @@ class Mixin:
     def _restore_overall_ui(self, ui):
         mode = self.mdiArea.viewMode()
         if ((ui.mdi and mode != QMdiArea.SubWindowView) or
-             (not ui.mdi and mode == QMdiArea.TabbedView)):
+             (not ui.mdi and mode != QMdiArea.TabbedView)):
             self.view_items_tree_toggle_tabs()
         if ui.show_items_tree != self.itemsTreeDock.isVisible():
             self.itemsTreeDock.setVisible(
