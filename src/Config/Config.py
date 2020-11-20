@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
+import json
 import pathlib
 
 from PySide2.QtCore import QStandardPaths
@@ -14,9 +15,10 @@ from Db.Sql import first
 
 from .Const import (
     _CLEAR_FILE_UI, _CLEAR_RECENT_FILES, _CREATE, _DELETE_OLD, _GET,
-    _GET_VERSION, _INCREMENT, _INSERT_FILE_UI, _INSERT_RECENT,
-    _INSERT_WINDOW_UI, _PREPARE, _SET, _UPDATE_VERSION, _VERSION)
-from .Struct import DbUi, MainWindowOptions
+    _GET_FILE_UI, _GET_VERSION, _GET_WINDOW_UI, _INCREMENT, _INSERT_FILE_UI,
+    _INSERT_RECENT, _INSERT_WINDOW_UI, _PREPARE, _SET, _UPDATE_VERSION,
+    _VERSION)
+from .Struct import DbUi, DbWindowUi, MainWindowOptions
 
 
 def filename():
@@ -208,95 +210,70 @@ class _Singleton_Config:
 
 
     def write_db_ui(self, ui):
-        ui.filename = str(pathlib.Path(ui.filename).resolve())
+        filename = str(pathlib.Path(ui.filename).resolve())
         db = None
         try:
             db, cursor = self._open()
             with db:
-                cursor.execute(_CLEAR_FILE_UI, dict(filename=ui.filename))
-                cursor.execute(_INSERT_FILE_UI, vars(ui))
+                cursor.execute(_CLEAR_FILE_UI, dict(filename=filename))
+                cursor.execute(_INSERT_FILE_UI, dict(filename=filename,
+                                                     ui=ui.to_json))
                 fid = db.last_insert_rowid()
                 for window in ui.windows:
-                    d = vars(window)
-                    d['fid'] = fid
-                    cursor.execute(_INSERT_WINDOW_UI, d)
+                    cursor.execute(_INSERT_WINDOW_UI,
+                                   dict(fid=fid, ui=window.to_json))
         finally:
             if db is not None:
                 db.close()
 
 
-    def read_db_ui(self, filename): # TODO
+    def read_db_ui(self, filename):
+        filename = str(pathlib.Path(filename).resolve())
         ui = DbUi(filename)
-        # TODO populate from .sbc if poss
-        print('read_db_ui', filename)
+        db = None
+        try:
+            db, cursor = self._open()
+            with db:
+                row = cursor.execute(_GET_FILE_UI,
+                                     dict(filename=filename)).fetchone()
+                if row is not None:
+                    fid = int(row[0])
+                    ui.update(json.loads(row[1]))
+                    for row in cursor.execute(_GET_WINDOW_UI,
+                                              dict(fid=fid)):
+                        d = json.loads(row[0])
+                        if d.get('title') and d.get('sql_select'):
+                            ui.windows.append(DbWindowUi(**d))
+        finally:
+            if db is not None:
+                db.close()
         return ui
 
 
     def _update_sbc(self, db, cursor):
         cursor.execute(_UPDATE_VERSION)
         with db:
-            # _VERSION = 4
+            # _VERSION = 13
             cursor.execute(f'''
-                INSERT INTO config (key, value)
-                SELECT '{SHOW_PRAGMAS}', FALSE
-                WHERE NOT EXISTS (SELECT 1 FROM config
-                                  WHERE key = '{SHOW_PRAGMAS}');''')
-            # _VERSION = 5
-            cursor.execute('''DELETE FROM config WHERE key = 'Blink';''')
-            # _VERSION = 6
-            cursor.execute(f''' 
-                INSERT INTO config (key, value)
-                SELECT '{SHOW_AS_TABS}', FALSE
-                WHERE NOT EXISTS (SELECT 1 FROM config
-                                  WHERE key = '{SHOW_AS_TABS}');''')
-            # _VERSION = 7
-            cursor.execute(f'''
-                DELETE FROM config WHERE key = 'ShowContents';
-                INSERT INTO config (key, value)
-                SELECT '{SHOW_ITEMS_TREE}', TRUE
-                WHERE NOT EXISTS (SELECT 1 FROM config
-                                  WHERE key = '{SHOW_ITEMS_TREE}');''')
-            # _VERSION = 8
-            cursor.execute(f'''
-                CREATE TABLE IF NOT EXISTS files (
+                DROP TRIGGER IF EXISTS files_on_update;
+                DROP TABLE IF EXISTS windows;
+                DROP TABLE IF EXISTS files;
+                CREATE TABLE files (
                     fid INTEGER PRIMARY KEY NOT NULL,
                     filename TEXT NOT NULL,
-                    updated INTEGER DEFAULT (STRFTIME('%s', 'NOW')) NOT NULL,
-                    mdi INTEGER DEFAULT TRUE NOT NULL,
-                    show_items_tree INTEGER DEFAULT TRUE NOT NULL,
-                    show_pragmas INTEGER DEFAULT FALSE NOT NULL,
-                    show_calendar INTEGER DEFAULT FALSE NOT NULL,
-                    CHECK(mdi IN (0, 1)),
-                    CHECK(show_items_tree IN (0, 1)),
-                    CHECK(show_pragmas IN (0, 1)),
-                    CHECK(show_calendar IN (0, 1))
-                );''')
-            # _VERSION = 10
-            cursor.execute(f'''
-                CREATE TRIGGER IF NOT EXISTS files_on_update
-                    AFTER UPDATE ON files
+                    updated INTEGER DEFAULT (STRFTIME('%s', 'NOW'))
+                            NOT NULL,
+                    ui TEXT
+                );
+                CREATE TRIGGER files_on_update AFTER UPDATE ON files
                     FOR EACH ROW BEGIN
                         UPDATE files SET updated = STRFTIME('%s', 'NOW')
                         WHERE fid = OLD.fid;
-                    END;''')
-            # _VERSION = 12
-            cursor.execute(f'''
-                DROP TABLE IF EXISTS windows;
+                    END;
                 CREATE TABLE windows (
                     wid INTEGER PRIMARY KEY NOT NULL,
                     fid INTEGER NOT NULL,
-                    title TEXT NOT NULL,
-                    sql_select TEXT NOT NULL,
-                    x INTEGER,
-                    y INTEGER,
-                    width INTEGER,
-                    height INTEGER,
-                    editor_height INTEGER,
-                    CHECK(x IS NULL OR x >= 0),
-                    CHECK(y IS NULL OR y >= 0),
-                    CHECK(width IS NULL OR width > 0),
-                    CHECK(height IS NULL OR height > 0),
-                    CHECK(editor_height IS NULL OR editor_height >= 0),
+                    ui TEXT,
                     UNIQUE(wid, fid),
                     FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
                 );''')

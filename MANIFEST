@@ -41,13 +41,6 @@ src/AppData.py
 
 # TODO
 #
-#   on database Open:
-#	. read from files & if present set UI accordingly;
-#	. read from windows & for each one found _try_ the sql & if it
-#	  works apply (i.e., create a window/tab etc.); otherwise
-#	  silently ignore (e.g., if the sql fails due to a change to the
-#	  database outside songbird)
-#
 # - QueryWidget
 #	copy TableWidget.py to QueryWidget.py
 #	put QTableView in a QWidgetStack? with a QPlainTextEdit

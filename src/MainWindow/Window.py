@@ -57,7 +57,7 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
             QStandardPaths.DocumentsLocation)
         self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
         self.closing = False
-        self.mdiWidgets = {} # key = (kind, name); value = QueryWidget etc.
+        self.mdiWidgets = {} # key = name; value = TableWidget, etc.
 
 
     def make_widgets(self):

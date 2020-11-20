@@ -5,7 +5,7 @@ from Const import (
     LAST_FILE, MAIN_WINDOW_GEOMETRY, MAIN_WINDOW_STATE, OPENED, RECENT_FILE,
     SHOW_AS_TABS, SHOW_ITEMS_TREE, SHOW_PRAGMAS)
 
-_VERSION = 12
+_VERSION = 13
 
 _PREPARE = f'''
 PRAGMA encoding = 'UTF-8';
@@ -39,15 +39,7 @@ CREATE TABLE files (
     fid INTEGER PRIMARY KEY NOT NULL,
     filename TEXT NOT NULL,
     updated INTEGER DEFAULT (STRFTIME('%s', 'NOW')) NOT NULL,
-    mdi INTEGER DEFAULT TRUE NOT NULL,
-    show_items_tree INTEGER DEFAULT TRUE NOT NULL,
-    show_pragmas INTEGER DEFAULT FALSE NOT NULL,
-    show_calendar INTEGER DEFAULT FALSE NOT NULL,
-
-    CHECK(mdi IN (0, 1)),
-    CHECK(show_items_tree IN (0, 1)),
-    CHECK(show_pragmas IN (0, 1)),
-    CHECK(show_calendar IN (0, 1))
+    ui TEXT
 );
 
 CREATE TRIGGER files_on_update AFTER UPDATE ON files
@@ -59,19 +51,8 @@ CREATE TRIGGER files_on_update AFTER UPDATE ON files
 CREATE TABLE windows (
     wid INTEGER PRIMARY KEY NOT NULL,
     fid INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    sql_select TEXT NOT NULL,
-    x INTEGER,
-    y INTEGER,
-    width INTEGER,
-    height INTEGER,
-    editor_height INTEGER,
+    ui TEXT,
 
-    CHECK(x IS NULL OR x >= 0),
-    CHECK(y IS NULL OR y >= 0),
-    CHECK(width IS NULL OR width > 0),
-    CHECK(height IS NULL OR height > 0),
-    CHECK(editor_height IS NULL OR editor_height >= 0),
     UNIQUE(wid, fid),
     FOREIGN KEY(fid) REFERENCES files(fid) ON DELETE CASCADE
 );
@@ -104,11 +85,10 @@ DELETE FROM files WHERE updated < STRFTIME('%s', 'NOW', '-1 YEAR');'''
 _CLEAR_FILE_UI = 'DELETE FROM files WHERE filename = :filename'
 
 _INSERT_FILE_UI = '''
-INSERT INTO files
-    (filename, mdi, show_items_tree, show_pragmas, show_calendar) VALUES
-    (:filename, :mdi, :show_items_tree, :show_pragmas, :show_calendar);'''
+INSERT INTO files (filename, ui) VALUES (:filename, :ui);'''
 
-_INSERT_WINDOW_UI = '''
-INSERT INTO windows
-    (fid, title, sql_select, x, y, width, height, editor_height) VALUES
-    (:fid, :title, :sql_select, :x, :y, :width, :height, :editor_height);'''
+_INSERT_WINDOW_UI = 'INSERT INTO windows (fid, ui) VALUES (:fid, :ui);'
+
+_GET_FILE_UI = 'SELECT fid, ui FROM files WHERE filename = :filename;'
+
+_GET_WINDOW_UI = 'SELECT ui FROM windows WHERE fid = :fid;'

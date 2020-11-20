@@ -156,7 +156,7 @@ class Mixin:
         if bool(self.db):
             saved += self.pragmasDock.widget().save()
             for widget in self.mdi_widgets:
-                saved += widget.save()
+                saved += widget.widget().save()
         message = 'Saved changes' if saved else 'No changes to save'
         self.statusBar().showMessage(message, TIMEOUT_SHORT)
 

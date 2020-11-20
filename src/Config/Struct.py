@@ -2,6 +2,7 @@
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
 import collections
+import json
 
 
 class MainWindowOptions:
@@ -34,6 +35,21 @@ class DbUi:
         self.windows = [] if windows is None else windows
 
 
+    @property
+    def to_json(self): # Deliberately excludes filename and windows
+        return json.dumps(dict(mdi=self.mdi,
+                               show_items_tree=self.show_items_tree,
+                               show_pragmas=self.show_pragmas,
+                               show_calendar=self.show_calendar))
+
+
+    def update(self, d):
+        self.mdi = d.get('mdi', True)
+        self.show_items_tree = d.get('show_items_tree', True)
+        self.show_pragmas = d.get('show_pragmas', False)
+        self.show_calendar = d.get('show_calendar', False)
+
+
     def __str__(self): # debug
         parts = [f'''Db={self.filename}
     mdi={self.mdi}
@@ -49,17 +65,24 @@ class DbUi:
 class DbWindowUi:
 
     def __init__(self, title, sql_select, *, x=None, y=None, width=None,
-                 height=None, editor_height=None):
+                 height=None, sizes=None):
         self.title = title
         self.sql_select = sql_select
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.editor_height = editor_height
+        self.sizes = sizes
+
+
+    @property
+    def to_json(self):
+        return json.dumps(dict(title=self.title, sql_select=self.sql_select,
+                               x=self.x, y=self.y, width=self.width,
+                               height=self.height, sizes=self.sizes))
 
 
     def __str__(self): # debug
         sql = ' '.join(self.sql_select.split()).strip()
         return (f'window={self.title} ({self.x},{self.y}+{self.width}+'
-                f'{self.height}) {self.editor_height} {sql!r}')
+                f'{self.height}) {self.sizes} {sql!r}')

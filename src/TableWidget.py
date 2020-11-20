@@ -54,8 +54,8 @@ class TableWidget(QWidget):
 
 
     @property
-    def editor_height(self):
-        return self.splitter.sizes()[0]
+    def sizes(self):
+        return self.splitter.sizes()
 
 
     @property

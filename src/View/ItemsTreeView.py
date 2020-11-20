@@ -21,10 +21,10 @@ class Mixin:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
         name = item.text(0)
-        sub_window = self.mdiWidgets.get((kind, name))
+        sub_window = self.mdiWidgets.get(name)
         if not shiboken2.isValid(sub_window):
             with contextlib.suppress(KeyError):
-                del self.mdiWidgets[(kind, name)]
+                del self.mdiWidgets[name]
             sub_window = None
         if sub_window is None:
             if kind in {'table', 'view'}:
@@ -33,7 +33,7 @@ class Mixin:
                 widget.sqlEdit.textChanged.connect(self.edit_update_ui)
                 widget.sqlEdit.copyAvailable.connect(self.edit_update_ui)
                 sub_window = self.mdiArea.addSubWindow(widget)
-                self.mdiWidgets[(kind, name)] = sub_window
+                self.mdiWidgets[name] = sub_window
                 widget.show()
             else:
                 # TODO create a new QueryWidget or TriggerEditWidget etc.
