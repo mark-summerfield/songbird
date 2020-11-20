@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # Copyright © 2020 Mark Summerfield. All rights reserved.
 
-import contextlib
-
-import shiboken2
 from PySide2.QtGui import QBrush, Qt
 from PySide2.QtWidgets import QHeaderView, QTreeWidget, QTreeWidgetItem
 
@@ -21,18 +18,13 @@ class Mixin:
             return # Ignore top-level items
         kind = item.parent().text(0).lower()[:-1]
         name = item.text(0)
-        sub_window = self.mdiWidgets.get(name)
-        if not shiboken2.isValid(sub_window):
-            with contextlib.suppress(KeyError):
-                del self.mdiWidgets[name]
-            sub_window = None
+        sub_window = self.findSubWindow(name)
         if sub_window is None:
             if kind in {'table', 'view'}:
                 select = self.db.select_make(kind, name)
                 widget = TableWidget(self.db, name, select,
                                      self.edit_update_ui)
                 sub_window = self.mdiArea.addSubWindow(widget)
-                self.mdiWidgets[name] = sub_window
                 widget.show()
             else:
                 # TODO create a new QueryWidget or TriggerEditWidget etc.

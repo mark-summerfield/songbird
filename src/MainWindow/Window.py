@@ -3,7 +3,6 @@
 
 import pathlib
 
-import shiboken2
 from PySide2.QtCore import QStandardPaths, Qt, QTimer
 from PySide2.QtWidgets import QMainWindow, QMdiArea
 
@@ -57,7 +56,6 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
             QStandardPaths.DocumentsLocation)
         self.recent_files = RecentFiles.get(RECENT_FILES_MAX)
         self.closing = False
-        self.mdiWidgets = {} # key = name; value = TableWidget, etc.
 
 
     def make_widgets(self):
@@ -169,20 +167,11 @@ class Window(QMainWindow, EditActions.Mixin, FileActions.Mixin,
         widget = self.pragmasDock.widget()
         widget.save(closing=self.closing)
         widget.clear()
-        for widget in self.mdi_widgets:
+        for widget in self.mdiArea.subWindowList():
             widget.close() # Will save if dirty
-        self.mdiWidgets.clear()
 
 
-    @property
-    def mdi_widgets(self):
-        to_delete = []
-        widgets = []
-        for key, widget in self.mdiWidgets.items():
-            if shiboken2.isValid(widget):
-                widgets.append(widget)
-            else:
-                to_delete.append(key)
-        for key in to_delete:
-            del self.mdiWidgets[key]
-        return widgets
+    def findSubWindow(self, name):
+        for widget in self.mdiArea.subWindowList():
+            if widget.windowTitle() == name:
+                return widget

@@ -43,7 +43,6 @@ class Mixin:
             sub_window.setGeometry(window.x, window.y, window.width,
                                    window.height)
             widget.splitter.setSizes(window.sizes)
-            self.mdiWidgets[window.title] = sub_window
             widget.show()
 
 
@@ -57,7 +56,7 @@ class Mixin:
         ui.show_items_tree = self.itemsTreeDock.isVisible()
         ui.show_pragmas = self.pragmasDock.isVisible()
         # ui.show_calendar = self.calendarDock.isVisible() # TODO
-        for widget in self.mdi_widgets:
+        for widget in self.mdiArea.subWindowList():
             child = widget.widget()
             if (child is not None and isinstance(child, TableWidget) and
                     child.is_select):
