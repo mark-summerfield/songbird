@@ -13,8 +13,8 @@
 	try:
 	    self.db.execute(sql)
 	...
-	```
-      give the window the name 'Query #n' (so for save/restore put windows
+```
+      give the window the name "Query #n" (so for save/restore put windows
       with names matching `/Query #\d+/` under the queryItem
 - If this all works, then replace the TableWidget with the QueryWidget
 - Make views and tables open with the editor _closed_ by default; and for
@@ -111,7 +111,7 @@ as rows in a QueryWidget)
 &Window _(SDI - max of 9)_ |
 ----------------------- |
 &1 _sdi name1_ |
-    : |
+_:_ |
 &9 _sdi nameN_ |
 
 ### 0.7.5 Extra functionality
