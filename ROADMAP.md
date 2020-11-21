@@ -13,7 +13,7 @@
 	try:
 	    self.db.execute(sql)
 	...
-```
+	```
       give the window the name "Query #n" (so for save/restore put windows
       with names matching `/Query #\d+/` under the queryItem
 - If this all works, then replace the TableWidget with the QueryWidget
