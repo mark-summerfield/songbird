@@ -13,7 +13,7 @@ Python 3.8, PySide 2, APSW.
 
 ## Roadmap
 
-For progress and plans see ROADMAP.md
+For progress and plans see the [roadmap](ROADMAP.md).
 
 ## License
 
