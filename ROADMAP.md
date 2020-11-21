@@ -14,7 +14,7 @@
     ...
     ```
 - for queries, give the window the name "Query #n" (so for save/restore put
-  windows with names matching `/Query #\d+/` under the queryItem
+  windows with names matching `/Query #\d+/` under the queryItem)
 - If this all works, then replace the TableWidget with the QueryWidget
 - Make views and tables open with the editor _closed_ by default; and for
   queries open with the editor _open_ (as now)
@@ -122,6 +122,9 @@ e.g., optimize, check, etc.
 
 Add any more rich types that are useful. This has an impact on custom and
 default forms.
+
+### 0.9.0
+
 
 ### 1.0.0
 

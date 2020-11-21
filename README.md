@@ -11,6 +11,10 @@ SQLite and Songbird databases.
 
 Python 3.8, PySide 2, APSW.
 
+## Roadmap
+
+For progress and plans see ROADMAP.md
+
 ## License
 
 GPL-3.0.
