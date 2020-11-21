@@ -50,6 +50,10 @@ _Convert to &Songbird_ |
 
 For Insert and Update create default forms.
 
+Form window names must have the form "{Table,view}name Form" so that they
+can be distinguished from tables, views, and queries and can be
+saved/restored to/from JSON ui.
+
 (_Italicised_ options are to be implemented later; see below)
 
 ### 0.4.3 View→Show Row Numbers
