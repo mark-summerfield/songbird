@@ -134,11 +134,14 @@ default forms.
 
 !
 
-## Ideas
+## Ideas (unordered)
 
 - provide an editor/dialog/? for creating transforms e.g., applying
   some math function to every column in a table (or selection of a
   table), etc.
+
+- Show Relations
+  Show a generated diagram showing PKs and FKs linked by lines
 
 - Completion in SQLEdit?
 
