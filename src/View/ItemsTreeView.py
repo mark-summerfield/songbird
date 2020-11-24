@@ -21,8 +21,8 @@ class Mixin:
         sub_window = self.findSubWindow(name)
         if sub_window is None:
             if kind in {'table', 'view'}:
-                select = self.db.select_make(kind, name)
-                widget = TableWidget(self.db, name, select,
+                sql = self.db.select_make(kind, name)
+                widget = TableWidget(self.db, f'{name} ({kind})', sql,
                                      self.edit_update_ui)
                 sub_window = self.mdiArea.addSubWindow(widget)
                 widget.show()

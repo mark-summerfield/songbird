@@ -50,6 +50,12 @@ def uncommented(sql):
 
 
 @functools.lru_cache
+def is_select(sql):
+    return re.match(r'\s*SELECT\s', uncommented(sql),
+                    re.IGNORECASE) is not None
+
+
+@functools.lru_cache
 def select_limit_1_from_select(select, row=0):
     select = uncommented(select)
     limit_rx = re.compile(

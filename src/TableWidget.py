@@ -62,8 +62,7 @@ class TableWidget(QWidget):
 
     @property
     def is_select(self):
-        select = Sql.uncommented(self.sqlEdit.toPlainText())
-        return re.match(r'\s*SELECT\s', select, re.IGNORECASE) is not None
+        return Sql.is_select(self.sql)
 
 
     @property
